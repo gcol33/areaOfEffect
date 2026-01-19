@@ -74,6 +74,7 @@ validate_inputs(points, support, reference, mask)
   # Prepare support: union and validate
   support_geom <- sf::st_union(sf::st_geometry(support))
   support_geom <- sf::st_make_valid(support_geom)
+  sf::st_crs(support_geom) <- target_crs
 
   # Determine reference point
 if (is.null(reference)) {
@@ -84,7 +85,7 @@ if (is.null(reference)) {
   }
 
   # Scale the support (fixed scale = 1, multiplier = 2)
-  aoe_geom <- scale_geometry(support_geom, reference, multiplier = 2)
+  aoe_geom <- scale_geometry(support_geom, reference, multiplier = 2, crs = target_crs)
   aoe_geom <- sf::st_make_valid(aoe_geom)
 
   # Apply mask if provided
@@ -195,10 +196,11 @@ validate_inputs <- function(points, support, reference, mask) {
 #' @param geom An sfc geometry
 #' @param reference An sfg POINT (the reference point)
 #' @param multiplier Numeric scaling multiplier
+#' @param crs The CRS to apply to the result
 #'
-#' @return Scaled sfc geometry
+#' @return Scaled sfc geometry with CRS preserved
 #' @noRd
-scale_geometry <- function(geom, reference, multiplier) {
+scale_geometry <- function(geom, reference, multiplier, crs) {
   ref_coords <- sf::st_coordinates(reference)
 
   # Extract the affine transformation:
@@ -209,11 +211,14 @@ scale_geometry <- function(geom, reference, multiplier) {
   # Use sf's affine transformation
   # First translate so reference is at origin
   # Then scale
- # Then translate back
+  # Then translate back
 
   geom_shifted <- geom - ref_coords
   geom_scaled <- geom_shifted * multiplier
   geom_result <- geom_scaled + ref_coords
+
+  # Restore CRS (arithmetic operations strip it)
+  sf::st_crs(geom_result) <- crs
 
   geom_result
 }
