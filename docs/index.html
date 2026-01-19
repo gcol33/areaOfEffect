@@ -77,22 +77,18 @@
 <li>
 <strong>Pruned</strong>: outside the area of effect (not returned)</li>
 </ul>
-<p>By default, the AoE expands to give <strong>equal core and halo areas</strong>. This is not arbitrary—it’s the unique scale where the inside and outside contribute equally.</p>
-<p>Sea boundaries are treated differently from political borders: they are hard boundaries. An optional mask can be provided to enforce such constraints.</p>
+<p>By default, the AoE expands to give <strong>equal core and halo areas</strong>.</p>
+<p>Sea boundaries are hard boundaries. An optional mask can enforce such constraints.</p>
 </div>
 <div class="section level2">
-<h2 id="why-equal-area">Why Equal Area?<a class="anchor" aria-label="anchor" href="#why-equal-area"></a>
+<h2 id="scale">Scale<a class="anchor" aria-label="anchor" href="#scale"></a>
 </h2>
-<p>The default scale (<code>sqrt(2) - 1 ≈ 0.414</code>) produces equal core and halo areas. This emerges from a simple principle: <strong>without domain knowledge, the outside should matter as much as the inside</strong>.</p>
-<p>This is not a tuned parameter. It’s the <em>unique</em> solution to “core equals halo”:</p>
-<pre><code>(1 + s)² - 1 = 1  →  s = √2 - 1</code></pre>
-<p>The formula is derived, not chosen. It removes a degree of freedom from the analyst and replaces it with a principled geometric constraint.</p>
+<p>Default: <code>sqrt(2) - 1 ≈ 0.414</code>, which gives equal core and halo areas.</p>
 <table class="table">
 <thead><tr>
 <th>Scale</th>
 <th>Multiplier</th>
 <th>Area Ratio</th>
-<th>Use Case</th>
 </tr></thead>
 <tbody>
 <tr>
@@ -100,13 +96,11 @@
 <strong>√2 − 1</strong> (default)</td>
 <td><strong>1.414</strong></td>
 <td><strong>1:1</strong></td>
-<td><strong>Symmetric prior</strong></td>
 </tr>
 <tr>
 <td>1</td>
 <td>2</td>
 <td>1:3</td>
-<td>External dominance</td>
 </tr>
 </tbody>
 </table>
@@ -114,7 +108,7 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
 <span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu">pak</span><span class="op">(</span><span class="st">"gcol33/areaOfEffect"</span><span class="op">)</span></span></code></pre></div>
@@ -125,7 +119,7 @@
 <div class="section level3">
 <h3 id="single-support">Single Support<a class="anchor" aria-label="anchor" href="#single-support"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/areaOfEffect/">areaOfEffect</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span></span>
@@ -161,7 +155,7 @@
 <h3 id="multiple-supports-parallel-processing">Multiple Supports (Parallel Processing)<a class="anchor" aria-label="anchor" href="#multiple-supports-parallel-processing"></a>
 </h3>
 <p>When multiple supports are provided, each is processed independently. Points can appear multiple times if they fall within multiple AoEs.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Two adjacent admin regions</span></span>
 <span><span class="va">supports</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -189,7 +183,7 @@
 <div class="section level3">
 <h3 id="with-a-mask-eg-land-boundary">With a Mask (e.g., Land Boundary)<a class="anchor" aria-label="anchor" href="#with-a-mask-eg-land-boundary"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create land mask (excludes sea)</span></span>
 <span><span class="va">land</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
@@ -205,7 +199,7 @@
 <div class="section level3">
 <h3 id="diagnostic-summary">Diagnostic Summary<a class="anchor" aria-label="anchor" href="#diagnostic-summary"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">pts</span>, <span class="va">support</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/aoe_summary.html">aoe_summary</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   support_id n_total n_core n_halo prop_core prop_halo</span></span>
@@ -215,7 +209,7 @@
 <div class="section level2">
 <h2 id="function-signature">Function Signature<a class="anchor" aria-label="anchor" href="#function-signature"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">points</span>, <span class="va">support</span>, scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>, reference <span class="op">=</span> <span class="cn">NULL</span>, mask <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -281,19 +275,17 @@
 <p>When multiple supports are provided, points may appear multiple times (once per support whose AoE contains them).</p>
 </div>
 <div class="section level2">
-<h2 id="design-principles">Design Principles<a class="anchor" aria-label="anchor" href="#design-principles"></a>
+<h2 id="design">Design<a class="anchor" aria-label="anchor" href="#design"></a>
 </h2>
 <ul>
 <li>
-<strong>Not a buffer</strong>: AoE scales proportionally from the centroid, not by fixed distance</li>
+<strong>Not a buffer</strong>: AoE scales from the centroid, not by fixed distance</li>
 <li>
-<strong>Derived default</strong>: The default scale is geometrically determined, not tuned</li>
+<strong>Default scale</strong>: Equal core/halo areas</li>
 <li>
-<strong>Symmetric prior</strong>: Equal core/halo areas = no bias toward inside or outside</li>
+<strong>Mask support</strong>: Coastlines and other hard constraints</li>
 <li>
-<strong>Hard boundaries respected</strong>: Optional mask for coastlines or other hard constraints</li>
-<li>
-<strong>Multiple supports</strong>: Process admin regions in parallel with long format output</li>
+<strong>Multiple supports</strong>: Long format output</li>
 </ul>
 </div>
 <div class="section level2">
@@ -304,12 +296,12 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">@software{areaOfEffect,</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">  author = {Colling, Gilles},</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">  title = {areaOfEffect: Spatial Support at Scale},</span></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">  year = {2026},</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">  url = {https://github.com/gcol33/areaOfEffect}</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">@software{areaOfEffect,</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">  author = {Colling, Gilles},</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">  title = {areaOfEffect: Spatial Support at Scale},</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">  year = {2026},</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">  url = {https://github.com/gcol33/areaOfEffect}</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

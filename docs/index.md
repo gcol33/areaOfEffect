@@ -29,32 +29,19 @@ classified:
   effect
 - **Pruned**: outside the area of effect (not returned)
 
-By default, the AoE expands to give **equal core and halo areas**. This
-is not arbitrary—it’s the unique scale where the inside and outside
-contribute equally.
+By default, the AoE expands to give **equal core and halo areas**.
 
-Sea boundaries are treated differently from political borders: they are
-hard boundaries. An optional mask can be provided to enforce such
+Sea boundaries are hard boundaries. An optional mask can enforce such
 constraints.
 
-## Why Equal Area?
+## Scale
 
-The default scale (`sqrt(2) - 1 ≈ 0.414`) produces equal core and halo
-areas. This emerges from a simple principle: **without domain knowledge,
-the outside should matter as much as the inside**.
+Default: `sqrt(2) - 1 ≈ 0.414`, which gives equal core and halo areas.
 
-This is not a tuned parameter. It’s the *unique* solution to “core
-equals halo”:
-
-    (1 + s)² - 1 = 1  →  s = √2 - 1
-
-The formula is derived, not chosen. It removes a degree of freedom from
-the analyst and replaces it with a principled geometric constraint.
-
-| Scale                | Multiplier | Area Ratio | Use Case            |
-|----------------------|------------|------------|---------------------|
-| **√2 − 1** (default) | **1.414**  | **1:1**    | **Symmetric prior** |
-| 1                    | 2          | 1:3        | External dominance  |
+| Scale                | Multiplier | Area Ratio |
+|----------------------|------------|------------|
+| **√2 − 1** (default) | **1.414**  | **1:1**    |
+| 1                    | 2          | 1:3        |
 
 ## Installation
 
@@ -198,18 +185,12 @@ for area statistics.
 When multiple supports are provided, points may appear multiple times
 (once per support whose AoE contains them).
 
-## Design Principles
+## Design
 
-- **Not a buffer**: AoE scales proportionally from the centroid, not by
-  fixed distance
-- **Derived default**: The default scale is geometrically determined,
-  not tuned
-- **Symmetric prior**: Equal core/halo areas = no bias toward inside or
-  outside
-- **Hard boundaries respected**: Optional mask for coastlines or other
-  hard constraints
-- **Multiple supports**: Process admin regions in parallel with long
-  format output
+- **Not a buffer**: AoE scales from the centroid, not by fixed distance
+- **Default scale**: Equal core/halo areas
+- **Mask support**: Coastlines and other hard constraints
+- **Multiple supports**: Long format output
 
 ## License
 
