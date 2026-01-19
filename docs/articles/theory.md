@@ -64,7 +64,7 @@ be meaningfully related to the support region.
 ![Point classification by AoE. Core points (green) are inside the
 original support. Halo points (orange) are in the expanded region.
 Points outside the AoE are
-pruned.](theory_files/figure-html/classification-1.png)
+pruned.](theory_files/figure-html/classification-1.svg)
 
 Point classification by AoE. Core points (green) are inside the original
 support. Halo points (orange) are in the expanded region. Points outside
@@ -154,7 +154,7 @@ intersecting the AoE with a land polygon.
 
 ![Hard boundaries constrain the AoE. The dashed line shows the
 theoretical AoE; the solid gray area shows the AoE after applying a land
-mask.](theory_files/figure-html/mask-concept-1.png)
+mask.](theory_files/figure-html/mask-concept-1.svg)
 
 Hard boundaries constrain the AoE. The dashed line shows the theoretical
 AoE; the solid gray area shows the AoE after applying a land mask.
