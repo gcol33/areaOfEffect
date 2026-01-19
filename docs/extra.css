@@ -1,4 +1,5 @@
-/* Plot styling */
+/* Plot styling - match code block borders */
+/* Bootstrap 5 Sandstone uses --bs-border-radius: .375rem for pre/code */
 img.r-plt,
 .figure img,
 figure img,
@@ -7,7 +8,7 @@ svg.inline-svg {
   max-width: 100%;
   width: 100%;
   height: auto;
-  border: none;
+  border: 1px solid #DFD7CA;
   border-radius: .375rem;
   overflow: hidden;
   display: block;
@@ -41,9 +42,13 @@ svg.inline-svg {
   }
   p > svg.inline-svg, p > img.r-plt {
     border-radius: 0 !important;
-    border: none !important;
+    border: 1px solid #DFD7CA !important;
     width: 100% !important;
     max-width: none !important;
+  }
+  [data-bs-theme="dark"] p > svg.inline-svg,
+  [data-bs-theme="dark"] p > img.r-plt {
+    border: 1px solid #495057 !important;
   }
   .section .figure, .section figure, div > div > .figure, div > div > figure {
     margin-left: calc(var(--bs-gutter-x, 1.5rem) * -.5) !important;
@@ -58,6 +63,13 @@ svg.inline-svg {
     width: 100% !important;
     max-width: none !important;
   }
+}
+
+/* Dark mode border */
+[data-bs-theme="dark"] img.r-plt, [data-bs-theme="dark"] .figure img,
+[data-bs-theme="dark"] figure img, [data-bs-theme="dark"] img.figure-img,
+[data-bs-theme="dark"] svg.inline-svg {
+  border-color: #495057;
 }
 
 /* Dark mode colors for base R svg format */
