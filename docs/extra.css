@@ -103,6 +103,7 @@ svg.inline-svg .svglite > g > rect[rx] { stroke: none !important; }
 [data-bs-theme="dark"] svg.inline-svg .svglite rect[style*="fill: #F5F6F8"]:not(.svg-bg),
 [data-bs-theme="dark"] svg.inline-svg .svglite rect.legend-bg {
   fill: #343739 !important;
+  stroke: #343739 !important;
 }
 
 /* Grid lines */
