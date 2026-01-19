@@ -112,7 +112,6 @@ The support geometry is validated internally using
 
 ``` r
 library(sf)
-#> Linking to GEOS 3.13.1, GDAL 3.11.4, PROJ 9.7.0; sf_use_s2() is TRUE
 
 # Single support
 support <- st_as_sf(

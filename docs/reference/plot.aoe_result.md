@@ -101,5 +101,4 @@ pts <- st_as_sf(
 
 result <- aoe(pts, support)
 plot(result)
-
 ```

@@ -83,13 +83,4 @@ pts <- st_as_sf(
 
 result <- aoe(pts, support)
 aoe_area(result)
-#> AoE Area Statistics
-#> ───────────────────
-#> 
-#>  support_id area_core (m²) area_halo (m²) area_aoe (m²) halo_core_ratio
-#>           1            100            100           200            1.00
-#>  pct_masked
-#>        0.0%
-#> 
-#> Note: Theoretical halo:core ratio is 1.00 (scale=0.414, no masking)
 ```

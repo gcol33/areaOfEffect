@@ -70,6 +70,4 @@ pts <- st_as_sf(
 
 result <- aoe(pts, support)
 aoe_summary(result)
-#>   support_id n_total n_core n_halo prop_core prop_halo
-#> 1          1       3      2      1 0.6666667 0.3333333
 ```

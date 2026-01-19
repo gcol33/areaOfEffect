@@ -233,6 +233,13 @@ MIT
 - [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.md) :
   Classify and Prune Points by Area of Effect
 
+## Data
+
+- [`countries`](https://gillescolling.com/areaOfEffect/reference/countries.md)
+  : World Country Polygons with Pre-calculated AoE Bounds
+- [`get_country()`](https://gillescolling.com/areaOfEffect/reference/get_country.md)
+  : Get Country Polygon by Name or ISO Code
+
 ## Diagnostics
 
 - [`aoe_summary()`](https://gillescolling.com/areaOfEffect/reference/aoe_summary.md)

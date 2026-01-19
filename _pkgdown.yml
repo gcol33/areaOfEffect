@@ -20,6 +20,10 @@ reference:
 - title: Core
   contents:
   - aoe
+- title: Data
+  contents:
+  - countries
+  - get_country
 - title: Diagnostics
   contents:
   - aoe_summary
