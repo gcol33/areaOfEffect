@@ -1,30 +1,28 @@
 url: https://gcol33.github.io/areaOfEffect/
-
 template:
   bootstrap: 5
   bslib:
-    primary: "#0d6efd"
-
+    primary: '#0d6efd'
+  includes:
+    in_header: pkgdown/mathjax-config.html
 navbar:
   structure:
     left:
-      - intro
-      - reference
-      - articles
-    right:
-      - github
+    - intro
+    - reference
+    - articles
+    right: github
   components:
     github:
       icon: fab fa-github
       href: https://github.com/gcol33/areaOfEffect
-
 reference:
-  - title: Main Functions
-    contents:
-      - aoe
-      - aoe_summary
-
+- title: Main Functions
+  contents:
+  - aoe
+  - aoe_summary
 articles:
-  - title: Getting Started
-    contents:
-      - quickstart
+- title: Getting Started
+  contents: quickstart
+- title: Background
+  contents: theory

@@ -1,0 +1,204 @@
+---
+title: "The Area of Effect Concept"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{The Area of Effect Concept}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 4
+)
+```
+
+## The Problem: Border Truncation
+
+When analyzing spatial data within political or administrative boundaries, a fundamental assumption is often violated: that the sampling region represents the ecological extent of the processes being studied.
+
+Consider sampling species occurrences within a country. Observations near the border are influenced by conditions *outside* that country. A forest that spans the border, a river that crosses it, or simply the continuous nature of climate and habitat means that truncating at the border introduces systematic bias.
+
+This is **border truncation**: the artificial constraint of ecological processes to administrative boundaries.
+
+## What AoE Is Not
+
+Before explaining what AoE does, it's important to clarify what it is *not*:
+- **Not a buffer**: Buffers add a fixed distance. AoE scales proportionally from a reference point.
+- **Not a distance-based operation**: There is no distance threshold or decay function.
+- **Not a tunable parameter**: Scale is fixed at 1. This is a method, not a knob.
+
+## The Area of Effect
+
+The **area of effect** (AoE) is the spatial extent over which observations within a support are influenced by external conditions. It is computed by scaling the support geometry outward from a reference point (typically the centroid).
+
+With scale fixed at 1, the transformation is:
+
+$$p' = r + 2(p - r)$$
+
+where:
+- $r$ is the reference point (centroid)
+- $p$ is each vertex of the support boundary
+- $p'$ is the transformed vertex
+
+This doubles the distance from the reference point to each boundary vertex, effectively expanding the support to twice its spatial extent while preserving shape and orientation.
+
+## Core and Halo Classification
+
+Points within the AoE are classified into two categories:
+
+1. **Core**: Points inside the original support. These are fully contained within the sampling region and represent "pure" observations unaffected by border effects.
+
+2. **Halo**: Points outside the original support but inside the expanded AoE. These observations are influenced by conditions in the border zone and may require different treatment in analysis.
+
+Points outside the AoE are **pruned** (removed). They are too distant to be meaningfully related to the support region.
+
+```{r classification, echo=FALSE, fig.cap="Point classification by AoE. Core points (green) are inside the original support. Halo points (orange) are in the expanded region. Points outside the AoE are pruned."}
+library(sf)
+library(areaOfEffect)
+
+# Create support
+support <- st_as_sf(
+  data.frame(id = 1),
+  geometry = st_sfc(st_polygon(list(
+    cbind(c(2, 8, 8, 2, 2), c(2, 2, 8, 8, 2))
+  ))),
+  crs = NA
+)
+
+# Create AoE manually for visualization
+centroid <- c(5, 5)
+support_coords <- cbind(c(2, 8, 8, 2, 2), c(2, 2, 8, 8, 2))
+aoe_coords <- centroid + 2 * (support_coords - centroid)
+aoe_poly <- st_polygon(list(aoe_coords))
+
+# Create points
+set.seed(42)
+n_pts <- 50
+pts_coords <- cbind(
+  runif(n_pts, -2, 12),
+  runif(n_pts, -2, 12)
+)
+pts <- st_as_sf(
+  data.frame(id = 1:n_pts),
+  geometry = st_sfc(lapply(1:n_pts, function(i) st_point(pts_coords[i, ]))),
+  crs = NA
+)
+
+# Classify
+in_support <- st_intersects(pts, support, sparse = FALSE)[, 1]
+in_aoe <- st_intersects(pts, st_sfc(aoe_poly), sparse = FALSE)[, 1]
+
+pts$class <- ifelse(in_support, "core",
+                    ifelse(in_aoe, "halo", "pruned"))
+
+# Plot
+par(mar = c(2, 2, 2, 2))
+plot(st_geometry(st_sfc(aoe_poly)), border = "gray70", lty = 2,
+     xlim = c(-3, 13), ylim = c(-3, 13), asp = 1)
+plot(st_geometry(support), border = "black", lwd = 2, add = TRUE)
+points(pts_coords[pts$class == "pruned", ], col = "gray60", pch = 4, cex = 0.8)
+points(pts_coords[pts$class == "halo", ], col = "darkorange", pch = 16)
+points(pts_coords[pts$class == "core", ], col = "forestgreen", pch = 16)
+points(5, 5, pch = 3, cex = 1.5, lwd = 2)  # centroid
+legend("topright",
+       legend = c("Core", "Halo", "Pruned", "Centroid", "Original", "AoE"),
+       col = c("forestgreen", "darkorange", "gray60", "black", "black", "gray70"),
+       pch = c(16, 16, 4, 3, NA, NA),
+       lty = c(NA, NA, NA, NA, 1, 2),
+       lwd = c(NA, NA, NA, 2, 2, 1),
+       bg = "white")
+```
+
+## Why Scale = 1?
+
+The scale is fixed at 1 for several reasons:
+
+1. **Reproducibility**: Every analysis uses the same definition. "We applied the AoE correction" is unambiguous.
+
+2. **Comparability**: Results across studies, regions, and time periods are directly comparable.
+
+3. **Interpretability**: Scale = 1 means "one full stamp" - the support is extended by its own characteristic scale.
+
+4. **Methodological consistency**: Good correction methods (rarefaction, bias correction) don't expose free parameters unless absolutely necessary.
+
+If you need to explore different scales for sensitivity analysis, that belongs in separate code, not in the core AoE definition.
+
+## Hard vs Soft Boundaries
+
+AoE distinguishes between two types of boundaries:
+
+**Political borders (soft)**: Administrative lines have no ecological meaning. The AoE freely crosses them. A country border does not stop species from dispersing or climate from varying.
+
+**Sea boundaries (hard)**: Physical barriers like coastlines are true boundaries. The optional `mask` argument enforces these constraints by intersecting the AoE with a land polygon.
+
+```{r mask-concept, echo=FALSE, fig.cap="Hard boundaries constrain the AoE. The dashed line shows the theoretical AoE; the solid gray area shows the AoE after applying a land mask."}
+# Create a coastal support
+support_coastal <- st_as_sf(
+  data.frame(id = 1),
+  geometry = st_sfc(st_polygon(list(
+    cbind(c(4, 8, 8, 4, 4), c(2, 2, 6, 6, 2))
+  ))),
+  crs = NA
+)
+
+# Theoretical AoE
+centroid_c <- c(6, 4)
+coastal_coords <- cbind(c(4, 8, 8, 4, 4), c(2, 2, 6, 6, 2))
+aoe_coastal_coords <- centroid_c + 2 * (coastal_coords - centroid_c)
+aoe_coastal <- st_polygon(list(aoe_coastal_coords))
+
+# Land mask (irregular coastline)
+land <- st_polygon(list(cbind(
+  c(0, 10, 10, 7, 5, 3, 0, 0),
+  c(0, 0, 5, 6, 5.5, 7, 6, 0)
+)))
+
+# Masked AoE
+aoe_masked <- st_intersection(aoe_coastal, land)
+
+par(mar = c(2, 2, 2, 2))
+plot(aoe_coastal, border = "gray70", lty = 2,
+     xlim = c(-1, 11), ylim = c(-1, 9), asp = 1)
+plot(land, col = NA, border = "steelblue", lwd = 2, add = TRUE)
+plot(aoe_masked, col = rgb(0.5, 0.5, 0.5, 0.3), border = NA, add = TRUE)
+plot(st_geometry(support_coastal), border = "black", lwd = 2, add = TRUE)
+points(6, 4, pch = 3, cex = 1.5, lwd = 2)
+
+# Add "SEA" label
+text(8, 7, "SEA", col = "steelblue", font = 2, cex = 1.2)
+
+legend("topleft",
+       legend = c("Support", "AoE (theoretical)", "AoE (masked)", "Coastline"),
+       col = c("black", "gray70", rgb(0.5, 0.5, 0.5, 0.5), "steelblue"),
+       lty = c(1, 2, NA, 1),
+       lwd = c(2, 1, NA, 2),
+       pch = c(NA, NA, 15, NA),
+       pt.cex = 2,
+       bg = "white")
+```
+
+## Multiple Supports
+
+Real-world analyses often involve multiple administrative regions (countries, provinces, protected areas). AoE handles these naturally:
+
+- Each support is processed independently
+- Each uses its own centroid as reference
+- Points can fall within multiple AoEs (when regions are adjacent)
+- Output is in long format: one row per point-support combination
+
+This enables cross-border analyses and studies of nested administrative structures without repeated preprocessing.
+
+## Summary
+
+The area of effect provides a principled correction for border truncation in spatial analysis:
+
+- **Fixed definition**: Scale = 1, no tuning
+- **Categorical output**: Core, halo, or pruned
+- **Soft/hard boundaries**: Political borders ignored, physical barriers respected
+- **Multiple supports**: Process many regions at once
+
+The result is a reproducible, interpretable method that can be consistently applied across studies.
