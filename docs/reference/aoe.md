@@ -10,7 +10,7 @@ outside.
 ``` r
 aoe(
   points,
-  support,
+  support = NULL,
   scale = sqrt(2) - 1,
   reference = NULL,
   mask = NULL,
@@ -26,10 +26,15 @@ aoe(
 
 - support:
 
-  An `sf` object with POLYGON or MULTIPOLYGON geometries. Each row
-  defines a separate support region. When multiple rows are provided,
-  points are classified against each support independently, returning
-  long format output where a point may appear multiple times.
+  One of:
+
+  - `sf` object with POLYGON/MULTIPOLYGON geometries
+
+  - Country name or ISO code: `"France"`, `"FR"`, `"FRA"`
+
+  - Vector of countries: `c("France", "Germany")`
+
+  - Missing: auto-detects countries containing the points
 
 - scale:
 

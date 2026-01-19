@@ -6,7 +6,7 @@
 \usage{
 aoe(
   points,
-  support,
+  support = NULL,
   scale = sqrt(2) - 1,
   reference = NULL,
   mask = NULL,
@@ -16,10 +16,13 @@ aoe(
 \arguments{
 \item{points}{An \code{sf} object with POINT geometries.}
 
-\item{support}{An \code{sf} object with POLYGON or MULTIPOLYGON geometries.
-Each row defines a separate support region. When multiple rows are
-provided, points are classified against each support independently,
-returning long format output where a point may appear multiple times.}
+\item{support}{One of:
+\itemize{
+\item \code{sf} object with POLYGON/MULTIPOLYGON geometries
+\item Country name or ISO code: \code{"France"}, \code{"FR"}, \code{"FRA"}
+\item Vector of countries: \code{c("France", "Germany")}
+\item Missing: auto-detects countries containing the points
+}}
 
 \item{scale}{Numeric scale factor (default \code{sqrt(2) - 1}, approximately 0.414). The
 multiplier applied to distances from the reference point is \code{1 + scale}.
