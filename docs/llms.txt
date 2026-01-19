@@ -6,14 +6,29 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 
 **Spatial Support at Scale**
 
-The `areaOfEffect` package formalizes spatial support at scale. Given a
-set of points and one or more support polygons,
+Given a set of points and one or more support polygons,
 [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.md)
 classifies points as “core” (inside original support) or “halo” (inside
 the area of effect but outside original support), pruning all points
 outside.
 
-## Concept
+## Quick Start
+
+``` r
+
+library(areaOfEffect)
+
+# Austria
+result <- aoe(pts, "AT")
+
+# Austria + Germany
+result <- aoe(pts, c("AT", "DE"))
+
+# Auto-detect countries from points
+result <- aoe(pts)
+```
+
+## Statement of Need
 
 Political borders are not hard ecological boundaries. Biological
 processes do not stop at administrative lines. When sampling within a
@@ -34,14 +49,20 @@ By default, the AoE expands to give **equal core and halo areas**.
 Sea boundaries are hard boundaries. An optional mask can enforce such
 constraints.
 
-## Scale
+## Features
 
-Default: `sqrt(2) - 1 ≈ 0.414`, which gives equal core and halo areas.
-
-| Scale                | Multiplier | Area Ratio |
-|----------------------|------------|------------|
-| **√2 − 1** (default) | **1.414**  | **1:1**    |
-| 1                    | 2          | 1:3        |
+- **Country lookup**: Pass ISO codes or names directly (`"AT"`,
+  `"Austria"`)
+- **Auto-detection**: Omit support to detect countries from points
+- **Multiple supports**: Process admin regions with long format output
+- **Masking**: Coastlines and other hard constraints
+- **S3 methods**: [`print()`](https://rdrr.io/r/base/print.html),
+  [`summary()`](https://rdrr.io/r/base/summary.html),
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
+- **Diagnostics**:
+  [`aoe_summary()`](https://gillescolling.com/areaOfEffect/reference/aoe_summary.md),
+  [`aoe_area()`](https://gillescolling.com/areaOfEffect/reference/aoe_area.md),
+  [`aoe_geometry()`](https://gillescolling.com/areaOfEffect/reference/aoe_geometry.md)
 
 ## Installation
 
@@ -52,7 +73,7 @@ Default: `sqrt(2) - 1 ≈ 0.414`, which gives equal core and halo areas.
 pak::pak("gcol33/areaOfEffect")
 ```
 
-## Usage
+## Usage Examples
 
 ### Single Support
 
@@ -61,7 +82,7 @@ pak::pak("gcol33/areaOfEffect")
 library(areaOfEffect)
 library(sf)
 
-# Create example support polygon (e.g., a country or region)
+# Create example support polygon
 support <- st_as_sf(
   data.frame(id = 1),
   geometry = st_sfc(st_polygon(list(
@@ -74,30 +95,23 @@ support <- st_as_sf(
 pts <- st_as_sf(
   data.frame(id = 1:4),
   geometry = st_sfc(
-    st_point(c(50, 50)),   # core (center)
-    st_point(c(10, 10)),   # core (inside)
-    st_point(c(150, 50)),  # halo (outside original, inside AoE)
-    st_point(c(300, 300))  # outside (will be pruned)
+    st_point(c(50, 50)),   # core
+    st_point(c(10, 10)),   # core
+    st_point(c(150, 50)),  # halo
+    st_point(c(300, 300))  # pruned
   ),
   crs = 32631
 )
 
-# Apply area of effect
 result <- aoe(pts, support)
-
-# View classification
 result$aoe_class
 #> [1] "core" "core" "halo"
 ```
 
-### Multiple Supports (Parallel Processing)
-
-When multiple supports are provided, each is processed independently.
-Points can appear multiple times if they fall within multiple AoEs.
+### Multiple Supports
 
 ``` r
 
-# Two adjacent admin regions
 supports <- st_as_sf(
   data.frame(region = c("A", "B")),
   geometry = st_sfc(
@@ -107,26 +121,14 @@ supports <- st_as_sf(
   crs = 32631
 )
 
-# Points near the shared boundary
-pts <- st_as_sf(
-  data.frame(id = 1:3),
-  geometry = st_sfc(
-    st_point(c(25, 50)),   # inside A
-    st_point(c(50, 50)),   # on boundary
-    st_point(c(75, 50))    # inside B
-  ),
-  crs = 32631
-)
-
 result <- aoe(pts, supports)
-# Points may appear in both regions' output (long format)
+# Points may appear in both regions' output
 ```
 
-### With a Mask (e.g., Land Boundary)
+### With Mask
 
 ``` r
 
-# Create land mask (excludes sea)
 land <- st_as_sf(
   data.frame(id = 1),
   geometry = st_sfc(st_polygon(list(
@@ -135,62 +137,46 @@ land <- st_as_sf(
   crs = 32631
 )
 
-# Apply with mask
 result <- aoe(pts, support, mask = land)
 ```
 
-### Diagnostic Summary
+### Diagnostics
 
 ``` r
 
-result <- aoe(pts, support)
 aoe_summary(result)
 #>   support_id n_total n_core n_halo prop_core prop_halo
 #> 1          1       3      2      1     0.667     0.333
 ```
 
-## Function Signature
+## Scale
 
-``` r
+Default: `sqrt(2) - 1`, which gives equal core and halo areas.
 
-aoe(points, support, scale = sqrt(2) - 1, reference = NULL, mask = NULL)
-```
+| Scale                     | Multiplier | Area Ratio |
+|---------------------------|------------|------------|
+| **sqrt(2) - 1** (default) | **1.414**  | **1:1**    |
+| 1                         | 2          | 1:3        |
 
-| Argument | Type | Default | Description |
-|----|----|----|----|
-| `points` | sf (POINT) | required | Points to classify and prune |
-| `support` | sf (POLYGON/MULTIPOLYGON) | required | One or more support regions (each row = separate AoE) |
-| `scale` | numeric | √2 − 1 | Scale factor; default gives equal core/halo areas |
-| `reference` | sf (POINT) or NULL | NULL | Reference point; only valid for single support |
-| `mask` | sf (POLYGON) or NULL | NULL | Hard boundary; AoE intersected with mask |
+## Documentation
 
-## Return Value
+- [Quick
+  Start](https://gillescolling.com/areaOfEffect/articles/quickstart.html)
+- [Theory](https://gillescolling.com/areaOfEffect/articles/theory.html)
 
-An `aoe_result` object (extends `sf`) containing only supported points,
-with:
+## Support
 
-- `point_id` column: original point identifier
-- `support_id` column: identifier for which support the classification
-  refers to
-- `aoe_class` column: `"core"` or `"halo"`
+> “Software is like sex: it’s better when it’s free.” - Linus Torvalds
 
-S3 methods: [`print()`](https://rdrr.io/r/base/print.html),
-[`summary()`](https://rdrr.io/r/base/summary.html),
-[`plot()`](https://rdrr.io/r/graphics/plot.default.html). Use
-[`aoe_geometry()`](https://gillescolling.com/areaOfEffect/reference/aoe_geometry.md)
-to extract polygons,
-[`aoe_area()`](https://gillescolling.com/areaOfEffect/reference/aoe_area.md)
-for area statistics.
+I’m a PhD student who builds R packages in my free time because I
+believe good tools should be free and open. I started these projects for
+my own work and figured others might find them useful too.
 
-When multiple supports are provided, points may appear multiple times
-(once per support whose AoE contains them).
+If this package saved you some time, buying me a coffee is a nice way to
+say thanks. It helps with my coffee addiction.
 
-## Design
-
-- **Not a buffer**: AoE scales from the centroid, not by fixed distance
-- **Default scale**: Equal core/halo areas
-- **Mask support**: Coastlines and other hard constraints
-- **Multiple supports**: Long format output
+[![Buy Me A
+Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gcol33)
 
 ## License
 
@@ -202,7 +188,7 @@ MIT
 @software{areaOfEffect,
   author = {Colling, Gilles},
   title = {areaOfEffect: Spatial Support at Scale},
-  year = {2026},
+  year = {2025},
   url = {https://github.com/gcol33/areaOfEffect}
 }
 ```

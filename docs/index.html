@@ -63,9 +63,24 @@
 </h1></div>
 <p><a href="https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
 <p><strong>Spatial Support at Scale</strong></p>
-<p>The <code>areaOfEffect</code> package formalizes spatial support at scale. Given a set of points and one or more support polygons, <code><a href="reference/aoe.html">aoe()</a></code> classifies points as “core” (inside original support) or “halo” (inside the area of effect but outside original support), pruning all points outside.</p>
+<p>Given a set of points and one or more support polygons, <code><a href="reference/aoe.html">aoe()</a></code> classifies points as “core” (inside original support) or “halo” (inside the area of effect but outside original support), pruning all points outside.</p>
 <div class="section level2">
-<h2 id="concept">Concept<a class="anchor" aria-label="anchor" href="#concept"></a>
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/areaOfEffect/">areaOfEffect</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Austria</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">pts</span>, <span class="st">"AT"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Austria + Germany</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">pts</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AT"</span>, <span class="st">"DE"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Auto-detect countries from points</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">pts</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="statement-of-need">Statement of Need<a class="anchor" aria-label="anchor" href="#statement-of-need"></a>
 </h2>
 <p>Political borders are not hard ecological boundaries. Biological processes do not stop at administrative lines. When sampling within a political region, observations near the border are influenced by conditions outside that region.</p>
 <p>The <strong>area of effect</strong> (AoE) corrects for this border truncation by expanding the support outward from its centroid. Points are then classified:</p>
@@ -81,49 +96,44 @@
 <p>Sea boundaries are hard boundaries. An optional mask can enforce such constraints.</p>
 </div>
 <div class="section level2">
-<h2 id="scale">Scale<a class="anchor" aria-label="anchor" href="#scale"></a>
+<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
-<p>Default: <code>sqrt(2) - 1 ≈ 0.414</code>, which gives equal core and halo areas.</p>
-<table class="table">
-<thead><tr>
-<th>Scale</th>
-<th>Multiplier</th>
-<th>Area Ratio</th>
-</tr></thead>
-<tbody>
-<tr>
-<td>
-<strong>√2 − 1</strong> (default)</td>
-<td><strong>1.414</strong></td>
-<td><strong>1:1</strong></td>
-</tr>
-<tr>
-<td>1</td>
-<td>2</td>
-<td>1:3</td>
-</tr>
-</tbody>
-</table>
+<ul>
+<li>
+<strong>Country lookup</strong>: Pass ISO codes or names directly (<code>"AT"</code>, <code>"Austria"</code>)</li>
+<li>
+<strong>Auto-detection</strong>: Omit support to detect countries from points</li>
+<li>
+<strong>Multiple supports</strong>: Process admin regions with long format output</li>
+<li>
+<strong>Masking</strong>: Coastlines and other hard constraints</li>
+<li>
+<strong>S3 methods</strong>: <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>
+</li>
+<li>
+<strong>Diagnostics</strong>: <code><a href="reference/aoe_summary.html">aoe_summary()</a></code>, <code><a href="reference/aoe_area.html">aoe_area()</a></code>, <code><a href="reference/aoe_geometry.html">aoe_geometry()</a></code>
+</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
 <span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu">pak</span><span class="op">(</span><span class="st">"gcol33/areaOfEffect"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+<h2 id="usage-examples">Usage Examples<a class="anchor" aria-label="anchor" href="#usage-examples"></a>
 </h2>
 <div class="section level3">
 <h3 id="single-support">Single Support<a class="anchor" aria-label="anchor" href="#single-support"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/areaOfEffect/">areaOfEffect</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Create example support polygon (e.g., a country or region)</span></span>
+<span><span class="co"># Create example support polygon</span></span>
 <span><span class="va">support</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  geometry <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -136,28 +146,23 @@
 <span><span class="va">pts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span>,</span>
 <span>  geometry <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span>,   <span class="co"># core (center)</span></span>
-<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>,   <span class="co"># core (inside)</span></span>
-<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">150</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span>,  <span class="co"># halo (outside original, inside AoE)</span></span>
-<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">300</span>, <span class="fl">300</span><span class="op">)</span><span class="op">)</span>  <span class="co"># outside (will be pruned)</span></span>
+<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span>,   <span class="co"># core</span></span>
+<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>,   <span class="co"># core</span></span>
+<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">150</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span>,  <span class="co"># halo</span></span>
+<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">300</span>, <span class="fl">300</span><span class="op">)</span><span class="op">)</span>  <span class="co"># pruned</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  crs <span class="op">=</span> <span class="fl">32631</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Apply area of effect</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">pts</span>, <span class="va">support</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># View classification</span></span>
 <span><span class="va">result</span><span class="op">$</span><span class="va">aoe_class</span></span>
 <span><span class="co">#&gt; [1] "core" "core" "halo"</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="multiple-supports-parallel-processing">Multiple Supports (Parallel Processing)<a class="anchor" aria-label="anchor" href="#multiple-supports-parallel-processing"></a>
+<h3 id="multiple-supports">Multiple Supports<a class="anchor" aria-label="anchor" href="#multiple-supports"></a>
 </h3>
-<p>When multiple supports are provided, each is processed independently. Points can appear multiple times if they fall within multiple AoEs.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Two adjacent admin regions</span></span>
-<span><span class="va">supports</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">supports</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  geometry <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">50</span>, <span class="fl">50</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">100</span>, <span class="fl">100</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -166,26 +171,14 @@
 <span>  crs <span class="op">=</span> <span class="fl">32631</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Points near the shared boundary</span></span>
-<span><span class="va">pts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>,</span>
-<span>  geometry <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span>,   <span class="co"># inside A</span></span>
-<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span>,   <span class="co"># on boundary</span></span>
-<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">75</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span>    <span class="co"># inside B</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  crs <span class="op">=</span> <span class="fl">32631</span></span>
-<span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">pts</span>, <span class="va">supports</span><span class="op">)</span></span>
-<span><span class="co"># Points may appear in both regions' output (long format)</span></span></code></pre></div>
+<span><span class="co"># Points may appear in both regions' output</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="with-a-mask-eg-land-boundary">With a Mask (e.g., Land Boundary)<a class="anchor" aria-label="anchor" href="#with-a-mask-eg-land-boundary"></a>
+<h3 id="with-mask">With Mask<a class="anchor" aria-label="anchor" href="#with-mask"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create land mask (excludes sea)</span></span>
-<span><span class="va">land</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">land</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  geometry <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">50</span>, <span class="fl">200</span>, <span class="fl">200</span>, <span class="op">-</span><span class="fl">50</span>, <span class="op">-</span><span class="fl">50</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">150</span>, <span class="fl">150</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
@@ -193,100 +186,59 @@
 <span>  crs <span class="op">=</span> <span class="fl">32631</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Apply with mask</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">pts</span>, <span class="va">support</span>, mask <span class="op">=</span> <span class="va">land</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="diagnostic-summary">Diagnostic Summary<a class="anchor" aria-label="anchor" href="#diagnostic-summary"></a>
+<h3 id="diagnostics">Diagnostics<a class="anchor" aria-label="anchor" href="#diagnostics"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">pts</span>, <span class="va">support</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/aoe_summary.html">aoe_summary</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/aoe_summary.html">aoe_summary</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   support_id n_total n_core n_halo prop_core prop_halo</span></span>
 <span><span class="co">#&gt; 1          1       3      2      1     0.667     0.333</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="function-signature">Function Signature<a class="anchor" aria-label="anchor" href="#function-signature"></a>
+<h2 id="scale">Scale<a class="anchor" aria-label="anchor" href="#scale"></a>
 </h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">points</span>, <span class="va">support</span>, scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>, reference <span class="op">=</span> <span class="cn">NULL</span>, mask <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<p>Default: <code>sqrt(2) - 1</code>, which gives equal core and halo areas.</p>
 <table class="table">
-<colgroup>
-<col width="13%">
-<col width="27%">
-<col width="9%">
-<col width="50%">
-</colgroup>
 <thead><tr>
-<th>Argument</th>
-<th>Type</th>
-<th>Default</th>
-<th>Description</th>
+<th>Scale</th>
+<th>Multiplier</th>
+<th>Area Ratio</th>
 </tr></thead>
 <tbody>
 <tr>
-<td><code>points</code></td>
-<td>sf (POINT)</td>
-<td>required</td>
-<td>Points to classify and prune</td>
+<td>
+<strong>sqrt(2) - 1</strong> (default)</td>
+<td><strong>1.414</strong></td>
+<td><strong>1:1</strong></td>
 </tr>
 <tr>
-<td><code>support</code></td>
-<td>sf (POLYGON/MULTIPOLYGON)</td>
-<td>required</td>
-<td>One or more support regions (each row = separate AoE)</td>
-</tr>
-<tr>
-<td><code>scale</code></td>
-<td>numeric</td>
-<td>√2 − 1</td>
-<td>Scale factor; default gives equal core/halo areas</td>
-</tr>
-<tr>
-<td><code>reference</code></td>
-<td>sf (POINT) or NULL</td>
-<td>NULL</td>
-<td>Reference point; only valid for single support</td>
-</tr>
-<tr>
-<td><code>mask</code></td>
-<td>sf (POLYGON) or NULL</td>
-<td>NULL</td>
-<td>Hard boundary; AoE intersected with mask</td>
+<td>1</td>
+<td>2</td>
+<td>1:3</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section level2">
-<h2 id="return-value">Return Value<a class="anchor" aria-label="anchor" href="#return-value"></a>
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
-<p>An <code>aoe_result</code> object (extends <code>sf</code>) containing only supported points, with:</p>
 <ul>
-<li>
-<code>point_id</code> column: original point identifier</li>
-<li>
-<code>support_id</code> column: identifier for which support the classification refers to</li>
-<li>
-<code>aoe_class</code> column: <code>"core"</code> or <code>"halo"</code>
-</li>
+<li><a href="https://gillescolling.com/areaOfEffect/articles/quickstart.html">Quick Start</a></li>
+<li><a href="https://gillescolling.com/areaOfEffect/articles/theory.html">Theory</a></li>
 </ul>
-<p>S3 methods: <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>. Use <code><a href="reference/aoe_geometry.html">aoe_geometry()</a></code> to extract polygons, <code><a href="reference/aoe_area.html">aoe_area()</a></code> for area statistics.</p>
-<p>When multiple supports are provided, points may appear multiple times (once per support whose AoE contains them).</p>
 </div>
 <div class="section level2">
-<h2 id="design">Design<a class="anchor" aria-label="anchor" href="#design"></a>
+<h2 id="support">Support<a class="anchor" aria-label="anchor" href="#support"></a>
 </h2>
-<ul>
-<li>
-<strong>Not a buffer</strong>: AoE scales from the centroid, not by fixed distance</li>
-<li>
-<strong>Default scale</strong>: Equal core/halo areas</li>
-<li>
-<strong>Mask support</strong>: Coastlines and other hard constraints</li>
-<li>
-<strong>Multiple supports</strong>: Long format output</li>
-</ul>
+<blockquote>
+<p>“Software is like sex: it’s better when it’s free.” - Linus Torvalds</p>
+</blockquote>
+<p>I’m a PhD student who builds R packages in my free time because I believe good tools should be free and open. I started these projects for my own work and figured others might find them useful too.</p>
+<p>If this package saved you some time, buying me a coffee is a nice way to say thanks. It helps with my coffee addiction.</p>
+<p><a href="https://buymeacoffee.com/gcol33" class="external-link"><img src="https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&amp;logoColor=black" alt="Buy Me A Coffee"></a></p>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
@@ -299,7 +251,7 @@
 <div class="sourceCode" id="cb7"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">@software{areaOfEffect,</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">  author = {Colling, Gilles},</span></span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">  title = {areaOfEffect: Spatial Support at Scale},</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">  year = {2026},</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">  year = {2025},</span></span>
 <span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">  url = {https://github.com/gcol33/areaOfEffect}</span></span>
 <span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
 </div>
