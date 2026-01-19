@@ -88,7 +88,7 @@ austria_geom <- geoms[geoms$type == "original", ]
 aoe_geom <- geoms[geoms$type == "aoe", ]
 
 # Plot
-par(mar = c(1, 1, 1, 1))
+par(mar = c(1, 1, 1, 1), bty = "n")
 plot(st_geometry(aoe_geom), border = "steelblue", lty = 2, lwd = 1.5)
 plot(st_geometry(austria_geom), border = "black", lwd = 2, add = TRUE)
 legend("topright",
@@ -217,7 +217,7 @@ result_coast <- aoe(pts_coast, support_coast, mask = land)
 aoe_masked <- aoe_geometry(result_coast, "aoe")
 support_geom <- aoe_geometry(result_coast, "original")
 
-par(mar = c(1, 1, 1, 1))
+par(mar = c(1, 1, 1, 1), bty = "n")
 plot(st_geometry(land), col = NA, border = "steelblue", lwd = 2,
      xlim = c(-10, 110), ylim = c(-10, 90))
 plot(st_geometry(aoe_masked), col = rgb(0.5, 0.5, 0.5, 0.3),

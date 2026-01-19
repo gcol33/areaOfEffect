@@ -95,7 +95,7 @@ pts$class <- ifelse(in_support, "core",
                     ifelse(in_aoe, "halo", "pruned"))
 
 # Plot
-par(mar = c(2, 2, 2, 2))
+par(mar = c(2, 2, 2, 2), bty = "n")
 plot(st_geometry(aoe_geom), border = "steelblue", lty = 2,
      xlim = c(-3, 13), ylim = c(-3, 13), asp = 1)
 plot(st_geometry(support), border = "black", lwd = 2, add = TRUE)
@@ -255,7 +255,7 @@ aoe_theoretical <- aoe_geometry(result_unmasked, "aoe")
 result_coastal <- aoe(dummy_coastal, support_coastal, mask = land)
 aoe_masked <- aoe_geometry(result_coastal, "aoe")
 
-par(mar = c(2, 2, 2, 2))
+par(mar = c(2, 2, 2, 2), bty = "n")
 plot(st_geometry(land), col = NA, border = "steelblue", lwd = 2,
      xlim = c(-1, 11), ylim = c(-1, 9), asp = 1)
 # Show theoretical AoE as dashed outline
