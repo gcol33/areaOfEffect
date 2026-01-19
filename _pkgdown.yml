@@ -1,8 +1,9 @@
 url: https://gillescolling.com/areaOfEffect/
 template:
   bootstrap: 5
+  light-switch: true
   bslib:
-    primary: '#0d6efd'
+    bootswatch: sandstone
   includes:
     in_header: pkgdown/mathjax-config.html
 navbar:
