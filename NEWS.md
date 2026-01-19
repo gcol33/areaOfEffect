@@ -2,6 +2,8 @@
 
 * Initial release
 * `aoe()` function for classifying points by spatial support at scale
-* Fixed scale = 1 (one full stamp, doubling distance from reference)
+* Fixed scale = 1 (one full stamp, doubling distance from centroid)
+* Multiple supports: process several regions at once (long format output)
 * Optional mask for hard boundaries (e.g., coastlines)
-* Returns sf POINT object with `aoe_class` column ("core" or "halo")
+* `aoe_summary()` for diagnostic statistics (counts and proportions)
+* Returns sf POINT object with `support_id` and `aoe_class` columns

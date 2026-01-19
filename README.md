@@ -5,19 +5,19 @@
 
 **Spatial Support at Scale**
 
-The `areaOfEffect` package formalizes spatial support at scale. Given a set of points and a support polygon, `aoe()` classifies points as "core" (inside original support) or "halo" (inside the area of effect but outside original support), pruning all points outside the area of effect.
+The `areaOfEffect` package formalizes spatial support at scale. Given a set of points and one or more support polygons, `aoe()` classifies points as "core" (inside original support) or "halo" (inside the area of effect but outside original support), pruning all points outside.
 
 ## Concept
 
 Political borders are not hard ecological boundaries. Biological processes do not stop at administrative lines. When sampling within a political region, observations near the border are influenced by conditions outside that region.
 
-The **area of effect** (AoE) corrects for this border truncation by expanding the support outward from a reference point. Points are then classified:
+The **area of effect** (AoE) corrects for this border truncation by expanding the support outward from its centroid. Points are then classified:
 
 - **Core**: inside the original support
 - **Halo**: outside the original support but inside the expanded area of effect
 - **Pruned**: outside the area of effect (not returned)
 
-Scale is fixed at 1 (one full stamp), meaning each vertex of the support boundary is moved to twice its distance from the reference point. This is a principled default, not a tunable parameter.
+Scale is fixed at 1 (one full stamp), meaning each vertex of the support boundary is moved to twice its distance from the centroid. This is a principled default, not a tunable parameter.
 
 Sea boundaries are treated differently from political borders: they are hard boundaries. An optional mask can be provided to enforce such constraints.
 
@@ -30,6 +30,8 @@ pak::pak("gcol33/areaOfEffect")
 ```
 
 ## Usage
+
+### Single Support
 
 ```r
 library(areaOfEffect)
@@ -64,6 +66,36 @@ result$aoe_class
 #> [1] "core" "core" "halo"
 ```
 
+### Multiple Supports (Parallel Processing)
+
+When multiple supports are provided, each is processed independently. Points can appear multiple times if they fall within multiple AoEs.
+
+```r
+# Two adjacent admin regions
+supports <- st_as_sf(
+  data.frame(region = c("A", "B")),
+  geometry = st_sfc(
+    st_polygon(list(cbind(c(0, 50, 50, 0, 0), c(0, 0, 100, 100, 0)))),
+    st_polygon(list(cbind(c(50, 100, 100, 50, 50), c(0, 0, 100, 100, 0))))
+  ),
+  crs = 32631
+)
+
+# Points near the shared boundary
+pts <- st_as_sf(
+  data.frame(id = 1:3),
+  geometry = st_sfc(
+    st_point(c(25, 50)),   # inside A
+    st_point(c(50, 50)),   # on boundary
+    st_point(c(75, 50))    # inside B
+  ),
+  crs = 32631
+)
+
+result <- aoe(pts, supports)
+# Points may appear in both regions' output (long format)
+```
+
 ### With a Mask (e.g., Land Boundary)
 
 ```r
@@ -80,17 +112,13 @@ land <- st_as_sf(
 result <- aoe(pts, support, mask = land)
 ```
 
-### Custom Reference Point
+### Diagnostic Summary
 
 ```r
-# Use a specific reference point instead of centroid
-ref <- st_as_sf(
-  data.frame(id = 1),
-  geometry = st_sfc(st_point(c(25, 25))),
-  crs = 32631
-)
-
-result <- aoe(pts, support, reference = ref)
+result <- aoe(pts, support)
+aoe_summary(result)
+#>   support_id n_total n_core n_halo prop_core prop_halo
+#> 1          1       3      2      1     0.667     0.333
 ```
 
 ## Function Signature
@@ -102,24 +130,27 @@ aoe(points, support, reference = NULL, mask = NULL)
 | Argument    | Type                      | Default | Description                                      |
 |-------------|---------------------------|---------|--------------------------------------------------|
 | `points`    | sf (POINT)                | required| Points to classify and prune                     |
-| `support`   | sf (POLYGON/MULTIPOLYGON) | required| Original spatial support                         |
-| `reference` | sf (POINT) or NULL        | NULL    | Reference point; if NULL, uses centroid          |
+| `support`   | sf (POLYGON/MULTIPOLYGON) | required| One or more support regions (each row = separate AoE) |
+| `reference` | sf (POINT) or NULL        | NULL    | Reference point; only valid for single support   |
 | `mask`      | sf (POLYGON) or NULL      | NULL    | Hard boundary; AoE intersected with mask         |
 
 ## Return Value
 
 An `sf` object containing only supported points, with:
 
+- `support_id` column: identifier for which support the classification refers to
 - `aoe_class` column: `"core"` or `"halo"`
 - `scale` attribute: always `1`
-- `reference` attribute: the reference point used
+
+When multiple supports are provided, points may appear multiple times (once per support whose AoE contains them).
 
 ## Design Principles
 
 - **Not a buffer**: AoE is a principled methodological correction, not a distance-based operation
 - **Fixed scale**: Scale is fixed at 1 to ensure reproducible, comparable results
 - **Hard boundaries respected**: Optional mask for coastlines or other hard constraints
-- **Minimal API**: One function, four arguments, no hidden complexity
+- **Multiple supports**: Process admin regions in parallel with long format output
+- **Minimal API**: Two functions, clear semantics, no hidden complexity
 
 ## License
 
@@ -131,7 +162,7 @@ MIT
 @software{areaOfEffect,
   author = {Colling, Gilles},
   title = {areaOfEffect: Spatial Support at Scale},
-  year = {2025},
+  year = {2026},
   url = {https://github.com/gcol33/areaOfEffect}
 }
 ```

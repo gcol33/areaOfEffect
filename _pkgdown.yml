@@ -19,9 +19,10 @@ navbar:
       href: https://github.com/gcol33/areaOfEffect
 
 reference:
-  - title: Main Function
+  - title: Main Functions
     contents:
       - aoe
+      - aoe_summary
 
 articles:
   - title: Getting Started

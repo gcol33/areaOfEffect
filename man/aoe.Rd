@@ -9,45 +9,53 @@ aoe(points, support, reference = NULL, mask = NULL)
 \arguments{
 \item{points}{An \code{sf} object with POINT geometries.}
 
-\item{support}{An \code{sf} object with POLYGON or MULTIPOLYGON geometry.
-If multiple features, they are unioned into a single support.}
+\item{support}{An \code{sf} object with POLYGON or MULTIPOLYGON geometries.
+Each row defines a separate support region. When multiple rows are
+provided, points are classified against each support independently,
+returning long format output where a point may appear multiple times.}
 
 \item{reference}{Optional \code{sf} object with a single POINT geometry.
-If \code{NULL} (default), the centroid of the support is used.}
+If \code{NULL} (default), the centroid of each support is used.
+Only valid when \code{support} has a single row.}
 
 \item{mask}{Optional \code{sf} object with POLYGON or MULTIPOLYGON geometry.
-If provided, the area of effect is intersected with this mask
+If provided, each area of effect is intersected with this mask
 (e.g., land boundary to exclude sea).}
 }
 \value{
-An \code{sf} object containing only the supported points, with an
-additional column \code{aoe_class} indicating \code{"core"} or \code{"halo"}.
-Attributes \code{"scale"} and \code{"reference"} are attached to the result.
+An \code{sf} object containing only the supported points, with columns:
+\describe{
+\item{support_id}{Identifier for which support the classification refers to}
+\item{aoe_class}{Classification: \code{"core"} or \code{"halo"}}
+}
+When multiple supports are provided, points may appear multiple times
+(once per support whose AoE contains them).
+
+Attribute \code{"scale"} (always 1) is attached to the result.
 }
 \description{
-Given a set of points and a support polygon, \code{aoe()} classifies points as
-"core" (inside original support) or "halo" (inside the area of effect but
-outside original support), pruning all points outside the area of effect.
+Given a set of points and one or more support polygons, \code{aoe()} classifies
+points as "core" (inside original support) or "halo" (inside the area of
+effect but outside original support), pruning all points outside.
 }
 \details{
-The area of effect is computed by scaling the support outward from a
-reference point. Scale is fixed at 1 (one full stamp), meaning each point
-on the support boundary is moved to twice its distance from the reference.
+The area of effect is computed by scaling each support outward from its
+centroid. Scale is fixed at 1 (one full stamp), meaning each point on the
+support boundary is moved to twice its distance from the centroid.
 
 The transformation applies:
 \deqn{p' = r + 2(p - r)}
-where \eqn{r} is the reference point and \eqn{p} is each vertex of the
-support boundary.
+where \eqn{r} is the reference point (centroid) and \eqn{p} is each vertex
+of the support boundary.
 
 Points exactly on the original support boundary are classified as "core".
 
 The support geometry is validated internally using \code{\link[sf:valid]{sf::st_make_valid()}}.
 }
 \examples{
-\dontrun{
 library(sf)
 
-# Create example support polygon
+# Single support
 support <- st_as_sf(
   data.frame(id = 1),
   geometry = st_sfc(st_polygon(list(
@@ -56,20 +64,30 @@ support <- st_as_sf(
   crs = 32631
 )
 
-# Create example points
 pts <- st_as_sf(
-  data.frame(id = 1:5),
+  data.frame(id = 1:4),
   geometry = st_sfc(
-    st_point(c(5, 5)),    # core (center)
-    st_point(c(2, 2)),    # core
-    st_point(c(15, 5)),   # halo
-    st_point(c(-3, 5)),   # halo
-    st_point(c(30, 30))   # outside, will be pruned
+    st_point(c(5, 5)),
+    st_point(c(2, 2)),
+    st_point(c(15, 5)),
+    st_point(c(30, 30))
   ),
   crs = 32631
 )
 
 result <- aoe(pts, support)
-}
+
+# Multiple supports (e.g., admin regions)
+supports <- st_as_sf(
+  data.frame(region = c("A", "B")),
+  geometry = st_sfc(
+    st_polygon(list(cbind(c(0, 10, 10, 0, 0), c(0, 0, 10, 10, 0)))),
+    st_polygon(list(cbind(c(8, 18, 18, 8, 8), c(0, 0, 10, 10, 0))))
+  ),
+  crs = 32631
+)
+
+result <- aoe(pts, supports)
+# Points near the boundary may appear in both regions' AoE
 
 }

@@ -42,6 +42,7 @@ support <- st_as_sf(
   crs = 32631
 )
 ```
+
 Create observation points:
 
 ```{r points}
@@ -77,16 +78,58 @@ result$aoe_class
 ## Understanding the Transformation
 
 The AoE is constructed by scaling the support geometry outward from a reference point (by default, the centroid). With fixed scale = 1, each boundary vertex is moved to twice its distance from the reference:
-
 $$p' = r + 2(p - r)$$
 
 where $r$ is the reference point and $p$ is each boundary vertex.
 
 This doubles the effective spatial extent while maintaining the shape and orientation of the original support.
 
+## Multiple Supports
+
+When working with multiple administrative regions, you can process them all at once:
+
+```{r multiple}
+# Two adjacent regions
+supports <- st_as_sf(
+  data.frame(region = c("A", "B")),
+  geometry = st_sfc(
+    st_polygon(list(cbind(c(0, 50, 50, 0, 0), c(0, 0, 100, 100, 0)))),
+    st_polygon(list(cbind(c(50, 100, 100, 50, 50), c(0, 0, 100, 100, 0))))
+  ),
+  crs = 32631
+)
+
+# Points that may fall in overlapping AoEs
+pts_multi <- st_as_sf(
+  data.frame(id = 1:3),
+  geometry = st_sfc(
+    st_point(c(25, 50)),   # inside A
+    st_point(c(50, 50)),   # on boundary
+    st_point(c(75, 50))    # inside B
+  ),
+  crs = 32631
+)
+
+result_multi <- aoe(pts_multi, supports)
+print(result_multi)
+```
+
+Points can appear multiple times (once per support whose AoE contains them). The `support_id` column indicates which support the classification refers to.
+
+## Diagnostic Summary
+
+Use `aoe_summary()` to get statistics for each support:
+
+```{r summary}
+aoe_summary(result)
+```
+
+This returns counts and proportions of core vs halo points per support.
+
 ## Using a Mask
 
 For coastal regions, sea is a hard boundary that should not be crossed. Provide a mask to constrain the AoE:
+
 ```{r mask, eval=FALSE}
 # Land polygon (excludes sea)
 land <- st_read("path/to/land.shp")
@@ -97,7 +140,7 @@ result <- aoe(pts, support, mask = land)
 
 ## Custom Reference Point
 
-By default, the centroid of the support is used as the reference point. You can specify a different reference:
+By default, the centroid of each support is used as the reference point. For single-support cases, you can specify a different reference:
 
 ```{r ref}
 # Reference at origin corner
@@ -110,6 +153,8 @@ ref <- st_as_sf(
 result_custom <- aoe(pts, support, reference = ref)
 ```
 
+Note: custom reference is only allowed when `support` has a single row. For multiple supports, each uses its own centroid.
+
 ## Accessing Metadata
 
 The result includes attributes with metadata:
@@ -117,9 +162,6 @@ The result includes attributes with metadata:
 ```{r meta}
 # Scale used (always 1)
 attr(result, "scale")
-
-# Reference point used
-attr(result, "reference")
 ```
 
 ## Why Fixed Scale?
@@ -135,6 +177,8 @@ If you need to explore different scales, that functionality belongs in separate 
 ## Summary
 
 - `aoe()` classifies points as "core" or "halo" based on their position relative to the original and expanded support
+- Multiple supports can be processed at once (long format output)
 - Points outside the AoE are automatically pruned
 - Sea and other hard boundaries can be enforced via the `mask` argument
 - Scale is fixed at 1 for methodological consistency
+- Use `aoe_summary()` for diagnostic statistics
