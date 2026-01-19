@@ -1,4 +1,4 @@
-# The Area of Effect Concept
+# Theory
 
 ## The Problem: Border Truncation
 

@@ -1,8 +1,8 @@
 ---
-title: "Getting Started with areaOfEffect"
+title: "Quick Start"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting Started with areaOfEffect}
+  %\VignetteIndexEntry{Quick Start}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -11,7 +11,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  dev = "svg",
+  dev = "svglite",
   fig.ext = "svg",
   fig.width = 7,
   fig.height = 5

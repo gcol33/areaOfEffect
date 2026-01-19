@@ -8,7 +8,7 @@ template:
     in_header: pkgdown/mathjax-config.html
 
 figures:
-  dev: svg
+  dev: svglite::svglite
   fig.ext: svg
   bg: "#F5F6F8"
 
@@ -47,12 +47,14 @@ reference:
   - "`[.aoe_result`"
 
 articles:
-- title: Getting Started
+- title: "Getting Started"
   navbar: ~
-  contents: quickstart
-- title: Background
+  contents:
+    - quickstart
+- title: "Background"
   navbar: ~
-  contents: theory
+  contents:
+    - theory
 
 footer:
   structure:

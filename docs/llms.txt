@@ -12,6 +12,8 @@ classifies points as “core” (inside original support) or “halo” (inside
 the area of effect but outside original support), pruning all points
 outside.
 
+![Austria with Area of Effect](reference/figures/austria-aoe.svg)
+
 ## Quick Start
 
 ``` r
@@ -235,10 +237,9 @@ MIT
 
 ### Getting Started
 
-- [Getting Started with
-  areaOfEffect](https://gillescolling.com/areaOfEffect/articles/quickstart.md):
+- [Quick
+  Start](https://gillescolling.com/areaOfEffect/articles/quickstart.md):
 
 ### Background
 
-- [The Area of Effect
-  Concept](https://gillescolling.com/areaOfEffect/articles/theory.md):
+- [Theory](https://gillescolling.com/areaOfEffect/articles/theory.md):

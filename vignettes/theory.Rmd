@@ -1,8 +1,8 @@
 ---
-title: "The Area of Effect Concept"
+title: "Theory"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{The Area of Effect Concept}
+  %\VignetteIndexEntry{Theory}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -11,7 +11,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  dev = "svg",
+  dev = "svglite",
   fig.ext = "svg",
   fig.width = 7,
   fig.height = 5
