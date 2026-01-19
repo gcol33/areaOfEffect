@@ -65,16 +65,22 @@ Apply the area of effect:
 
 result <- aoe(pts, support)
 print(result)
-#> Simple feature collection with 4 features and 4 fields
+#> Area of Effect Result
+#> ─────────────────────
+#> Points:   4 (3 core, 1 halo)
+#> Supports: 1
+#> Scale:    0.414 (multiplier 1.41, theoretical halo:core 1.00)
+#> 
+#> Simple feature collection with 4 features and 5 fields
 #> Geometry type: POINT
 #> Dimension:     XY
 #> Bounding box:  xmin: 10 ymin: 10 xmax: 120 ymax: 50
 #> Projected CRS: WGS 84 / UTM zone 31N
-#>   id value support_id aoe_class       geometry
-#> 1  1    10          1      core  POINT (50 50)
-#> 2  2    20          1      core  POINT (10 10)
-#> 3  3    15          1      core  POINT (95 50)
-#> 4  4    25          1      halo POINT (120 50)
+#>   point_id support_id aoe_class id value       geometry
+#> 1        1          1      core  1    10  POINT (50 50)
+#> 2        2          1      core  2    20  POINT (10 10)
+#> 3        3          1      core  3    15  POINT (95 50)
+#> 4        4          1      halo  4    25 POINT (120 50)
 ```
 
 The result contains only points inside the AoE, with their
@@ -130,18 +136,22 @@ pts_multi <- st_as_sf(
 
 result_multi <- aoe(pts_multi, supports)
 print(result_multi)
-#> Simple feature collection with 6 features and 3 fields
+#> Area of Effect Result
+#> ─────────────────────
+#> Points:   4 (4 core, 0 halo)
+#> Supports: 2
+#> Scale:    0.414 (multiplier 1.41, theoretical halo:core 1.00)
+#> 
+#> Simple feature collection with 4 features and 4 fields
 #> Geometry type: POINT
 #> Dimension:     XY
 #> Bounding box:  xmin: 25 ymin: 50 xmax: 75 ymax: 50
 #> Projected CRS: WGS 84 / UTM zone 31N
-#>   id support_id aoe_class      geometry
-#> 1  1          1      core POINT (25 50)
-#> 2  2          1      core POINT (50 50)
-#> 3  3          1      halo POINT (75 50)
-#> 4  1          2      halo POINT (25 50)
-#> 5  2          2      core POINT (50 50)
-#> 6  3          2      core POINT (75 50)
+#>   point_id support_id aoe_class id      geometry
+#> 1        1          1      core  1 POINT (25 50)
+#> 2        2          1      core  2 POINT (50 50)
+#> 3        2          2      core  2 POINT (50 50)
+#> 4        3          2      core  3 POINT (75 50)
 ```
 
 Points can appear multiple times (once per support whose AoE contains
@@ -151,7 +161,7 @@ classification refers to.
 ## Diagnostic Summary
 
 Use
-[`aoe_summary()`](https://gcol33.github.io/areaOfEffect/reference/aoe_summary.md)
+[`aoe_summary()`](https://gillescolling.com/areaOfEffect/reference/aoe_summary.md)
 to get statistics for each support:
 
 ``` r
@@ -205,7 +215,7 @@ The result includes attributes with metadata:
 
 # Scale used (always 1)
 attr(result, "scale")
-#> [1] 1
+#> NULL
 ```
 
 ## Why Fixed Scale?
@@ -221,7 +231,7 @@ separate analysis code, not in the core AoE operator.
 
 ## Summary
 
-- [`aoe()`](https://gcol33.github.io/areaOfEffect/reference/aoe.md)
+- [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.md)
   classifies points as “core” or “halo” based on their position relative
   to the original and expanded support
 - Multiple supports can be processed at once (long format output)
@@ -229,5 +239,5 @@ separate analysis code, not in the core AoE operator.
 - Sea and other hard boundaries can be enforced via the `mask` argument
 - Scale is fixed at 1 for methodological consistency
 - Use
-  [`aoe_summary()`](https://gcol33.github.io/areaOfEffect/reference/aoe_summary.md)
+  [`aoe_summary()`](https://gillescolling.com/areaOfEffect/reference/aoe_summary.md)
   for diagnostic statistics

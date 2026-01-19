@@ -4,7 +4,14 @@
 \alias{aoe}
 \title{Classify and Prune Points by Area of Effect}
 \usage{
-aoe(points, support, reference = NULL, mask = NULL)
+aoe(
+  points,
+  support,
+  scale = sqrt(2) - 1,
+  reference = NULL,
+  mask = NULL,
+  coords = NULL
+)
 }
 \arguments{
 \item{points}{An \code{sf} object with POINT geometries.}
@@ -14,6 +21,14 @@ Each row defines a separate support region. When multiple rows are
 provided, points are classified against each support independently,
 returning long format output where a point may appear multiple times.}
 
+\item{scale}{Numeric scale factor (default \code{sqrt(2) - 1}, approximately 0.414). The
+multiplier applied to distances from the reference point is \code{1 + scale}.
+Common values:
+\itemize{
+\item \code{sqrt(2) - 1} (default): equal core/halo areas, ratio 1:1
+\item \code{1}: equal linear distance inside/outside, area ratio 1:3
+}}
+
 \item{reference}{Optional \code{sf} object with a single POINT geometry.
 If \code{NULL} (default), the centroid of each support is used.
 Only valid when \code{support} has a single row.}
@@ -21,17 +36,23 @@ Only valid when \code{support} has a single row.}
 \item{mask}{Optional \code{sf} object with POLYGON or MULTIPOLYGON geometry.
 If provided, each area of effect is intersected with this mask
 (e.g., land boundary to exclude sea).}
+
+\item{coords}{Column names for coordinates when \code{points} is a data.frame,
+e.g. \code{c("lon", "lat")}. If \code{NULL}, auto-detects common names.}
 }
 \value{
-An \code{sf} object containing only the supported points, with columns:
+An \code{aoe_result} object (extends \code{sf}) containing only the supported
+points, with columns:
 \describe{
+\item{point_id}{Original point identifier (row name or index)}
 \item{support_id}{Identifier for which support the classification refers to}
 \item{aoe_class}{Classification: \code{"core"} or \code{"halo"}}
 }
 When multiple supports are provided, points may appear multiple times
 (once per support whose AoE contains them).
 
-Attribute \code{"scale"} (always 1) is attached to the result.
+The result has S3 methods for \code{print()}, \code{summary()}, and \code{plot()}.
+Use \code{aoe_geometry()} to extract the AoE polygons.
 }
 \description{
 Given a set of points and one or more support polygons, \code{aoe()} classifies
@@ -40,13 +61,20 @@ effect but outside original support), pruning all points outside.
 }
 \details{
 The area of effect is computed by scaling each support outward from its
-centroid. Scale is fixed at 1 (one full stamp), meaning each point on the
-support boundary is moved to twice its distance from the centroid.
+centroid. By default, scale is \code{sqrt(2) - 1} (~0.414), which produces equal
+core and halo areas. This means the AoE has twice the area of the original
+support, split evenly between core (inside) and halo (outside).
 
 The transformation applies:
-\deqn{p' = r + 2(p - r)}
-where \eqn{r} is the reference point (centroid) and \eqn{p} is each vertex
-of the support boundary.
+\deqn{p' = r + (1 + s)(p - r)}
+where \eqn{r} is the reference point (centroid), \eqn{p} is each vertex
+of the support boundary, and \eqn{s} is the scale factor.
+
+With scale \eqn{s}, the area multiplier is \eqn{(1 + s)^2}:
+\itemize{
+\item Scale 1: multiplier 2, area 4x original, halo:core = 3:1
+\item Scale 0.414: multiplier ~1.414, area 2x original, halo:core = 1:1
+}
 
 Points exactly on the original support boundary are classified as "core".
 

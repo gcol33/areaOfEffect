@@ -24,3 +24,5 @@
 ^TEST_SUMMARY\.md$
 ^[Nn][Uu][Ll]$
 ^build_site\.R$
+^IMPLEMENTATION_PLAN\.md$
+^data-raw$

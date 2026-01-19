@@ -113,19 +113,60 @@ legend("topright",
        bg = "white")
 ```
 
-## Why Scale = 1?
+## The Scale Parameter
 
-The scale is fixed at 1 for several reasons:
+The `scale` parameter controls how far the AoE extends beyond the original support. With scale `s`, the linear multiplier is `1 + s`, and the area multiplier is `(1 + s)²`.
 
-1. **Reproducibility**: Every analysis uses the same definition. "We applied the AoE correction" is unambiguous.
+Two values have special geometric meaning:
 
-2. **Comparability**: Results across studies, regions, and time periods are directly comparable.
+- **`sqrt(2) - 1` ≈ 0.414** (default): Equal core and halo areas
+- **`1`**: Equal linear distance inside and outside the boundary
 
-3. **Interpretability**: Scale = 1 means "one full stamp" - the support is extended by its own characteristic scale.
+## Why Equal Area is the Default
 
-4. **Methodological consistency**: Good correction methods (rarefaction, bias correction) don't expose free parameters unless absolutely necessary.
+The default scale produces equal core and halo areas. This is not arbitrary—it reflects a philosophical position about what "influence" means.
 
-If you need to explore different scales for sensitivity analysis, that belongs in separate code, not in the core AoE definition.
+### The Symmetry Argument
+
+When we say a point in the halo is "influenced by" the support region, we're making a claim about spatial relevance. The question is: how much relevance should we grant to the outside?
+
+Equal area says: **the outside matters as much as the inside**.
+
+This is the maximally symmetric choice. Any other ratio implies that either:
+- The core is more important than the halo (halo smaller), or
+- External conditions dominate internal ones (halo larger)
+
+Without domain-specific knowledge to justify asymmetry, equal weighting is the principled default.
+
+### The Information-Theoretic View
+
+Consider the AoE as defining a probability distribution over space: "where might conditions relevant to this support come from?"
+
+Equal areas means equal prior probability mass inside and outside the original boundary. This is the maximum-entropy choice—it encodes no bias toward internal or external dominance.
+
+Scale = 1 (the "one full stamp" expansion) gives a 1:3 ratio, implying the outside is three times more relevant than the inside. This may be appropriate for some analyses (e.g., highly mobile species), but it's a strong assumption to make by default.
+
+### The Geometric Inevitability
+
+The formula `s = √2 - 1` is not a tuned parameter. It's the *unique* solution to the constraint "core equals halo." This value emerges from geometry itself:
+
+$$
+(1 + s)^2 - 1 = 1 \implies s = \sqrt{2} - 1
+$$
+
+There's something satisfying about a default that isn't chosen but *derived*. It removes a degree of freedom from the analyst and replaces it with a principled constraint.
+
+### When to Override
+
+Use `scale = 1` when:
+- You want the classic "one full stamp" expansion
+- Your domain knowledge suggests external conditions dominate
+- You're comparing with previous work that used this convention
+
+Use custom scales when:
+- You have empirical data on influence decay
+- Sensitivity analysis requires exploring the parameter space
+- Domain expertise justifies a specific ratio
 
 ## Hard vs Soft Boundaries
 
@@ -196,7 +237,8 @@ This enables cross-border analyses and studies of nested administrative structur
 
 The area of effect provides a principled correction for border truncation in spatial analysis:
 
-- **Fixed definition**: Scale = 1, no tuning
+- **Principled default**: Scale = √2 − 1, giving equal core and halo areas
+- **Geometric derivation**: The default emerges from symmetry, not tuning
 - **Categorical output**: Core, halo, or pruned
 - **Soft/hard boundaries**: Political borders ignored, physical barriers respected
 - **Multiple supports**: Process many regions at once

@@ -8,7 +8,14 @@ outside.
 ## Usage
 
 ``` r
-aoe(points, support, reference = NULL, mask = NULL)
+aoe(
+  points,
+  support,
+  scale = sqrt(2) - 1,
+  reference = NULL,
+  mask = NULL,
+  coords = NULL
+)
 ```
 
 ## Arguments
@@ -24,6 +31,16 @@ aoe(points, support, reference = NULL, mask = NULL)
   points are classified against each support independently, returning
   long format output where a point may appear multiple times.
 
+- scale:
+
+  Numeric scale factor (default `sqrt(2) - 1`, approximately 0.414). The
+  multiplier applied to distances from the reference point is
+  `1 + scale`. Common values:
+
+  - `sqrt(2) - 1` (default): equal core/halo areas, ratio 1:1
+
+  - `1`: equal linear distance inside/outside, area ratio 1:3
+
 - reference:
 
   Optional `sf` object with a single POINT geometry. If `NULL`
@@ -36,9 +53,19 @@ aoe(points, support, reference = NULL, mask = NULL)
   provided, each area of effect is intersected with this mask (e.g.,
   land boundary to exclude sea).
 
+- coords:
+
+  Column names for coordinates when `points` is a data.frame, e.g.
+  `c("lon", "lat")`. If `NULL`, auto-detects common names.
+
 ## Value
 
-An `sf` object containing only the supported points, with columns:
+An `aoe_result` object (extends `sf`) containing only the supported
+points, with columns:
+
+- point_id:
+
+  Original point identifier (row name or index)
 
 - support_id:
 
@@ -51,17 +78,29 @@ An `sf` object containing only the supported points, with columns:
 When multiple supports are provided, points may appear multiple times
 (once per support whose AoE contains them).
 
-Attribute `"scale"` (always 1) is attached to the result.
+The result has S3 methods for
+[`print()`](https://rdrr.io/r/base/print.html),
+[`summary()`](https://rdrr.io/r/base/summary.html), and
+[`plot()`](https://rdrr.io/r/graphics/plot.default.html). Use
+[`aoe_geometry()`](https://gillescolling.com/areaOfEffect/reference/aoe_geometry.md)
+to extract the AoE polygons.
 
 ## Details
 
 The area of effect is computed by scaling each support outward from its
-centroid. Scale is fixed at 1 (one full stamp), meaning each point on
-the support boundary is moved to twice its distance from the centroid.
+centroid. By default, scale is `sqrt(2) - 1` (~0.414), which produces
+equal core and halo areas. This means the AoE has twice the area of the
+original support, split evenly between core (inside) and halo (outside).
 
-The transformation applies: \$\$p' = r + 2(p - r)\$\$ where \\r\\ is the
-reference point (centroid) and \\p\\ is each vertex of the support
-boundary.
+The transformation applies: \$\$p' = r + (1 + s)(p - r)\$\$ where \\r\\
+is the reference point (centroid), \\p\\ is each vertex of the support
+boundary, and \\s\\ is the scale factor.
+
+With scale \\s\\, the area multiplier is \\(1 + s)^2\\:
+
+- Scale 1: multiplier 2, area 4x original, halo:core = 3:1
+
+- Scale 0.414: multiplier ~1.414, area 2x original, halo:core = 1:1
 
 Points exactly on the original support boundary are classified as
 "core".
@@ -73,6 +112,7 @@ The support geometry is validated internally using
 
 ``` r
 library(sf)
+#> Linking to GEOS 3.13.1, GDAL 3.11.4, PROJ 9.7.0; sf_use_s2() is TRUE
 
 # Single support
 support <- st_as_sf(

@@ -5,36 +5,52 @@
 #' effect but outside original support), pruning all points outside.
 #'
 #' The area of effect is computed by scaling each support outward from its
-#' centroid. Scale is fixed at 1 (one full stamp), meaning each point on the
-#' support boundary is moved to twice its distance from the centroid.
+#' centroid. By default, scale is `sqrt(2) - 1` (~0.414), which produces equal
+#' core and halo areas. This means the AoE has twice the area of the original
+#' support, split evenly between core (inside) and halo (outside).
 #'
 #' @param points An `sf` object with POINT geometries.
-#' @param support An `sf` object with POLYGON or MULTIPOLYGON geometries.
-#'   Each row defines a separate support region. When multiple rows are
-#'   provided, points are classified against each support independently,
-#'   returning long format output where a point may appear multiple times.
+#' @param support One of:
+#'   - `sf` object with POLYGON/MULTIPOLYGON geometries
+#'   - Country name or ISO code: `"France"`, `"FR"`, `"FRA"`
+#'   - Vector of countries: `c("France", "Germany")`
+#'   - Missing: auto-detects countries containing the points
+#' @param scale Numeric scale factor (default `sqrt(2) - 1`, approximately 0.414). The
+#'   multiplier applied to distances from the reference point is `1 + scale`.
+#'   Common values:
+#'   - `sqrt(2) - 1` (default): equal core/halo areas, ratio 1:1
+#'   - `1`: equal linear distance inside/outside, area ratio 1:3
 #' @param reference Optional `sf` object with a single POINT geometry.
 #'   If `NULL` (default), the centroid of each support is used.
 #'   Only valid when `support` has a single row.
 #' @param mask Optional `sf` object with POLYGON or MULTIPOLYGON geometry.
 #'   If provided, each area of effect is intersected with this mask
 #'   (e.g., land boundary to exclude sea).
+#' @param coords Column names for coordinates when `points` is a data.frame,
+#'   e.g. `c("lon", "lat")`. If `NULL`, auto-detects common names.
 #'
-#' @return An `sf` object containing only the supported points, with columns:
+#' @return An `aoe_result` object (extends `sf`) containing only the supported
+#'   points, with columns:
 #'   \describe{
+#'     \item{point_id}{Original point identifier (row name or index)}
 #'     \item{support_id}{Identifier for which support the classification refers to}
 #'     \item{aoe_class}{Classification: `"core"` or `"halo"`}
 #'   }
 #'   When multiple supports are provided, points may appear multiple times
 #'   (once per support whose AoE contains them).
 #'
-#'   Attribute `"scale"` (always 1) is attached to the result.
+#'   The result has S3 methods for `print()`, `summary()`, and `plot()`.
+#'   Use `aoe_geometry()` to extract the AoE polygons.
 #'
 #' @details
 #' The transformation applies:
-#' \deqn{p' = r + 2(p - r)}
-#' where \eqn{r} is the reference point (centroid) and \eqn{p} is each vertex
-#' of the support boundary.
+#' \deqn{p' = r + (1 + s)(p - r)}
+#' where \eqn{r} is the reference point (centroid), \eqn{p} is each vertex
+#' of the support boundary, and \eqn{s} is the scale factor.
+#'
+#' With scale \eqn{s}, the area multiplier is \eqn{(1 + s)^2}:
+#' - Scale 1: multiplier 2, area 4x original, halo:core = 3:1
+#' - Scale 0.414: multiplier ~1.414, area 2x original, halo:core = 1:1
 #'
 #' Points exactly on the original support boundary are classified as "core".
 #'
@@ -79,14 +95,34 @@
 #' # Points near the boundary may appear in both regions' AoE
 #'
 #' @export
-aoe <- function(points, support, reference = NULL, mask = NULL) {
+aoe <- function(points, support = NULL, scale = sqrt(2) - 1, reference = NULL, mask = NULL, coords = NULL) {
+  # Handle support: NULL = auto-detect, character = country lookup
+  if (is.null(support) || (is.character(support) && length(support) == 1 && tolower(support) == "auto")) {
+    support <- detect_countries(points, coords)
+  } else if (is.character(support)) {
+    support <- do.call(rbind, lapply(support, get_country))
+  }
+
+  # Convert to sf (data.frame assumes support's CRS)
+  support <- to_sf(support)
+  crs <- sf::st_crs(support)
+  points <- to_sf(points, crs, coords)
+  reference <- to_sf(reference, crs)
+  mask <- to_sf(mask, crs)
+
   # Input validation
   validate_inputs(points, support, reference, mask)
+
+
+  # Validate scale
+
+  if (!is.numeric(scale) || length(scale) != 1 || scale <= 0) {
+    stop("`scale` must be a single positive number", call. = FALSE)
+  }
 
   n_supports <- nrow(support)
 
   # Reference only allowed for single support
-
   if (!is.null(reference) && n_supports > 1) {
     stop(
       "`reference` can only be provided when `support` has a single row.\n",
@@ -98,6 +134,14 @@ aoe <- function(points, support, reference = NULL, mask = NULL) {
   # Ensure consistent CRS
   target_crs <- sf::st_crs(support)
   points <- sf::st_transform(points, target_crs)
+
+  # Create point IDs from row names or indices
+  point_ids <- if (!is.null(row.names(points))) {
+    row.names(points)
+  } else {
+    as.character(seq_len(nrow(points)))
+  }
+  points$.point_id_internal <- point_ids
 
   # Prepare mask once if provided
   mask_geom <- NULL
@@ -112,19 +156,31 @@ aoe <- function(points, support, reference = NULL, mask = NULL) {
   support_ids <- if (!is.null(row.names(support))) {
     row.names(support)
   } else {
-    seq_len(n_supports)
+    as.character(seq_len(n_supports))
   }
 
-  # Process each support
+  # Compute multiplier from scale
+  multiplier <- 1 + scale
+
+  # Process each support and collect geometries
+  geometries <- list()
+
   results <- lapply(seq_len(n_supports), function(i) {
-    process_single_support(
+    sid <- support_ids[i]
+    processed <- process_single_support(
       points = points,
       support_row = support[i, ],
-      support_id = support_ids[i],
+      support_id = sid,
       reference = reference,
       mask_geom = mask_geom,
-      target_crs = target_crs
+      target_crs = target_crs,
+      multiplier = multiplier
     )
+
+    # Store geometries
+    geometries[[sid]] <<- processed$geometries
+
+    processed$points
   })
 
   # Combine results
@@ -133,17 +189,26 @@ aoe <- function(points, support, reference = NULL, mask = NULL) {
   if (is.null(result) || nrow(result) == 0) {
     # Return empty sf with correct schema
     result <- points[0, ]
+    result$point_id <- character(0)
     result$support_id <- character(0)
     result$aoe_class <- character(0)
-  }
+    result$.point_id_internal <- NULL
+  } else {
+    # Rename internal point_id to point_id and reorder columns
+    result$point_id <- result$.point_id_internal
+    result$.point_id_internal <- NULL
 
-  # Attach metadata
-  attr(result, "scale") <- 1
+    # Reorder: point_id, support_id, aoe_class, then original columns
+    geom_col <- attr(result, "sf_column")
+    other_cols <- setdiff(names(result), c("point_id", "support_id", "aoe_class", geom_col))
+    result <- result[, c("point_id", "support_id", "aoe_class", other_cols, geom_col)]
+  }
 
   # Reset row names to sequential
   row.names(result) <- NULL
 
-  result
+  # Always return aoe_result (sf-based) for full functionality
+  new_aoe_result(result, geometries, n_supports, scale)
 }
 
 
@@ -155,11 +220,15 @@ aoe <- function(points, support, reference = NULL, mask = NULL) {
 #' @param reference Optional reference point (sf or NULL)
 #' @param mask_geom Prepared mask geometry (sfc or NULL)
 #' @param target_crs Target CRS
+#' @param multiplier Scaling multiplier (1 + scale)
 #'
-#' @return sf object with classified points for this support, or NULL if empty
+#' @return A list with:
+#'   - `points`: sf object with classified points for this support, or NULL if empty
+#'   - `geometries`: list with original, aoe_raw, and aoe_final geometries
 #' @noRd
 process_single_support <- function(points, support_row, support_id,
-                                   reference, mask_geom, target_crs) {
+                                   reference, mask_geom, target_crs,
+                                   multiplier) {
 
   # Prepare support geometry
   support_geom <- sf::st_geometry(support_row)[[1]]
@@ -174,48 +243,111 @@ process_single_support <- function(points, support_row, support_id,
     ref_point <- sf::st_geometry(reference)[[1]]
   }
 
-  # Scale the support (fixed scale = 1, multiplier = 2)
-  aoe_geom <- scale_geometry(support_geom, ref_point, multiplier = 2, crs = target_crs)
-  aoe_geom <- sf::st_make_valid(aoe_geom)
+  # Scale the support
+  aoe_geom_raw <- scale_geometry(support_geom, ref_point, multiplier = multiplier, crs = target_crs)
+  aoe_geom_raw <- sf::st_make_valid(aoe_geom_raw)
 
   # Apply mask if provided
+  aoe_geom_final <- aoe_geom_raw
   if (!is.null(mask_geom)) {
-    aoe_geom <- sf::st_intersection(aoe_geom, mask_geom)
-    aoe_geom <- sf::st_make_valid(aoe_geom)
+    aoe_geom_final <- sf::st_intersection(aoe_geom_raw, mask_geom)
+    aoe_geom_final <- sf::st_make_valid(aoe_geom_final)
   }
+
+  # Store geometries
+  geometries <- list(
+    original = support_geom,
+    aoe_raw = aoe_geom_raw,
+    aoe_final = aoe_geom_final
+  )
 
   # Classify points
   in_original <- as.logical(sf::st_intersects(points, support_geom, sparse = FALSE))
-  in_aoe <- as.logical(sf::st_intersects(points, aoe_geom, sparse = FALSE))
+  in_aoe <- as.logical(sf::st_intersects(points, aoe_geom_final, sparse = FALSE))
 
   # Prune: keep only points inside AoE
   supported_idx <- which(in_aoe)
 
   if (length(supported_idx) == 0) {
-    return(NULL)
+    return(list(points = NULL, geometries = geometries))
   }
 
   result <- points[supported_idx, ]
   result$support_id <- support_id
   result$aoe_class <- ifelse(in_original[supported_idx], "core", "halo")
 
-  result
+  list(points = result, geometries = geometries)
 }
 
 
+#' Auto-detect countries containing points
+#' @noRd
+detect_countries <- function(points, coords) {
+  pts_sf <- to_sf(points, sf::st_crs(4326), coords)
+  pts_sf <- sf::st_transform(pts_sf, 4326)
+  hits <- lengths(sf::st_intersects(countries, pts_sf)) > 0
+  if (!any(hits)) stop("No countries contain the provided points", call. = FALSE)
+  result <- countries[hits, ]
+  message("Countries: ", paste(result$name, collapse = ", "))
+  result
+}
+
+#' Convert to sf
+#' @noRd
+to_sf <- function(x, crs = NULL, coords = NULL) {
+  if (is.null(x)) return(NULL)
+  if (inherits(x, "Spatial")) return(sf::st_as_sf(x))
+  if (is.data.frame(x) && !inherits(x, "sf")) {
+    if (is.null(coords)) {
+      coords <- detect_coords(names(x))
+      if (is.null(coords)) {
+        stop("Cannot detect coordinate columns. Use coords = c('x', 'y')", call. = FALSE)
+      }
+    }
+    return(sf::st_as_sf(x, coords = coords, crs = crs))
+  }
+  x
+}
+
+#' Detect coordinate columns
+#' @noRd
+detect_coords <- function(nms) {
+  nms_lower <- tolower(nms)
+  # Try common pairs
+  pairs <- list(
+    c("x", "y"), c("lon", "lat"), c("longitude", "latitude"),
+    c("lng", "lat"), c("long", "lat"), c("easting", "northing")
+  )
+  for (p in pairs) {
+    idx <- match(p, nms_lower)
+    if (!anyNA(idx)) return(nms[idx])
+  }
+  NULL
+}
+
+#' Convert sf to sp
+#' @noRd
+#' @importFrom methods as
+to_sp <- function(x) {
+  as(x, "Spatial")
+}
+
+#' Convert sf to data.frame with coordinates
+#' @noRd
+to_df <- function(x) {
+  coords <- sf::st_coordinates(x)
+  df <- sf::st_drop_geometry(x)
+  df$x <- coords[, 1]
+  df$y <- coords[, 2]
+  df
+}
+
 #' Validate inputs for aoe()
-#'
-#' @param points Points input
-#' @param support Support input
-#' @param reference Reference input
-#' @param mask Mask input
-#'
-#' @return NULL invisibly; raises errors on invalid input
 #' @noRd
 validate_inputs <- function(points, support, reference, mask) {
   # Check points
   if (!inherits(points, "sf")) {
-    stop("`points` must be an sf object", call. = FALSE)
+    stop("`points` must be an sf object (use st_as_sf() to convert)", call. = FALSE)
   }
   point_types <- unique(sf::st_geometry_type(points))
   if (!all(point_types %in% c("POINT"))) {

@@ -1,4 +1,4 @@
-url: https://gcol33.github.io/areaOfEffect/
+url: https://gillescolling.com/areaOfEffect/
 template:
   bootstrap: 5
   bslib:
@@ -17,10 +17,21 @@ navbar:
       icon: fab fa-github
       href: https://github.com/gcol33/areaOfEffect
 reference:
-- title: Main Functions
+- title: Core
   contents:
   - aoe
+- title: Diagnostics
+  contents:
   - aoe_summary
+  - aoe_area
+  - aoe_geometry
+- title: S3 Methods
+  contents:
+  - print.aoe_result
+  - summary.aoe_result
+  - plot.aoe_result
+  - starts_with("print.aoe_")
+  - "`[.aoe_result`"
 articles:
 - title: Getting Started
   contents: quickstart

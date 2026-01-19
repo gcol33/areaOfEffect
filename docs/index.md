@@ -8,7 +8,7 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 
 The `areaOfEffect` package formalizes spatial support at scale. Given a
 set of points and one or more support polygons,
-[`aoe()`](https://gcol33.github.io/areaOfEffect/reference/aoe.md)
+[`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.md)
 classifies points as “core” (inside original support) or “halo” (inside
 the area of effect but outside original support), pruning all points
 outside.
@@ -29,13 +29,32 @@ classified:
   effect
 - **Pruned**: outside the area of effect (not returned)
 
-Scale is fixed at 1 (one full stamp), meaning each vertex of the support
-boundary is moved to twice its distance from the centroid. This is a
-principled default, not a tunable parameter.
+By default, the AoE expands to give **equal core and halo areas**. This
+is not arbitrary—it’s the unique scale where the inside and outside
+contribute equally.
 
 Sea boundaries are treated differently from political borders: they are
 hard boundaries. An optional mask can be provided to enforce such
 constraints.
+
+## Why Equal Area?
+
+The default scale (`sqrt(2) - 1 ≈ 0.414`) produces equal core and halo
+areas. This emerges from a simple principle: **without domain knowledge,
+the outside should matter as much as the inside**.
+
+This is not a tuned parameter. It’s the *unique* solution to “core
+equals halo”:
+
+    (1 + s)² - 1 = 1  →  s = √2 - 1
+
+The formula is derived, not chosen. It removes a degree of freedom from
+the analyst and replaces it with a principled geometric constraint.
+
+| Scale                | Multiplier | Area Ratio | Use Case            |
+|----------------------|------------|------------|---------------------|
+| **√2 − 1** (default) | **1.414**  | **1:1**    | **Symmetric prior** |
+| 1                    | 2          | 1:3        | External dominance  |
 
 ## Installation
 
@@ -147,39 +166,50 @@ aoe_summary(result)
 
 ``` r
 
-aoe(points, support, reference = NULL, mask = NULL)
+aoe(points, support, scale = sqrt(2) - 1, reference = NULL, mask = NULL)
 ```
 
 | Argument | Type | Default | Description |
 |----|----|----|----|
 | `points` | sf (POINT) | required | Points to classify and prune |
 | `support` | sf (POLYGON/MULTIPOLYGON) | required | One or more support regions (each row = separate AoE) |
+| `scale` | numeric | √2 − 1 | Scale factor; default gives equal core/halo areas |
 | `reference` | sf (POINT) or NULL | NULL | Reference point; only valid for single support |
 | `mask` | sf (POLYGON) or NULL | NULL | Hard boundary; AoE intersected with mask |
 
 ## Return Value
 
-An `sf` object containing only supported points, with:
+An `aoe_result` object (extends `sf`) containing only supported points,
+with:
 
+- `point_id` column: original point identifier
 - `support_id` column: identifier for which support the classification
   refers to
 - `aoe_class` column: `"core"` or `"halo"`
-- `scale` attribute: always `1`
+
+S3 methods: [`print()`](https://rdrr.io/r/base/print.html),
+[`summary()`](https://rdrr.io/r/base/summary.html),
+[`plot()`](https://rdrr.io/r/graphics/plot.default.html). Use
+[`aoe_geometry()`](https://gillescolling.com/areaOfEffect/reference/aoe_geometry.md)
+to extract polygons,
+[`aoe_area()`](https://gillescolling.com/areaOfEffect/reference/aoe_area.md)
+for area statistics.
 
 When multiple supports are provided, points may appear multiple times
 (once per support whose AoE contains them).
 
 ## Design Principles
 
-- **Not a buffer**: AoE is a principled methodological correction, not a
-  distance-based operation
-- **Fixed scale**: Scale is fixed at 1 to ensure reproducible,
-  comparable results
+- **Not a buffer**: AoE scales proportionally from the centroid, not by
+  fixed distance
+- **Derived default**: The default scale is geometrically determined,
+  not tuned
+- **Symmetric prior**: Equal core/halo areas = no bias toward inside or
+  outside
 - **Hard boundaries respected**: Optional mask for coastlines or other
   hard constraints
 - **Multiple supports**: Process admin regions in parallel with long
   format output
-- **Minimal API**: Two functions, clear semantics, no hidden complexity
 
 ## License
 
