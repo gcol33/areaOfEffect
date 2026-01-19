@@ -44,26 +44,26 @@ result <- aoe(pts, "AT")
 ## Austria Example
 
 ```{r austria-visual, fig.cap="Austria (black) with its area of effect (dashed). The AoE expands proportionally from the centroid."}
-# Get Austria
+# Get Austria and transform to equal-area projection
 austria <- get_country("AT")
-
-# Transform to equal-area projection for accurate visualization
 austria_ea <- st_transform(austria, "ESRI:54009")
 
-# Compute AoE geometry manually for visualization
-centroid <- st_centroid(st_geometry(austria_ea))
-ref_coords <- st_coordinates(centroid)[1, 1:2]
+# Create a dummy point inside Austria to run aoe()
+dummy_pt <- st_centroid(austria_ea)
 
-# Scale with default multiplier (1 + sqrt(2) - 1 = sqrt(2))
-multiplier <- sqrt(2)
-austria_geom <- st_geometry(austria_ea)
-aoe_geom <- (austria_geom - ref_coords) * multiplier + ref_coords
-st_crs(aoe_geom) <- st_crs(austria_ea)
+# Run aoe() to get proper geometries
+result <- aoe(dummy_pt, austria_ea)
+geoms <- aoe_geometry(result, "both")
+
+# Extract geometries
+austria_geom <- geoms[geoms$type == "original", ]
+aoe_geom <- geoms[geoms$type == "aoe", ]
+centroid <- st_centroid(st_geometry(austria_ea))
 
 # Plot
 par(mar = c(1, 1, 1, 1))
-plot(aoe_geom, border = "gray50", lty = 2, lwd = 1.5)
-plot(st_geometry(austria_ea), border = "black", lwd = 2, add = TRUE)
+plot(st_geometry(aoe_geom), border = "gray50", lty = 2, lwd = 1.5)
+plot(st_geometry(austria_geom), border = "black", lwd = 2, add = TRUE)
 plot(centroid, pch = 3, cex = 1.5, lwd = 2, add = TRUE)
 legend("topright",
        legend = c("Austria", "Area of Effect", "Centroid"),
