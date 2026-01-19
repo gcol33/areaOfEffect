@@ -7,6 +7,10 @@
 
 Given a set of points and one or more support polygons, `aoe()` classifies points as "core" (inside original support) or "halo" (inside the area of effect but outside original support), pruning all points outside.
 
+<p align="center">
+  <img src="man/figures/austria-aoe.svg" alt="Austria with Area of Effect" width="500">
+</p>
+
 ## Quick Start
 
 ```r
