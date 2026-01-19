@@ -1,0 +1,140 @@
+---
+title: "Getting Started with areaOfEffect"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with areaOfEffect}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Overview
+
+The `areaOfEffect` package addresses a common problem in spatial ecology: political borders are not ecological boundaries. When sampling within a defined region (e.g., a country or protected area), observations near the border are influenced by conditions outside that region. Simply cropping data to administrative boundaries introduces edge effects.
+
+The **area of effect** (AoE) correction expands the spatial support outward, classifying points as:
+
+- **Core**: inside the original support (fully representative)
+- **Halo**: outside the original but inside the expanded AoE (influenced by external conditions)
+- **Pruned**: outside the AoE entirely (removed)
+
+## Basic Usage
+
+```{r setup}
+library(areaOfEffect)
+library(sf)
+```
+
+Create a simple support polygon:
+
+```{r support}
+support <- st_as_sf(
+  data.frame(id = 1),
+  geometry = st_sfc(st_polygon(list(
+    cbind(c(0, 100, 100, 0, 0), c(0, 0, 100, 100, 0))
+  ))),
+  crs = 32631
+)
+```
+Create observation points:
+
+```{r points}
+pts <- st_as_sf(
+  data.frame(
+    id = 1:5,
+    value = c(10, 20, 15, 25, 30)
+  ),
+  geometry = st_sfc(
+    st_point(c(50, 50)),   # center
+    st_point(c(10, 10)),   # near corner
+    st_point(c(95, 50)),   # near edge
+    st_point(c(120, 50)),  # outside, in halo
+    st_point(c(250, 250))  # far outside
+  ),
+  crs = 32631
+)
+```
+
+Apply the area of effect:
+
+```{r aoe}
+result <- aoe(pts, support)
+print(result)
+```
+
+The result contains only points inside the AoE, with their classification:
+
+```{r class}
+result$aoe_class
+```
+
+## Understanding the Transformation
+
+The AoE is constructed by scaling the support geometry outward from a reference point (by default, the centroid). With fixed scale = 1, each boundary vertex is moved to twice its distance from the reference:
+
+$$p' = r + 2(p - r)$$
+
+where $r$ is the reference point and $p$ is each boundary vertex.
+
+This doubles the effective spatial extent while maintaining the shape and orientation of the original support.
+
+## Using a Mask
+
+For coastal regions, sea is a hard boundary that should not be crossed. Provide a mask to constrain the AoE:
+```{r mask, eval=FALSE}
+# Land polygon (excludes sea)
+land <- st_read("path/to/land.shp")
+
+# AoE will be intersected with land
+result <- aoe(pts, support, mask = land)
+```
+
+## Custom Reference Point
+
+By default, the centroid of the support is used as the reference point. You can specify a different reference:
+
+```{r ref}
+# Reference at origin corner
+ref <- st_as_sf(
+  data.frame(id = 1),
+  geometry = st_sfc(st_point(c(0, 0))),
+  crs = 32631
+)
+
+result_custom <- aoe(pts, support, reference = ref)
+```
+
+## Accessing Metadata
+
+The result includes attributes with metadata:
+
+```{r meta}
+# Scale used (always 1)
+attr(result, "scale")
+
+# Reference point used
+attr(result, "reference")
+```
+
+## Why Fixed Scale?
+
+The scale is fixed at 1 to ensure:
+
+1. **Reproducibility**: All analyses use the same definition
+2. **Comparability**: Results across studies are directly comparable
+3. **Interpretability**: "We applied the AoE correction" is unambiguous
+
+If you need to explore different scales, that functionality belongs in separate analysis code, not in the core AoE operator.
+
+## Summary
+
+- `aoe()` classifies points as "core" or "halo" based on their position relative to the original and expanded support
+- Points outside the AoE are automatically pruned
+- Sea and other hard boundaries can be enforced via the `mask` argument
+- Scale is fixed at 1 for methodological consistency

@@ -1,0 +1,24 @@
+Package: areaOfEffect
+Title: Spatial Support at Scale
+Version: 0.1.0
+Authors@R:
+    person("Gilles", "Colling", , "gilles.colling051@gmail.com", role = c("aut", "cre"))
+Description: Formalizes spatial support at scale. Given a set of points and a
+    support polygon, aoe() classifies points as "core" (inside original support)
+    or "halo" (inside scaled support but outside original), pruning all others.
+    Scale is fixed: the support is expanded by one full stamp from the reference
+    point (doubling the distance from reference to boundary). An optional mask
+    enforces hard boundaries such as coastlines. Political borders carry no
+    special meaning.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports:
+    sf
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Config/testthat/edition: 3

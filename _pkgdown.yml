@@ -1,0 +1,29 @@
+url: https://gcol33.github.io/areaOfEffect/
+
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#0d6efd"
+
+navbar:
+  structure:
+    left:
+      - intro
+      - reference
+      - articles
+    right:
+      - github
+  components:
+    github:
+      icon: fab fa-github
+      href: https://github.com/gcol33/areaOfEffect
+
+reference:
+  - title: Main Function
+    contents:
+      - aoe
+
+articles:
+  - title: Getting Started
+    contents:
+      - quickstart
