@@ -264,8 +264,8 @@ plot(st_geometry(aoe_theoretical), border = "gray50", lty = 2, lwd = 1.5, add = 
 plot(st_geometry(aoe_masked), col = rgb(0.5, 0.5, 0.5, 0.3), border = NA, add = TRUE)
 plot(st_geometry(support_coastal), border = "black", lwd = 2, add = TRUE)
 
-# Add "SEA" label
-text(8, 7, "SEA", col = "steelblue", font = 2, cex = 1.2)
+# Add "SEA" label in the water area
+text(9, 7.5, "SEA", col = "steelblue", font = 2, cex = 1.2)
 
 legend("topleft",
        legend = c("Support", "Theoretical AoE", "AoE (masked)", "Coastline"),
