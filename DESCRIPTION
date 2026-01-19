@@ -12,7 +12,7 @@ Description: Formalizes spatial support at scale for ecological and geographical
     mask enforces hard boundaries such as coastlines. Political borders are
     treated as soft boundaries with no ecological meaning.
 License: MIT + file LICENSE
-URL: https://gillescolling.com/areaOfEffect/, https://github.com/gcol33/areaOfEffect
+URL: https://gcol33.github.io/areaOfEffect, https://github.com/gcol33/areaOfEffect
 BugReports: https://github.com/gcol33/areaOfEffect/issues
 Encoding: UTF-8
 Language: en-US

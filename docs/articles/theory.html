@@ -90,6 +90,24 @@
     
     
 <div class="section level2">
+<h2 id="what-aoe-is-not">What AoE is Not<a class="anchor" aria-label="anchor" href="#what-aoe-is-not"></a>
+</h2>
+<p>Before explaining what AoE does, it’s important to clarify what it is
+<em>not</em>:</p>
+<ul>
+<li><p><strong>Not a buffer</strong>: Buffers add a fixed distance. AoE
+computes the buffer distance from an <em>area</em> target—you specify
+how much area, not how many meters.</p></li>
+<li><p><strong>Not a distance decay</strong>: There is no continuous
+weight function. Points are categorically classified as core, halo, or
+pruned.</p></li>
+<li><p><strong>Not a magic number</strong>: The default scale (√2 − 1)
+is derived from the constraint of equal core/halo areas, not chosen
+arbitrarily. But you <em>can</em> override it with domain
+knowledge.</p></li>
+</ul>
+</div>
+<div class="section level2">
 <h2 id="the-problem-border-truncation">The Problem: Border Truncation<a class="anchor" aria-label="anchor" href="#the-problem-border-truncation"></a>
 </h2>
 <p>When analyzing spatial data within political or administrative
@@ -105,40 +123,22 @@ truncating at the border introduces systematic bias.</p>
 of ecological processes to administrative boundaries.</p>
 </div>
 <div class="section level2">
-<h2 id="what-aoe-is-not">What AoE Is Not<a class="anchor" aria-label="anchor" href="#what-aoe-is-not"></a>
-</h2>
-<p>Before explaining what AoE does, it’s important to clarify what it is
-<em>not</em>: - <strong>Not a buffer</strong>: Buffers add a fixed
-distance. AoE scales proportionally from a reference point. -
-<strong>Not a distance-based operation</strong>: There is no distance
-threshold or decay function. - <strong>Not a tunable parameter</strong>:
-Scale is fixed at 1. This is a method, not a knob.</p>
-</div>
-<div class="section level2">
 <h2 id="the-area-of-effect">The Area of Effect<a class="anchor" aria-label="anchor" href="#the-area-of-effect"></a>
 </h2>
 <p>The <strong>area of effect</strong> (AoE) is the spatial extent over
 which observations within a support are influenced by external
-conditions. It is computed by scaling the support geometry outward from
-a reference point (typically the centroid).</p>
-<p>With scale fixed at 1, the transformation is:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>p</mi><mo>′</mo></msup><mo>=</mo><mi>r</mi><mo>+</mo><mn>2</mn><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo>−</mo><mi>r</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p' = r + 2(p - r)</annotation></semantics></math></p>
-<p>where: -
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>
-is the reference point (centroid) -
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
-is each vertex of the support boundary -
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>p</mi><mo>′</mo></msup><annotation encoding="application/x-tex">p'</annotation></semantics></math>
-is the transformed vertex</p>
-<p>This doubles the distance from the reference point to each boundary
-vertex, effectively expanding the support to twice its spatial extent
-while preserving shape and orientation.</p>
+conditions. It is computed by expanding the support boundary outward to
+create a halo region.</p>
+<p>The key insight: <strong>halos are defined as a proportion of region
+area</strong>, not as arbitrary buffer distances. This enables
+consistent cross-region comparisons without units or scale
+dependencies.</p>
 </div>
 <div class="section level2">
 <h2 id="core-and-halo-classification">Core and Halo Classification<a class="anchor" aria-label="anchor" href="#core-and-halo-classification"></a>
 </h2>
 <p>Points within the AoE are classified into two categories:</p>
-<ol style="list-style-type: decimal">
+<ul>
 <li><p><strong>Core</strong>: Points inside the original support. These
 are fully contained within the sampling region and represent “pure”
 observations unaffected by border effects.</p></li>
@@ -146,7 +146,7 @@ observations unaffected by border effects.</p></li>
 inside the expanded AoE. These observations are influenced by conditions
 in the border zone and may require different treatment in
 analysis.</p></li>
-</ol>
+</ul>
 <p>Points outside the AoE are <strong>pruned</strong> (removed). They
 are too distant to be meaningfully related to the support region.</p>
 <pre><code><span><span class="co">#&gt; Linking to GEOS 3.13.1, GDAL 3.11.4, PROJ 9.7.0; sf_use_s2() is TRUE</span></span></code></pre>
@@ -196,65 +196,79 @@ are too distant to be meaningfully related to the support region.</p>
 </defs>
 <g clip-path='url(#cpMjguODB8NDc1LjIwfDI4LjgwfDMzMS4yMA==)'>
 <rect class='legend-bg' x='28.80' y='28.80' width='446.40' height='302.40' style='stroke-width: 0.75; stroke: #F5F6F8; fill: #F5F6F8;' />
-<path d='M 147.00 285.00 L 357.00 285.00 L 357.00 75.00 L 147.00 75.00 L 147.00 285.00 Z' style='fill-rule: evenodd; stroke-width: 0.75; stroke: #B3B3B3; stroke-dasharray: 4.00,4.00;' />
+<path d='M 199.50 254.97 L 198.32 254.94 L 197.15 254.85 L 195.98 254.70 L 194.83 254.48 L 193.68 254.21 L 192.56 253.87 L 191.45 253.48 L 190.36 253.03 L 189.30 252.52 L 188.26 251.96 L 187.26 251.35 L 186.29 250.68 L 185.36 249.97 L 184.46 249.20 L 183.61 248.39 L 182.80 247.54 L 182.03 246.64 L 181.32 245.71 L 180.65 244.74 L 180.04 243.74 L 179.48 242.70 L 178.97 241.64 L 178.52 240.55 L 178.13 239.44 L 177.79 238.32 L 177.52 237.17 L 177.30 236.02 L 177.15 234.85 L 177.06 233.68 L 177.03 232.50 L 177.03 127.50 L 177.06 126.32 L 177.15 125.15 L 177.30 123.98 L 177.52 122.83 L 177.79 121.68 L 178.13 120.56 L 178.52 119.45 L 178.97 118.36 L 179.48 117.30 L 180.04 116.26 L 180.65 115.26 L 181.32 114.29 L 182.03 113.36 L 182.80 112.46 L 183.61 111.61 L 184.46 110.80 L 185.36 110.03 L 186.29 109.32 L 187.26 108.65 L 188.26 108.04 L 189.30 107.48 L 190.36 106.97 L 191.45 106.52 L 192.56 106.13 L 193.68 105.79 L 194.83 105.52 L 195.98 105.30 L 197.15 105.15 L 198.32 105.06 L 199.50 105.03 L 304.50 105.03 L 305.68 105.06 L 306.85 105.15 L 308.02 105.30 L 309.17 105.52 L 310.32 105.79 L 311.44 106.13 L 312.55 106.52 L 313.64 106.97 L 314.70 107.48 L 315.74 108.04 L 316.74 108.65 L 317.71 109.32 L 318.64 110.03 L 319.54 110.80 L 320.39 111.61 L 321.20 112.46 L 321.97 113.36 L 322.68 114.29 L 323.35 115.26 L 323.96 116.26 L 324.52 117.30 L 325.03 118.36 L 325.48 119.45 L 325.87 120.56 L 326.21 121.68 L 326.48 122.83 L 326.70 123.98 L 326.85 125.15 L 326.94 126.32 L 326.97 127.50 L 326.97 232.50 L 326.94 233.68 L 326.85 234.85 L 326.70 236.02 L 326.48 237.17 L 326.21 238.32 L 325.87 239.44 L 325.48 240.55 L 325.03 241.64 L 324.52 242.70 L 323.96 243.74 L 323.35 244.74 L 322.68 245.71 L 321.97 246.64 L 321.20 247.54 L 320.39 248.39 L 319.54 249.20 L 318.64 249.97 L 317.71 250.68 L 316.74 251.35 L 315.74 251.96 L 314.70 252.52 L 313.64 253.03 L 312.55 253.48 L 311.44 253.87 L 310.32 254.21 L 309.17 254.48 L 308.02 254.70 L 306.85 254.85 L 305.68 254.94 L 304.50 254.97 L 199.50 254.97 Z' style='fill-rule: evenodd; stroke-width: 0.75; stroke: #4682B4; stroke-dasharray: 4.00,4.00;' />
 <path d='M 199.50 232.50 L 304.50 232.50 L 304.50 127.50 L 199.50 127.50 L 199.50 232.50 Z' style='fill-rule: evenodd; stroke-width: 1.50;' />
+<line x1='351.47' y1='222.97' x2='355.79' y2='218.65' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='351.47' y1='218.65' x2='355.79' y2='222.97' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='356.92' y1='219.71' x2='361.24' y2='215.39' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='356.92' y1='215.39' x2='361.24' y2='219.71' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='330.80' y1='112.41' x2='335.12' y2='108.09' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='330.80' y1='108.09' x2='335.12' y2='112.41' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='284.57' y1='295.12' x2='288.89' y2='290.80' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='284.57' y1='290.80' x2='288.89' y2='295.12' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='160.33' y1='262.70' x2='164.65' y2='258.38' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='160.33' y1='258.38' x2='164.65' y2='262.70' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='303.52' y1='63.87' x2='307.84' y2='59.55' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='303.52' y1='59.55' x2='307.84' y2='63.87' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='356.33' y1='118.57' x2='360.65' y2='114.25' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='356.33' y1='114.25' x2='360.65' y2='118.57' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='240.60' y1='96.49' x2='244.92' y2='92.17' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='240.60' y1='92.17' x2='244.92' y2='96.49' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='357.64' y1='258.24' x2='361.96' y2='253.92' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='357.64' y1='253.92' x2='361.96' y2='258.24' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='367.01' y1='238.19' x2='371.33' y2='233.87' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='367.01' y1='233.87' x2='371.33' y2='238.19' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='156.12' y1='101.76' x2='160.44' y2='97.44' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='156.12' y1='97.44' x2='160.44' y2='101.76' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='348.83' y1='294.13' x2='353.15' y2='289.81' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='348.83' y1='289.81' x2='353.15' y2='294.13' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='161.32' y1='270.24' x2='165.64' y2='265.92' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='161.32' y1='265.92' x2='165.64' y2='270.24' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='369.62' y1='251.65' x2='373.94' y2='247.33' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='369.62' y1='247.33' x2='373.94' y2='251.65' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='359.27' y1='187.21' x2='363.59' y2='182.89' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='359.27' y1='182.89' x2='363.59' y2='187.21' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='147.54' y1='256.29' x2='151.86' y2='251.97' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='147.54' y1='251.97' x2='151.86' y2='256.29' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='222.94' y1='302.73' x2='227.26' y2='298.41' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='222.94' y1='298.41' x2='227.26' y2='302.73' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='349.25' y1='212.66' x2='353.57' y2='208.34' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='349.25' y1='208.34' x2='353.57' y2='212.66' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='332.16' y1='304.28' x2='336.48' y2='299.96' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='332.16' y1='299.96' x2='336.48' y2='304.28' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='326.05' y1='265.97' x2='330.37' y2='261.65' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='326.05' y1='261.65' x2='330.37' y2='265.97' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='128.31' y1='114.58' x2='132.63' y2='110.26' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='128.31' y1='110.26' x2='132.63' y2='114.58' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='331.40' y1='166.57' x2='335.72' y2='162.25' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='331.40' y1='162.25' x2='335.72' y2='166.57' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='129.14' y1='247.40' x2='133.46' y2='243.08' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='129.14' y1='243.08' x2='133.46' y2='247.40' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='178.22' y1='282.61' x2='182.54' y2='278.29' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='178.22' y1='278.29' x2='182.54' y2='282.61' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='349.46' y1='283.69' x2='353.78' y2='279.37' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='349.46' y1='279.37' x2='353.78' y2='283.69' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='234.10' y1='304.60' x2='238.42' y2='300.28' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='234.10' y1='300.28' x2='238.42' y2='304.60' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='136.51' y1='253.56' x2='140.83' y2='249.24' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='136.51' y1='249.24' x2='140.83' y2='253.56' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='365.86' y1='76.07' x2='370.18' y2='71.75' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='365.86' y1='71.75' x2='370.18' y2='76.07' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='233.12' y1='77.88' x2='237.44' y2='73.56' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='233.12' y1='73.56' x2='237.44' y2='77.88' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='361.95' y1='124.81' x2='366.27' y2='120.49' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='361.95' y1='120.49' x2='366.27' y2='124.81' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='344.84' y1='223.06' x2='349.16' y2='218.74' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='344.84' y1='218.74' x2='349.16' y2='223.06' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='365.23' y1='122.39' x2='369.55' y2='118.07' style='stroke-width: 0.75; stroke: #999999;' />
 <line x1='365.23' y1='118.07' x2='369.55' y2='122.39' style='stroke-width: 0.75; stroke: #999999;' />
-<circle cx='353.63' cy='220.81' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='332.96' cy='110.25' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
 <circle cx='256.68' cy='119.05' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
 <circle cx='309.96' cy='136.57' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='162.49' cy='260.54' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
 <circle cx='290.46' cy='238.53' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
 <circle cx='192.08' cy='163.71' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='242.76' cy='94.33' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='158.28' cy='99.60' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
 <circle cx='266.78' cy='243.57' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='163.48' cy='268.08' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='149.70' cy='254.13' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
 <circle cx='255.48' cy='126.26' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='351.41' cy='210.50' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
 <circle cx='310.21' cy='160.01' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='328.21' cy='263.81' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='333.56' cy='164.41' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='180.38' cy='280.45' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='351.62' cy='281.53' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='235.28' cy='75.72' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<circle cx='347.00' cy='220.90' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
 <circle cx='199.60' cy='204.87' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #228B22;' />
 <circle cx='302.24' cy='176.47' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #228B22;' />
 <circle cx='241.65' cy='136.98' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #228B22;' />
@@ -266,23 +280,18 @@ are too distant to be meaningfully related to the support region.</p>
 <circle cx='222.49' cy='138.98' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #228B22;' />
 <circle cx='286.29' cy='176.31' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #228B22;' />
 <circle cx='281.12' cy='150.81' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #228B22;' />
-<line x1='246.27' y1='180.00' x2='257.73' y2='180.00' style='stroke-width: 1.50;' />
-<line x1='252.00' y1='185.73' x2='252.00' y2='174.27' style='stroke-width: 1.50;' />
-<rect rx='4' x='388.80' y='28.80' width='86.40' height='100.80' style='stroke-width: 0.75; stroke: #DFD7CA; fill: #F5F6F8;' />
-<line x1='392.04' y1='100.80' x2='413.64' y2='100.80' style='stroke-width: 1.50;' />
-<line x1='392.04' y1='115.20' x2='413.64' y2='115.20' style='stroke-width: 0.75; stroke: #B3B3B3; stroke-dasharray: 4.00,4.00;' />
-<circle cx='402.84' cy='43.20' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #228B22;' />
-<circle cx='402.84' cy='57.60' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
-<line x1='400.14' y1='74.70' x2='405.54' y2='69.30' style='stroke-width: 0.75; stroke: #999999;' />
-<line x1='400.14' y1='69.30' x2='405.54' y2='74.70' style='stroke-width: 0.75; stroke: #999999;' />
-<line x1='399.02' y1='86.40' x2='406.66' y2='86.40' style='stroke-width: 1.50;' />
-<line x1='402.84' y1='90.22' x2='402.84' y2='82.58' style='stroke-width: 1.50;' />
-<text x='424.44' y='47.50' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='26.02px' lengthAdjust='spacingAndGlyphs'>Core</text>
-<text x='424.44' y='61.90' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='24.69px' lengthAdjust='spacingAndGlyphs'>Halo</text>
-<text x='424.44' y='76.30' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='38.69px' lengthAdjust='spacingAndGlyphs'>Pruned</text>
-<text x='424.44' y='90.70' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='45.36px' lengthAdjust='spacingAndGlyphs'>Centroid</text>
-<text x='424.44' y='105.10' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='41.36px' lengthAdjust='spacingAndGlyphs'>Original</text>
-<text x='424.44' y='119.50' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='22.67px' lengthAdjust='spacingAndGlyphs'>AoE</text>
+<rect class='legend-bg' x='392.80' y='28.80' width='82.40' height='86.40' style='stroke-width: 0.75; fill: #F5F6F8;' />
+<line x1='396.04' y1='86.40' x2='417.64' y2='86.40' style='stroke-width: 1.50;' />
+<line x1='396.04' y1='100.80' x2='417.64' y2='100.80' style='stroke-width: 0.75; stroke: #4682B4; stroke-dasharray: 4.00,4.00;' />
+<circle cx='406.84' cy='43.20' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #228B22;' />
+<circle cx='406.84' cy='57.60' r='2.70' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
+<line x1='404.14' y1='74.70' x2='409.54' y2='69.30' style='stroke-width: 0.75; stroke: #999999;' />
+<line x1='404.14' y1='69.30' x2='409.54' y2='74.70' style='stroke-width: 0.75; stroke: #999999;' />
+<text x='428.44' y='47.50' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='26.02px' lengthAdjust='spacingAndGlyphs'>Core</text>
+<text x='428.44' y='61.90' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='24.69px' lengthAdjust='spacingAndGlyphs'>Halo</text>
+<text x='428.44' y='76.30' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='38.69px' lengthAdjust='spacingAndGlyphs'>Pruned</text>
+<text x='428.44' y='90.70' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='41.36px' lengthAdjust='spacingAndGlyphs'>Original</text>
+<text x='428.44' y='105.10' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='22.67px' lengthAdjust='spacingAndGlyphs'>AoE</text>
 </g>
 </g>
 </svg></div><p class="caption">
@@ -295,26 +304,25 @@ the AoE are pruned.
 <div class="section level2">
 <h2 id="the-scale-parameter">The Scale Parameter<a class="anchor" aria-label="anchor" href="#the-scale-parameter"></a>
 </h2>
-<p>The <code>scale</code> parameter controls how far the AoE extends
-beyond the original support. With scale <code>s</code>, the linear
-multiplier is <code>1 + s</code>, and the area multiplier is
-<code>(1 + s)²</code>.</p>
-<p>Two values have special geometric meaning:</p>
+<p>The <code>scale</code> parameter controls how large the halo is
+relative to the core. The relationship between scale and area is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Total AoE area</mtext><mo>=</mo><mtext mathvariant="normal">Core area</mtext><mo>×</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>s</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\text{Total AoE area} = \text{Core area} \times (1 + s)^2</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math>
+is the scale parameter.</p>
+<p>Two values have special meaning:</p>
 <ul>
-<li>
-<strong><code>sqrt(2) - 1</code> ≈ 0.414</strong> (default): Equal
-core and halo areas</li>
-<li>
-<strong><code>1</code></strong>: Equal linear distance inside and
-outside the boundary</li>
+<li><p><strong><code>sqrt(2) - 1</code> ≈ 0.414</strong> (default):
+Equal core and halo areas</p></li>
+<li><p><strong><code>1</code></strong>: Halo area is 3× the core
+area</p></li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="why-equal-area-is-the-default">Why Equal Area is the Default<a class="anchor" aria-label="anchor" href="#why-equal-area-is-the-default"></a>
 </h2>
 <p>The default scale produces equal core and halo areas. This is not
-arbitrary—it reflects a philosophical position about what “influence”
-means.</p>
+arbitrary—it reflects a principled position about spatial influence.</p>
 <div class="section level3">
 <h3 id="the-symmetry-argument">The Symmetry Argument<a class="anchor" aria-label="anchor" href="#the-symmetry-argument"></a>
 </h3>
@@ -324,8 +332,12 @@ how much relevance should we grant to the outside?</p>
 <p>Equal area says: <strong>the outside matters as much as the
 inside</strong>.</p>
 <p>This is the maximally symmetric choice. Any other ratio implies that
-either: - The core is more important than the halo (halo smaller), or -
-External conditions dominate internal ones (halo larger)</p>
+either:</p>
+<ul>
+<li><p>The core is more important than the halo (halo smaller),
+or</p></li>
+<li><p>External conditions dominate internal ones (halo larger)</p></li>
+</ul>
 <p>Without domain-specific knowledge to justify asymmetry, equal
 weighting is the principled default.</p>
 </div>
@@ -337,17 +349,14 @@ weighting is the principled default.</p>
 <p>Equal areas means equal prior probability mass inside and outside the
 original boundary. This is the maximum-entropy choice—it encodes no bias
 toward internal or external dominance.</p>
-<p>Scale = 1 (the “one full stamp” expansion) gives a 1:3 ratio,
-implying the outside is three times more relevant than the inside. This
-may be appropriate for some analyses (e.g., highly mobile species), but
-it’s a strong assumption to make by default.</p>
 </div>
 <div class="section level3">
 <h3 id="the-geometric-inevitability">The Geometric Inevitability<a class="anchor" aria-label="anchor" href="#the-geometric-inevitability"></a>
 </h3>
-<p>The formula <code>s = √2 - 1</code> is not a tuned parameter. It’s
-the <em>unique</em> solution to the constraint “core equals halo.” This
-value emerges from geometry itself:</p>
+<p>The formula
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><msqrt><mn>2</mn></msqrt><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">s = \sqrt{2} - 1</annotation></semantics></math>
+is not a tuned parameter. It’s the <em>unique</em> solution to the
+constraint “core equals halo”:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>s</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mo>−</mo><mn>1</mn><mo>=</mo><mn>1</mn><mo>⟹</mo><mi>s</mi><mo>=</mo><msqrt><mn>2</mn></msqrt><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">
 (1 + s)^2 - 1 = 1 \implies s = \sqrt{2} - 1
 </annotation></semantics></math></p>
@@ -358,13 +367,65 @@ replaces it with a principled constraint.</p>
 <div class="section level3">
 <h3 id="when-to-override">When to Override<a class="anchor" aria-label="anchor" href="#when-to-override"></a>
 </h3>
-<p>Use <code>scale = 1</code> when: - You want the classic “one full
-stamp” expansion - Your domain knowledge suggests external conditions
-dominate - You’re comparing with previous work that used this
-convention</p>
-<p>Use custom scales when: - You have empirical data on influence decay
-- Sensitivity analysis requires exploring the parameter space - Domain
-expertise justifies a specific ratio</p>
+<p>Use <code>scale = 1</code> when:</p>
+<ul>
+<li><p>Your domain knowledge suggests external conditions strongly
+dominate</p></li>
+<li><p>You’re comparing with previous work that used this
+convention</p></li>
+</ul>
+<p>Use custom scales when:</p>
+<ul>
+<li><p>You have empirical data on influence decay</p></li>
+<li><p>Sensitivity analysis requires exploring the parameter
+space</p></li>
+<li><p>Domain expertise justifies a specific ratio</p></li>
+</ul>
+</div>
+</div>
+<div class="section level2">
+<h2 id="method-buffer-vs-stamp">Method: Buffer vs Stamp<a class="anchor" aria-label="anchor" href="#method-buffer-vs-stamp"></a>
+</h2>
+<p>The package offers two methods for computing the AoE:</p>
+<div class="section level3">
+<h3 id="buffer-method-default">Buffer Method (Default)<a class="anchor" aria-label="anchor" href="#buffer-method-default"></a>
+</h3>
+<p>The buffer method expands the boundary uniformly in all directions.
+The buffer distance is computed to achieve the target halo area.</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li><p>Robust for any polygon shape</p></li>
+<li><p>Always guarantees the AoE contains the original support</p></li>
+<li><p>Consistent behavior for concave shapes</p></li>
+</ul>
+<p><strong>How it works:</strong></p>
+<p>The buffer distance
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+is found by solving:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>π</mi><msup><mi>d</mi><mn>2</mn></msup><mo>+</mo><mi>P</mi><mo>⋅</mo><mi>d</mi><mo>=</mo><msub><mi>A</mi><mtext mathvariant="normal">halo</mtext></msub></mrow><annotation encoding="application/x-tex">\pi d^2 + P \cdot d = A_{\text{halo}}</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>P</mi><annotation encoding="application/x-tex">P</annotation></semantics></math>
+is the perimeter and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>A</mi><mtext mathvariant="normal">halo</mtext></msub><annotation encoding="application/x-tex">A_{\text{halo}}</annotation></semantics></math>
+is the target halo area.</p>
+</div>
+<div class="section level3">
+<h3 id="stamp-method-alternative">Stamp Method (Alternative)<a class="anchor" aria-label="anchor" href="#stamp-method-alternative"></a>
+</h3>
+<p>The stamp method scales vertices outward from the centroid,
+preserving shape proportions.</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li><p>Preserves the shape’s proportions</p></li>
+<li><p>Exact area calculation</p></li>
+</ul>
+<p><strong>Limitation:</strong></p>
+<p>Only guarantees containment for <em>star-shaped</em> polygons (where
+the centroid can “see” all boundary points). For highly concave shapes
+like country boundaries, small gaps may occur where the original is not
+fully contained.</p>
+<p>Use <code>method = "stamp"</code> when working with convex or nearly
+convex regions where shape preservation is important.</p>
 </div>
 </div>
 <div class="section level2">
@@ -424,27 +485,25 @@ polygon.</p>
 </defs>
 <g clip-path='url(#cpMjguODB8NDc1LjIwfDI4LjgwfDMzMS4yMA==)'>
 <rect class='legend-bg' x='28.80' y='28.80' width='446.40' height='302.40' style='stroke-width: 0.75; stroke: #F5F6F8; fill: #F5F6F8;' />
-<path d='M 168.00 292.00 L 448.00 348.00 L 392.00 68.00 L 224.00 124.00 L 168.00 292.00 Z' style='fill-rule: evenodd; stroke-width: 0.75; stroke: #B3B3B3; stroke-dasharray: 4.00,4.00;' />
 <path d='M 112.00 292.00 L 392.00 292.00 L 392.00 152.00 L 308.00 124.00 L 252.00 138.00 L 196.00 96.00 L 112.00 124.00 L 112.00 292.00 Z' style='fill-rule: evenodd; stroke-width: 1.50; stroke: #4682B4;' />
-<path d='M 224.00 124.00 L 230.46 121.85 L 252.00 138.00 L 308.00 124.00 L 392.00 152.00 L 392.00 292.00 L 168.00 292.00 L 224.00 124.00 Z' style='fill-rule: evenodd; fill: #808080; fill-opacity: 0.30; stroke-width: 0.75; stroke: none;' />
+<path d='M 224.00 259.97 L 222.75 259.94 L 221.49 259.84 L 220.25 259.68 L 219.02 259.45 L 217.80 259.16 L 216.59 258.80 L 215.41 258.38 L 214.25 257.90 L 213.12 257.36 L 212.01 256.76 L 210.94 256.10 L 209.91 255.39 L 208.91 254.63 L 207.96 253.81 L 207.05 252.95 L 206.19 252.04 L 205.37 251.09 L 204.61 250.09 L 203.90 249.06 L 203.24 247.99 L 202.64 246.88 L 202.10 245.75 L 201.62 244.59 L 201.20 243.41 L 200.84 242.20 L 200.55 240.98 L 200.32 239.75 L 200.16 238.51 L 200.06 237.25 L 200.03 236.00 L 200.03 124.00 L 200.06 122.75 L 200.16 121.49 L 200.32 120.25 L 200.55 119.02 L 200.84 117.80 L 201.20 116.59 L 201.62 115.41 L 202.10 114.25 L 202.64 113.12 L 203.24 112.01 L 203.90 110.94 L 204.61 109.91 L 205.37 108.91 L 206.19 107.96 L 207.05 107.05 L 207.96 106.19 L 208.91 105.37 L 209.91 104.61 L 210.94 103.90 L 212.01 103.24 L 213.12 102.64 L 214.25 102.10 L 215.41 101.62 L 216.59 101.20 L 217.80 100.84 L 219.02 100.55 L 220.25 100.32 L 221.49 100.16 L 222.75 100.06 L 224.00 100.03 L 336.00 100.03 L 337.25 100.06 L 338.51 100.16 L 339.75 100.32 L 340.98 100.55 L 342.20 100.84 L 343.41 101.20 L 344.59 101.62 L 345.75 102.10 L 346.88 102.64 L 347.99 103.24 L 349.06 103.90 L 350.09 104.61 L 351.09 105.37 L 352.04 106.19 L 352.95 107.05 L 353.81 107.96 L 354.63 108.91 L 355.39 109.91 L 356.10 110.94 L 356.76 112.01 L 357.36 113.12 L 357.90 114.25 L 358.38 115.41 L 358.80 116.59 L 359.16 117.80 L 359.45 119.02 L 359.68 120.25 L 359.84 121.49 L 359.94 122.75 L 359.97 124.00 L 359.97 236.00 L 359.94 237.25 L 359.84 238.51 L 359.68 239.75 L 359.45 240.98 L 359.16 242.20 L 358.80 243.41 L 358.38 244.59 L 357.90 245.75 L 357.36 246.88 L 356.76 247.99 L 356.10 249.06 L 355.39 250.09 L 354.63 251.09 L 353.81 252.04 L 352.95 252.95 L 352.04 253.81 L 351.09 254.63 L 350.09 255.39 L 349.06 256.10 L 347.99 256.76 L 346.88 257.36 L 345.75 257.90 L 344.59 258.38 L 343.41 258.80 L 342.20 259.16 L 340.98 259.45 L 339.75 259.68 L 338.51 259.84 L 337.25 259.94 L 336.00 259.97 L 224.00 259.97 Z' style='fill-rule: evenodd; stroke-width: 1.12; stroke: #7F7F7F; stroke-dasharray: 6.00,6.00;' />
+<path d='M 222.75 259.94 L 221.49 259.84 L 220.25 259.68 L 219.02 259.45 L 217.80 259.16 L 216.59 258.80 L 215.41 258.38 L 214.25 257.90 L 213.12 257.36 L 212.01 256.76 L 210.94 256.10 L 209.91 255.39 L 208.91 254.63 L 207.96 253.81 L 207.05 252.95 L 206.19 252.04 L 205.37 251.09 L 204.61 250.09 L 203.90 249.06 L 203.24 247.99 L 202.64 246.88 L 202.10 245.75 L 201.62 244.59 L 201.20 243.41 L 200.84 242.20 L 200.55 240.98 L 200.32 239.75 L 200.16 238.51 L 200.06 237.25 L 200.03 236.00 L 200.03 124.00 L 200.06 122.75 L 200.16 121.49 L 200.32 120.25 L 200.55 119.02 L 200.84 117.80 L 201.20 116.59 L 201.62 115.41 L 202.10 114.25 L 202.64 113.12 L 203.24 112.01 L 203.90 110.94 L 204.61 109.91 L 205.37 108.91 L 206.19 107.96 L 207.05 107.05 L 207.96 106.19 L 208.72 105.54 L 252.00 138.00 L 308.00 124.00 L 359.97 141.32 L 359.97 236.00 L 359.94 237.25 L 359.84 238.51 L 359.68 239.75 L 359.45 240.98 L 359.16 242.20 L 358.80 243.41 L 358.38 244.59 L 357.90 245.75 L 357.36 246.88 L 356.76 247.99 L 356.10 249.06 L 355.39 250.09 L 354.63 251.09 L 353.81 252.04 L 352.95 252.95 L 352.04 253.81 L 351.09 254.63 L 350.09 255.39 L 349.06 256.10 L 347.99 256.76 L 346.88 257.36 L 345.75 257.90 L 344.59 258.38 L 343.41 258.80 L 342.20 259.16 L 340.98 259.45 L 339.75 259.68 L 338.51 259.84 L 337.25 259.94 L 336.00 259.97 L 224.00 259.97 L 222.75 259.94 Z' style='fill-rule: evenodd; fill: #808080; fill-opacity: 0.30; stroke-width: 0.75; stroke: none;' />
 <path d='M 224.00 236.00 L 336.00 236.00 L 336.00 124.00 L 224.00 124.00 L 224.00 236.00 Z' style='fill-rule: evenodd; stroke-width: 1.50;' />
-<line x1='274.27' y1='180.00' x2='285.73' y2='180.00' style='stroke-width: 1.50;' />
-<line x1='280.00' y1='185.73' x2='280.00' y2='174.27' style='stroke-width: 1.50;' />
 <text x='336.00' y='101.15' text-anchor='middle' style='font-size: 14.40px; font-weight: bold;fill: #4682B4; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='29.58px' lengthAdjust='spacingAndGlyphs'>SEA</text>
-<rect rx='4' x='28.80' y='28.80' width='130.40' height='72.00' style='stroke-width: 0.75; stroke: #DFD7CA; fill: #F5F6F8;' />
+<rect class='legend-bg' x='28.80' y='28.80' width='125.74' height='72.00' style='stroke-width: 0.75; fill: #F5F6F8;' />
 <line x1='32.04' y1='43.20' x2='53.64' y2='43.20' style='stroke-width: 1.50;' />
-<line x1='32.04' y1='57.60' x2='53.64' y2='57.60' style='stroke-width: 0.75; stroke: #B3B3B3; stroke-dasharray: 4.00,4.00;' />
+<line x1='32.04' y1='57.60' x2='53.64' y2='57.60' style='stroke-width: 1.12; stroke: #7F7F7F; stroke-dasharray: 6.00,6.00;' />
 <line x1='32.04' y1='86.40' x2='53.64' y2='86.40' style='stroke-width: 1.50; stroke: #4682B4;' />
-<polygon points='37.44,77.40 48.24,77.40 48.24,66.60 37.44,66.60 ' style='stroke-width: 0.75; stroke: none; fill: #808080; fill-opacity: 0.50;' />
+<polygon points='37.44,77.40 48.24,77.40 48.24,66.60 37.44,66.60 ' style='stroke-width: 0.75; stroke: none; fill: #7F7F7F;' />
 <text x='64.44' y='47.50' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='42.02px' lengthAdjust='spacingAndGlyphs'>Support</text>
-<text x='64.44' y='61.90' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='89.36px' lengthAdjust='spacingAndGlyphs'>AoE (theoretical)</text>
+<text x='64.44' y='61.90' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='84.70px' lengthAdjust='spacingAndGlyphs'>Theoretical AoE</text>
 <text x='64.44' y='76.30' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='76.02px' lengthAdjust='spacingAndGlyphs'>AoE (masked)</text>
 <text x='64.44' y='90.70' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='50.03px' lengthAdjust='spacingAndGlyphs'>Coastline</text>
 </g>
 </g>
 </svg></div><p class="caption">
 Hard boundaries constrain the AoE. The dashed line shows the theoretical
-AoE; the solid gray area shows the AoE after applying a land mask.
+AoE; the gray area shows the AoE after applying a land mask.
 </p>
 </div>
 </div>
@@ -455,11 +514,11 @@ AoE; the solid gray area shows the AoE after applying a land mask.
 (countries, provinces, protected areas). AoE handles these
 naturally:</p>
 <ul>
-<li>Each support is processed independently</li>
-<li>Each uses its own centroid as reference</li>
-<li>Points can fall within multiple AoEs (when regions are
-adjacent)</li>
-<li>Output is in long format: one row per point-support combination</li>
+<li><p>Each support is processed independently</p></li>
+<li><p>Points can fall within multiple AoEs (when regions are
+adjacent)</p></li>
+<li><p>Output is in long format: one row per point-support
+combination</p></li>
 </ul>
 <p>This enables cross-border analyses and studies of nested
 administrative structures without repeated preprocessing.</p>
@@ -470,20 +529,20 @@ administrative structures without repeated preprocessing.</p>
 <p>The area of effect provides a principled correction for border
 truncation in spatial analysis:</p>
 <ul>
-<li>
-<strong>Principled default</strong>: Scale = √2 − 1, giving equal
-core and halo areas</li>
-<li>
-<strong>Geometric derivation</strong>: The default emerges from
-symmetry, not tuning</li>
-<li>
-<strong>Categorical output</strong>: Core, halo, or pruned</li>
-<li>
-<strong>Soft/hard boundaries</strong>: Political borders ignored,
-physical barriers respected</li>
-<li>
-<strong>Multiple supports</strong>: Process many regions at
-once</li>
+<li><p><strong>Area-based definition</strong>: Halos defined by
+proportion of region area, not arbitrary distances</p></li>
+<li><p><strong>Principled default</strong>: Scale = √2 − 1, giving equal
+core and halo areas</p></li>
+<li><p><strong>Geometric derivation</strong>: The default emerges from
+symmetry, not tuning</p></li>
+<li><p><strong>Robust method</strong>: Buffer-based expansion works for
+any polygon shape</p></li>
+<li><p><strong>Categorical output</strong>: Core, halo, or
+pruned</p></li>
+<li><p><strong>Soft/hard boundaries</strong>: Political borders ignored,
+physical barriers respected</p></li>
+<li><p><strong>Multiple supports</strong>: Process many regions at
+once</p></li>
 </ul>
 <p>The result is a reproducible, interpretable method that can be
 consistently applied across studies.</p>

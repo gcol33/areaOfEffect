@@ -4,10 +4,9 @@
 #' points as "core" (inside original support) or "halo" (inside the area of
 #' effect but outside original support), pruning all points outside.
 #'
-#' The area of effect is computed by scaling each support outward from its
-#' centroid. By default, scale is `sqrt(2) - 1` (~0.414), which produces equal
-#' core and halo areas. This means the AoE has twice the area of the original
-#' support, split evenly between core (inside) and halo (outside).
+#' By default, the area of effect is computed using a buffer that produces
+#' equal core and halo areas. This means the AoE has twice the area of the
+#' original support, split evenly between core (inside) and halo (outside).
 #'
 #' @param points An `sf` object with POINT geometries.
 #' @param support One of:
@@ -15,17 +14,32 @@
 #'   - Country name or ISO code: `"France"`, `"FR"`, `"FRA"`
 #'   - Vector of countries: `c("France", "Germany")`
 #'   - Missing: auto-detects countries containing the points
-#' @param scale Numeric scale factor (default `sqrt(2) - 1`, approximately 0.414). The
-#'   multiplier applied to distances from the reference point is `1 + scale`.
-#'   Common values:
+#' @param scale Numeric scale factor (default `sqrt(2) - 1`, approximately 0.414).
+#'   Controls the size of the halo relative to the core:
 #'   - `sqrt(2) - 1` (default): equal core/halo areas, ratio 1:1
-#'   - `1`: equal linear distance inside/outside, area ratio 1:3
+#'   - `1`: area ratio 1:3 (halo is 3x core area)
+#'
+#'   For `method = "buffer"`, determines the target halo area as
+#'   `original_area * ((1 + scale)^2 - 1)`.
+#'
+#'   For `method = "stamp"`, the multiplier `1 + scale` is applied to distances
+#'
+#'   from the reference point.
+#' @param method Method for computing the area of effect:
+#'   - `"buffer"` (default): Uniform buffer around the support boundary.
+#'     Robust for any polygon shape. Buffer distance is calculated to achieve
+#'     the target halo area.
+#'   - `"stamp"`: Scale vertices outward from the centroid (or reference point).
+#'     Preserves shape proportions but only guarantees containment for
+#'     star-shaped polygons. May leave small gaps for highly concave shapes.
 #' @param reference Optional `sf` object with a single POINT geometry.
+#'
 #'   If `NULL` (default), the centroid of each support is used.
-#'   Only valid when `support` has a single row.
+#'   Only valid when `support` has a single row and `method = "stamp"`.
 #' @param mask Optional `sf` object with POLYGON or MULTIPOLYGON geometry.
 #'   If provided, each area of effect is intersected with this mask
-#'   (e.g., land boundary to exclude sea).
+#'   (e.
+#'   g., land boundary to exclude sea).
 #' @param coords Column names for coordinates when `points` is a data.frame,
 #'   e.g. `c("lon", "lat")`. If `NULL`, auto-detects common names.
 #'
@@ -43,14 +57,19 @@
 #'   Use `aoe_geometry()` to extract the AoE polygons.
 #'
 #' @details
-#' The transformation applies:
-#' \deqn{p' = r + (1 + s)(p - r)}
-#' where \eqn{r} is the reference point (centroid), \eqn{p} is each vertex
-#' of the support boundary, and \eqn{s} is the scale factor.
+#' ## Buffer method (default)
+#' Computes a uniform buffer distance \eqn{d} such that the buffered area
+#' equals the target. The buffer distance is found by solving:
+#' \deqn{\pi d^2 + P \cdot d = A_{target}}
+#' where \eqn{P} is the perimeter and \eqn{A_{target}} is the desired halo area.
 #'
-#' With scale \eqn{s}, the area multiplier is \eqn{(1 + s)^2}:
-#' - Scale 1: multiplier 2, area 4x original, halo:core = 3:1
-#' - Scale 0.414: multiplier ~1.414, area 2x original, halo:core = 1:1
+#' ## Stamp method
+#' Applies an affine transformation to each vertex:
+#' \deqn{p' = r + (1 + s)(p - r)}
+#' where \eqn{r} is the reference point (centroid), \eqn{p} is each vertex,
+#' and \eqn{s} is the scale factor. This method preserves shape proportions
+#' but only guarantees the AoE contains the original for star-shaped polygons
+#' (where the centroid can "see" all boundary points).
 #'
 #' Points exactly on the original support boundary are classified as "core".
 #'
@@ -95,7 +114,9 @@
 #' # Points near the boundary may appear in both regions' AoE
 #'
 #' @export
-aoe <- function(points, support = NULL, scale = sqrt(2) - 1, reference = NULL, mask = NULL, coords = NULL) {
+aoe <- function(points, support = NULL, scale = sqrt(2) - 1, method = c("buffer", "stamp"),
+                reference = NULL, mask = NULL, coords = NULL) {
+  method <- match.arg(method)
   # Handle support: NULL = auto-detect, character = country lookup
   if (is.null(support) || (is.character(support) && length(support) == 1 && tolower(support) == "auto")) {
     support <- detect_countries(points, coords)
@@ -122,13 +143,22 @@ aoe <- function(points, support = NULL, scale = sqrt(2) - 1, reference = NULL, m
 
   n_supports <- nrow(support)
 
-  # Reference only allowed for single support
-  if (!is.null(reference) && n_supports > 1) {
-    stop(
-      "`reference` can only be provided when `support` has a single row.\n",
-      "For multiple supports, each uses its centroid as reference.",
-      call. = FALSE
-    )
+
+  # Reference only allowed for single support with stamp method
+  if (!is.null(reference)) {
+    if (method != "stamp") {
+      stop(
+        "`reference` can only be used with `method = \"stamp\"`.",
+        call. = FALSE
+      )
+    }
+    if (n_supports > 1) {
+      stop(
+        "`reference` can only be provided when `support` has a single row.\n",
+        "For multiple supports, each uses its centroid as reference.",
+        call. = FALSE
+      )
+    }
   }
 
   # Ensure consistent CRS
@@ -171,6 +201,8 @@ aoe <- function(points, support = NULL, scale = sqrt(2) - 1, reference = NULL, m
       points = points,
       support_row = support[i, ],
       support_id = sid,
+      method = method,
+      scale = scale,
       reference = reference,
       mask_geom = mask_geom,
       target_crs = target_crs,
@@ -217,6 +249,8 @@ aoe <- function(points, support = NULL, scale = sqrt(2) - 1, reference = NULL, m
 #' @param points sf POINT object
 #' @param support_row Single row from support sf
 #' @param support_id Identifier for this support
+#' @param method Method for computing AoE ("buffer" or "stamp")
+#' @param scale Scale factor for halo area
 #' @param reference Optional reference point (sf or NULL)
 #' @param mask_geom Prepared mask geometry (sfc or NULL)
 #' @param target_crs Target CRS
@@ -227,24 +261,29 @@ aoe <- function(points, support = NULL, scale = sqrt(2) - 1, reference = NULL, m
 #'   - `geometries`: list with original, aoe_raw, and aoe_final geometries
 #' @noRd
 process_single_support <- function(points, support_row, support_id,
-                                   reference, mask_geom, target_crs,
-                                   multiplier) {
+                                   method, scale, reference, mask_geom,
+                                   target_crs, multiplier) {
 
   # Prepare support geometry
   support_geom <- sf::st_geometry(support_row)[[1]]
   support_geom <- sf::st_sfc(support_geom, crs = target_crs)
   support_geom <- sf::st_make_valid(support_geom)
 
-  # Determine reference point
-  if (is.null(reference)) {
-    ref_point <- sf::st_centroid(support_geom)
+  # Compute AoE geometry based on method
+  if (method == "buffer") {
+    # Buffer method: compute buffer distance for target halo area
+    aoe_geom_raw <- buffer_geometry(support_geom, scale = scale, crs = target_crs)
   } else {
-    reference <- sf::st_transform(reference, target_crs)
-    ref_point <- sf::st_geometry(reference)[[1]]
+    # Stamp method: scale vertices from reference point
+    if (is.null(reference)) {
+      ref_point <- sf::st_centroid(support_geom)
+    } else {
+      reference <- sf::st_transform(reference, target_crs)
+      ref_point <- sf::st_geometry(reference)[[1]]
+    }
+    aoe_geom_raw <- scale_geometry(support_geom, ref_point,
+                                   multiplier = multiplier, crs = target_crs)
   }
-
-  # Scale the support
-  aoe_geom_raw <- scale_geometry(support_geom, ref_point, multiplier = multiplier, crs = target_crs)
   aoe_geom_raw <- sf::st_make_valid(aoe_geom_raw)
 
   # Apply mask if provided
@@ -393,6 +432,63 @@ validate_inputs <- function(points, support, reference, mask) {
   }
 
   invisible(NULL)
+}
+
+
+#' Buffer geometry to achieve target halo area
+#'
+#' Computes a buffer distance that produces a halo with the target area.
+#' Uses binary search to find the exact buffer distance, since the analytical
+#' formula (quadratic) is only approximate for concave shapes.
+#'
+#' @param geom An sfc geometry
+#' @param scale Scale factor (halo area = original_area * ((1 + scale)^2 - 1))
+#' @param crs The CRS to apply to the result
+#'
+#' @return Buffered sfc geometry with CRS preserved
+#' @noRd
+buffer_geometry <- function(geom, scale, crs) {
+  # Calculate target total area (original + halo)
+  original_area <- as.numeric(sf::st_area(geom))
+  multiplier <- 1 + scale
+  target_total_area <- original_area * multiplier^2
+
+  # Use quadratic formula for initial estimate
+  target_halo_area <- original_area * (multiplier^2 - 1)
+  boundary <- sf::st_cast(geom, "MULTILINESTRING")
+  perimeter <- as.numeric(sf::st_length(boundary))
+  discriminant <- perimeter^2 + 4 * pi * target_halo_area
+  initial_dist <- (-perimeter + sqrt(discriminant)) / (2 * pi)
+
+  # Binary search to find exact buffer distance
+  # Start with bounds around the initial estimate
+  low <- initial_dist * 0.5
+  high <- initial_dist * 2.0
+  tolerance <- target_total_area * 0.0001  # 0.01% tolerance
+
+  for (i in 1:50) {  # Max 50 iterations
+    mid <- (low + high) / 2
+    buffered <- sf::st_buffer(geom, mid)
+    current_area <- as.numeric(sf::st_area(buffered))
+
+    if (abs(current_area - target_total_area) < tolerance) {
+      break
+    }
+
+    if (current_area < target_total_area) {
+      low <- mid
+    } else {
+      high <- mid
+    }
+  }
+
+  # Final buffer with found distance
+  geom_result <- sf::st_buffer(geom, mid)
+
+  # Ensure CRS is set
+  sf::st_crs(geom_result) <- crs
+
+  geom_result
 }
 
 

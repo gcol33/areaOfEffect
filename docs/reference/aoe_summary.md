@@ -14,7 +14,7 @@ aoe_summary(x)
 - x:
 
   An `sf` object returned by
-  [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.md).
+  [`aoe()`](https://gcol33.github.io/areaOfEffect/reference/aoe.md).
 
 ## Value
 

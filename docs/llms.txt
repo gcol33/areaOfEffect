@@ -4,15 +4,13 @@
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Spatial Support at Scale**
+**Classify occurrence records relative to country borders — without
+writing sf code.**
 
-Given a set of points and one or more support polygons,
-[`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.md)
-classifies points as “core” (inside original support) or “halo” (inside
-the area of effect but outside original support), pruning all points
-outside.
+Dataframe in → dataframe out. No CRS headaches. No buffer distance
+guessing.
 
-![Austria with Area of Effect](reference/figures/austria-aoe.svg)
+![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNTA0LjAwcHQiIGhlaWdodD0iMzYwLjAwcHQiIHZpZXdib3g9IjAgMCA1MDQuMDAgMzYwLjAwIiBjbGFzcz0iaW5saW5lLXN2ZyIgc3R5bGU9Im1heC13aWR0aDoxMDAlO3dpZHRoOjEwMCU7aGVpZ2h0OmF1dG87Ij48ZyBjbGFzcz0ic3ZnbGl0ZSI+PGRlZnM+PHN0eWxlIHR5cGU9InRleHQvY3NzIj4KICAgIC8qIHRoZW1lLWF3YXJlLXByb2Nlc3NlZCAqLwogICAgLnN2Z2xpdGUgbGluZSwgLnN2Z2xpdGUgcG9seWxpbmUsIC5zdmdsaXRlIHBvbHlnb24sIC5zdmdsaXRlIHBhdGgsIC5zdmdsaXRlIGNpcmNsZSB7CiAgICAgIGZpbGw6IG5vbmU7CiAgICAgIHN0cm9rZTogIzNFM0YzQTsKICAgICAgc3Ryb2tlLWxpbmVjYXA6IHJvdW5kOwogICAgICBzdHJva2UtbGluZWpvaW46IHJvdW5kOwogICAgICBzdHJva2UtbWl0ZXJsaW1pdDogMTAuMDA7CiAgICB9CiAgICAuc3ZnbGl0ZSA+IGcgPiByZWN0IHsKICAgICAgZmlsbDogbm9uZTsKICAgICAgc3Ryb2tlOiAjM0UzRjNBOwogICAgICBzdHJva2UtbGluZWNhcDogcm91bmQ7CiAgICAgIHN0cm9rZS1saW5lam9pbjogcm91bmQ7CiAgICAgIHN0cm9rZS1taXRlcmxpbWl0OiAxMC4wMDsKICAgIH0KICAgIC5zdmdsaXRlIHRleHQgewogICAgICB3aGl0ZS1zcGFjZTogcHJlOwogICAgICBmaWxsOiAjM0UzRjNBOwogICAgfQogICAgLnN2Z2xpdGUgZy5nbHlwaGdyb3VwIHBhdGggewogICAgICBmaWxsOiBpbmhlcml0OwogICAgICBzdHJva2U6IG5vbmU7CiAgICB9CiAgPC9zdHlsZT48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgc3R5bGU9InN0cm9rZTogbm9uZTsgZmlsbDogI0Y1RjZGODsiIC8+PGRlZnM+PGNsaXBwYXRoIGlkPSJjcE1DNHdNSHcxTURRdU1EQjhNQzR3TUh3ek5qQXVNREE9Ij48cmVjdCB4PSIwLjAwIiB5PSIwLjAwIiB3aWR0aD0iNTA0LjAwIiBoZWlnaHQ9IjM2MC4wMCIgLz48L2NsaXBwYXRoPjwvZGVmcz48ZyBjbGlwLXBhdGg9InVybCgjY3BNQzR3TUh3MU1EUXVNREI4TUM0d01Id3pOakF1TURBPSkiPjwvZz48ZGVmcz48Y2xpcHBhdGggaWQ9ImNwTVRRdU5EQjhORGc1TGpZd2ZERTBMalF3ZkRNME5TNDJNQT09Ij48cmVjdCB4PSIxNC40MCIgeT0iMTQuNDAiIHdpZHRoPSI0NzUuMjAiIGhlaWdodD0iMzMxLjIwIiAvPjwvY2xpcHBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjcE1UUXVOREI4TkRnNUxqWXdmREUwTGpRd2ZETTBOUzQyTUE9PSkiPjxyZWN0IGNsYXNzPSJsZWdlbmQtYmciIHg9IjE0LjQwIiB5PSIxNC40MCIgd2lkdGg9IjQ3NS4yMCIgaGVpZ2h0PSIzMzEuMjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6IDAuNzU7IHN0cm9rZTogI0Y1RjZGODsgZmlsbDogI0Y1RjZGODsiIC8+PHBhdGggZD0iTSAzNC41NSAyMTQuOTcgTCAzMy45MCAyMTMuNjkgTCAzNy44NyAyMDQuMDUgTCAzOC4zNCAxOTguMDcgTCAzMy44NiAxOTQuNTYgTCAzMi4wMCAxOTMuNTIgTCAzMy4zOSAxOTIuNzQgTCAzOS4zOSAxOTMuMzkgTCA0My4wMCAxOTEuNDEgTCA0NC44MCAxODkuNDQgTCA1MC4yNCAxOTEuMjkgTCA1OC4zMSAxOTUuMDIgTCA2Mi4xOSAxOTcuNTUgTCA2My44NyAxOTkuNDkgTCA2NC44NSAyMDEuMTMgTCA2NC42NCAyMDMuOTMgTCA2Ni41MCAyMDUuMDIgTCA3MC4xOSAyMDUuNDUgTCA3Mi43MCAyMDYuMzEgTCA3Mi4xOCAyMDkuOTkgTCA3Mi4yOSAyMTMuMDQgTCA3NS42MyAyMTIuNjIgTCA3OS42NSAyMTAuMjkgTCA4Mi41NyAyMDYuMTAgTCA4NC4yNCAyMDIuMDUgTCA4NC44OCAxOTIuMTggTCA4NS4zNCAxOTEuMzUgTCA4Ny45NCAxOTIuMTIgTCA5OC4xOSAxOTEuNjkgTCAxMDMuMjEgMTkzLjUzIEwgMTEwLjkyIDE5My44NCBMIDExMC45MyAxOTUuMzggTCAxMTIuNTMgMTk3Ljc5IEwgMTE2LjI3IDIwMS4yNyBMIDExOC4xNyAyMDMuNTUgTCAxMjEuNzkgMjAzLjk1IEwgMTI3LjE3IDIwMi42OSBMIDEzMC4yOCAyMDEuMzkgTCAxMzEuNTggMjAyLjMxIEwgMTM2LjUzIDIwMS40MiBMIDE0MC43MSAxOTguNjEgTCAxNDEuNjAgMTk2LjQ3IEwgMTQ1Ljk1IDE5NC45NiBMIDE1MS42OCAxOTEuNDkgTCAxNTkuNzUgMTg4LjgxIEwgMTg2Ljg0IDE4NS45NSBMIDE4Ny42NyAxODMuNzkgTCAxODYuNzMgMTc4LjgzIEwgMTg3LjM3IDE3OC4xMSBMIDE5MC45NSAxNzkuMzQgTCAxOTYuNjIgMTgwLjQ5IEwgMjAxLjA0IDE4Mi4yNSBMIDIwNC4wNSAxODQuNTMgTCAyMDYuNjEgMTg0LjYzIEwgMjEwLjM4IDE4My4wMyBMIDIxNS42MiAxODEuOTkgTCAyMjAuODggMTg0LjM3IEwgMjIyLjYyIDE4Ni45NCBMIDIyMS44OSAxODguMjYgTCAyMjIuMjIgMTkwLjM1IEwgMjIzLjk3IDE5Mi4wOSBMIDIyOC4zNiAxOTQuOTMgTCAyMzMuODYgMTk3LjM4IEwgMjM2LjU0IDE5Ny4xOSBMIDIzNy4yOCAxOTQuODEgTCAyMzcuNTggMTg5LjE1IEwgMjM3LjI1IDE4My4xMiBMIDIzNS42NSAxNzkuNjYgTCAyMzIuNzUgMTc4LjgxIEwgMjI5LjM2IDE3OC41NCBMIDIyNy41MCAxNzcuODIgTCAyMjcuOTEgMTc1LjkyIEwgMjMwLjAyIDE3MS4wMCBMIDIyOS4yMiAxNjQuNDMgTCAyMjIuMzMgMTU2Ljk3IEwgMjE2LjI4IDE0OS43NSBMIDIxNi4wMSAxNDcuMjkgTCAyMTguNjUgMTQzLjAzIEwgMjIzLjA5IDEzOS42NCBMIDIzMy4xMyAxMzMuOTkgTCAyMzYuMzcgMTMyLjgyIEwgMjQwLjU5IDEzMS44NyBMIDI0Ni41NSAxMjkuNTUgTCAyNDkuMjUgMTI3LjE3IEwgMjUwLjk1IDEyNC41OCBMIDI1Mi4yMyAxMTEuMTMgTCAyNTIuODQgMTEwLjU2IEwgMjUzLjYwIDEwOS43NyBMIDI2NS4wNyAxMTQuNDEgTCAyNjUuOTUgMTEzLjY0IEwgMjY3LjY5IDExMi44OCBMIDI3MC43OSAxMDkuMzMgTCAyNzEuMjMgMTA2LjYzIEwgMjcwLjUxIDEwMS41MiBMIDI3MC4yMiA5Ni43MSBMIDI3MC43MCA5NS4xOCBMIDI3Mi40MSA5NS43MyBMIDI3Ny40MCA5OC4yNCBMIDI4MS40OCAxMDEuMDUgTCAyODUuODcgMTA4LjE0IEwgMjk0LjIzIDExMC4wMyBMIDMwNC41MiAxMTAuMjEgTCAzMDcuNzcgMTA3LjA1IEwgMzExLjAwIDEwNi4zMiBMIDMxNC44OSAxMDcuMjggTCAzMjIuOTcgMTA4LjQwIEwgMzIzLjA4IDEwMi42NiBMIDMyNi44NSA5Ni43MiBMIDMyOC42MyA5NC42MiBMIDMzNC40NiA5NC44MyBMIDMzNS4yOCA5MC4zOSBMIDMzNS4wMSA3OC4wOSBMIDMzNi4wNSA3Ni43NCBMIDM0MC4yOSA3Ny4wMCBMIDM0NC44MCA3OS4yNCBMIDM0Ni4zMSA4MS4wNiBMIDM0OC40NyA4MC45MSBMIDM1MS4zNSA3OS42NyBMIDM1NC41OCA3OC44NyBMIDM2MC4wNSA4MC4xOCBMIDM3Mi4xNSA4NS43NyBMIDM3OC4yNyA4Ny44MSBMIDM4MS45MSA4Ny40MiBMIDM4NS4zOCA4Ny41MCBMIDQwMC4wMCA5Ni4xMyBMIDQwOS41MiA5Ny4zNSBMIDQxOC4wNSA5Ny4zOCBMIDQyMC40MCA5NC43NyBMIDQyMy43MCA5Mi41NiBMIDQyNy41MiA5Mi44NyBMIDQzMS4wMCA5NC4wMCBMIDQzOC4wMSA5Ny43NSBMIDQ0MS4xNCA5OC43MiBMIDQ0NS4yMCA5OS4zMiBMIDQ0OC4yNCAxMDAuMTYgTCA0NTEuODIgMTA2LjY5IEwgNDUzLjUyIDEwOC40MyBMIDQ1My40MCAxMDkuMjQgTCA0NTMuNTQgMTEyLjIxIEwgNDUxLjg3IDExNS45NSBMIDQ1MC4yMSAxMjAuODUgTCA0NTEuMDMgMTI1LjE2IEwgNDU5LjUyIDE0MC4wOCBMIDQ2Ni40NCAxNDkuMTcgTCA0NjguMDIgMTUyLjYzIEwgNDcyLjAwIDE1NS4yOSBMIDQ2OS4xMiAxNTguNjUgTCA0NjkuMjIgMTYzLjYyIEwgNDY3LjM2IDE2NS44MyBMIDQ2Ny4yMiAxNjguNjggTCA0NjguNTMgMTcxLjI2IEwgNDY5LjAxIDE3NC40OSBMIDQ3MC45MSAxNzguOTYgTCA0NjUuNjIgMTc5LjkzIEwgNDU5LjEzIDE3OS43NyBMIDQ1Ni44NiAxODAuMDMgTCA0NTQuODcgMTgxLjI1IEwgNDUyLjU0IDE4MC42NSBMIDQ0Ni4wOCAxNzYuNDYgTCA0NDIuNjUgMTc1LjU0IEwgNDQwLjM1IDE3NS44MCBMIDQzOC44OCAxNzcuNjEgTCA0MzYuMjIgMTc5Ljk1IEwgNDMzLjYzIDE4MS41OCBMIDQzNC40OCAxODMuMDMgTCA0NDcuMTUgMTg2Ljc5IEwgNDUwLjE2IDE5Mi41OCBMIDQ0OC41MiAxOTcuMzAgTCA0NDguMDYgMTk5LjYyIEwgNDQ1LjQ4IDIwMS40NCBMIDQ0Mi4yMiAyMDMuMDQgTCA0MzguMDcgMjAzLjQ0IEwgNDM3Ljk0IDIwNS45OSBMIDQ0MC42OCAyMTMuNDkgTCA0MzkuNTcgMjE1LjEyIEwgNDM4LjU2IDIxNy40NSBMIDQ0MC43MSAyMjMuNjMgTCA0NDMuMzkgMjI0LjA3IEwgNDQ0LjE3IDIyNS40OCBMIDQ0NC4wNiAyMjcuOTkgTCA0NDMuOTkgMjMwLjY1IEwgNDQzLjQ3IDIzMy40NyBMIDQ0My4xOSAyMzQuNzIgTCA0NDEuNTYgMjM1LjUxIEwgNDM2LjA4IDIzNS4wOSBMIDQzMS43NiAyMzcuNTEgTCA0MjMuNTggMjQ2LjE4IEwgNDIwLjQ5IDI0Ny42NSBMIDQxNy40MSAyNTEuMTIgTCA0MTguNjggMjU4Ljc2IEwgNDE4LjI5IDI1OS40NSBMIDQxNy42NCAyNjEuMDEgTCA0MDYuMDEgMjU4LjMyIEwgNDA1LjYyIDI1OC4zNyBMIDM5OC4yMiAyNTkuMzUgTCAzOTMuNTMgMjYyLjg1IEwgMzg3LjUzIDI2NC44NSBMIDM3NC4yNSAyNjMuNzkgTCAzNjEuNjQgMjY1LjE0IEwgMzU4Ljc0IDI2Ni4xNiBMIDM1NS41MCAyNjYuNzUgTCAzNTIuNjUgMjY4Ljc5IEwgMzUxLjIzIDI3MS42NiBMIDM0OC41MSAyNzUuMzAgTCAzNDQuMzQgMjc4LjE1IEwgMzM5LjY4IDI4MC4zNCBMIDMzOC43NCAyODIuMjAgTCAzMzcuMjUgMjgzLjI2IEwgMzM0LjMzIDI4MS44NyBMIDMzMi4xMiAyODEuOTQgTCAzMjkuMjcgMjgxLjAwIEwgMzIwLjExIDI3OS45NyBMIDMwOS45NiAyNzguMjcgTCAzMDUuMDQgMjc2LjY1IEwgMjk5LjUxIDI3NS4zNyBMIDI5My42MiAyNzQuMzMgTCAyODguNDIgMjc0LjA4IEwgMjg1Ljc2IDI3My42MCBMIDI3My4wMSAyNzAuNzggTCAyNjQuNzkgMjcwLjU5IEwgMjUzLjg1IDI2OS40MSBMIDIzMS45MCAyNjUuMTUgTCAyMjUuNDYgMjYzLjQzIEwgMjE5LjQyIDI2Mi44OSBMIDIxMi4yMSAyNjEuNDIgTCAyMDYuNTggMjU5LjAxIEwgMjAyLjY2IDI1NC40NCBMIDE5OC4zNSAyNDguMzcgTCAxOTAuODAgMjQwLjQzIEwgMTg5LjAxIDIzNi40OCBMIDE5MC42OSAyMzMuMDIgTCAxOTIuNTIgMjMwLjQxIEwgMTkyLjE2IDIyOS4yOCBMIDE5MC40NyAyMjguNzIgTCAxNzkuMDcgMjMyLjEwIEwgMTY4LjEwIDIzNi4zOCBMIDE2My42MiAyMzYuNDkgTCAxNTkuMTggMjM1LjU0IEwgMTUzLjQxIDIzNS40NyBMIDE0Ny45NyAyMzYuNjIgTCAxMzYuOTEgMjM3LjIxIEwgMTMwLjcxIDI0MC4zNiBMIDEyNy4xNSAyNDYuNTEgTCAxMjUuMzcgMjUxLjQ3IEwgMTIzLjY0IDI1My4wNyBMIDExOS44MSAyNTMuNjcgTCAxMTMuOTUgMjUzLjIxIEwgMTA5Ljc0IDI1MS43NyBMIDEwNS4xOSAyNDcuNTMgTCA5OC42OCAyNDYuOTQgTCA5Mi43NSAyNDYuODMgTCA5MS4xMiAyNDYuMDUgTCA5MC45NyAyNDMuMjkgTCA4OC4xNyAyMzguMTEgTCA4NC4xNiAyMzYuNDggTCA3NS4wNCAyNDYuMjUgTCA3Mi4zOSAyNDcuMTIgTCA2NC4xMCAyNDQuNDIgTCA1Ni43MiAyNDAuMjQgTCA1NS42OSAyMzcuMTggTCA1NC4zNCAyMzQuNjggTCA0OC4yNCAyMzIuMzEgTCA0MC43NCAyMzAuNjggTCAzOC40MSAyMzAuNjkgTCAzOS4yMCAyMjkuMjIgTCAzOS44NiAyMjYuNzIgTCAzOS4xNCAyMjQuNzMgTCAzNy4yNSAyMjIuNjcgTCAzNi4xMiAyMjAuNDggTCAzNS42NyAyMTguMzQgTCAzNS4wMCAyMTYuNjAgTCAzNC41NSAyMTQuOTcgWiIgc3R5bGU9ImZpbGwtcnVsZTogZXZlbm9kZDsgc3Ryb2tlLXdpZHRoOiAxLjEyOyBzdHJva2U6ICM3RjdGN0Y7IHN0cm9rZS1kYXNoYXJyYXk6IDYuMDAsNi4wMDsiIC8+PHBhdGggZD0iTSAxMTIuMjQgMjA3LjQ1IEwgMTExLjc4IDIwNi41NCBMIDExNC41OSAxOTkuNzMgTCAxMTQuOTIgMTk1LjQ5IEwgMTExLjc2IDE5My4wMiBMIDExMC40NCAxOTIuMjggTCAxMTEuNDIgMTkxLjczIEwgMTE1LjY2IDE5Mi4xOSBMIDExOC4yMSAxOTAuNzkgTCAxMTkuNDkgMTg5LjQwIEwgMTIzLjMzIDE5MC43MCBMIDEyOS4wNCAxOTMuMzQgTCAxMzEuNzggMTk1LjEzIEwgMTMyLjk3IDE5Ni41MSBMIDEzMy42NyAxOTcuNjYgTCAxMzMuNTIgMTk5LjY0IEwgMTM0Ljg0IDIwMC40MSBMIDEzNy40NCAyMDAuNzEgTCAxMzkuMjIgMjAxLjMyIEwgMTM4Ljg1IDIwMy45MyBMIDEzOC45MyAyMDYuMDkgTCAxNDEuMjkgMjA1Ljc5IEwgMTQ0LjEzIDIwNC4xNCBMIDE0Ni4yMCAyMDEuMTcgTCAxNDcuMzggMTk4LjMxIEwgMTQ3LjgzIDE5MS4zMyBMIDE0OC4xNSAxOTAuNzQgTCAxNTAuMDAgMTkxLjI5IEwgMTU3LjI0IDE5MC45OSBMIDE2MC43OSAxOTIuMjkgTCAxNjYuMjUgMTkyLjUxIEwgMTY2LjI1IDE5My42MCBMIDE2Ny4zOCAxOTUuMzAgTCAxNzAuMDMgMTk3Ljc2IEwgMTcxLjM3IDE5OS4zNyBMIDE3My45MyAxOTkuNjUgTCAxNzcuNzQgMTk4Ljc3IEwgMTc5LjkzIDE5Ny44NSBMIDE4MC44NSAxOTguNTAgTCAxODQuMzUgMTk3Ljg2IEwgMTg3LjMxIDE5NS44OCBMIDE4Ny45NCAxOTQuMzYgTCAxOTEuMDEgMTkzLjMwIEwgMTk1LjA2IDE5MC44NSBMIDIwMC43NyAxODguOTUgTCAyMTkuOTMgMTg2LjkyIEwgMjIwLjUxIDE4NS40MCBMIDIxOS44NSAxODEuOTAgTCAyMjAuMzAgMTgxLjM4IEwgMjIyLjg0IDE4Mi4yNSBMIDIyNi44NCAxODMuMDcgTCAyMjkuOTcgMTg0LjMxIEwgMjMyLjEwIDE4NS45MyBMIDIzMy45MSAxODUuOTkgTCAyMzYuNTggMTg0Ljg2IEwgMjQwLjI3IDE4NC4xMyBMIDI0NC4wMCAxODUuODEgTCAyNDUuMjMgMTg3LjYzIEwgMjQ0LjcxIDE4OC41NiBMIDI0NC45NSAxOTAuMDQgTCAyNDYuMTggMTkxLjI3IEwgMjQ5LjI5IDE5My4yOCBMIDI1My4xNyAxOTUuMDEgTCAyNTUuMDcgMTk0Ljg3IEwgMjU1LjU5IDE5My4xOSBMIDI1NS44MSAxODkuMTkgTCAyNTUuNTcgMTg0LjkzIEwgMjU0LjQ0IDE4Mi40OCBMIDI1Mi4zOSAxODEuODggTCAyNTAuMDAgMTgxLjY5IEwgMjQ4LjY4IDE4MS4xOCBMIDI0OC45NyAxNzkuODQgTCAyNTAuNDYgMTc2LjM2IEwgMjQ5Ljg5IDE3MS43MSBMIDI0NS4wMiAxNjYuNDMgTCAyNDAuNzQgMTYxLjMzIEwgMjQwLjU2IDE1OS41OSBMIDI0Mi40MiAxNTYuNTggTCAyNDUuNTYgMTU0LjE4IEwgMjUyLjY2IDE1MC4xOSBMIDI1NC45NSAxNDkuMzYgTCAyNTcuOTMgMTQ4LjY5IEwgMjYyLjE0IDE0Ny4wNSBMIDI2NC4wNiAxNDUuMzcgTCAyNjUuMjYgMTQzLjU0IEwgMjY2LjE2IDEzNC4wMiBMIDI2Ni41OSAxMzMuNjIgTCAyNjcuMTQgMTMzLjA2IEwgMjc1LjI0IDEzNi4zNCBMIDI3NS44NyAxMzUuODAgTCAyNzcuMTAgMTM1LjI2IEwgMjc5LjI5IDEzMi43NSBMIDI3OS42MCAxMzAuODQgTCAyNzkuMDkgMTI3LjIzIEwgMjc4Ljg4IDEyMy44MiBMIDI3OS4yMyAxMjIuNzQgTCAyODAuNDMgMTIzLjEzIEwgMjgzLjk3IDEyNC45MSBMIDI4Ni44NSAxMjYuODkgTCAyODkuOTUgMTMxLjkxIEwgMjk1Ljg3IDEzMy4yNCBMIDMwMy4xNCAxMzMuMzcgTCAzMDUuNDQgMTMxLjE0IEwgMzA3LjcyIDEzMC42MiBMIDMxMC40NyAxMzEuMzAgTCAzMTYuMTggMTMyLjA5IEwgMzE2LjI2IDEyOC4wNCBMIDMxOC45MyAxMjMuODMgTCAzMjAuMTkgMTIyLjM1IEwgMzI0LjMxIDEyMi40OSBMIDMyNC44OSAxMTkuMzUgTCAzMjQuNzAgMTEwLjY2IEwgMzI1LjQzIDEwOS43MSBMIDMyOC40NCAxMDkuODkgTCAzMzEuNjIgMTExLjQ3IEwgMzMyLjY5IDExMi43NiBMIDMzNC4yMiAxMTIuNjUgTCAzMzYuMjUgMTExLjc4IEwgMzM4LjU0IDExMS4yMSBMIDM0Mi40MSAxMTIuMTQgTCAzNTAuOTYgMTE2LjA5IEwgMzU1LjI5IDExNy41MyBMIDM1Ny44NiAxMTcuMjYgTCAzNjAuMzIgMTE3LjMxIEwgMzcwLjY2IDEyMy40MiBMIDM3Ny4zOSAxMjQuMjcgTCAzODMuNDIgMTI0LjMwIEwgMzg1LjA4IDEyMi40NSBMIDM4Ny40MSAxMjAuODkgTCAzOTAuMTIgMTIxLjExIEwgMzkyLjU4IDEyMS45MSBMIDM5Ny41MyAxMjQuNTYgTCAzOTkuNzQgMTI1LjI0IEwgNDAyLjYxIDEyNS42NyBMIDQwNC43NiAxMjYuMjYgTCA0MDcuMzAgMTMwLjg4IEwgNDA4LjUwIDEzMi4xMSBMIDQwOC40MSAxMzIuNjggTCA0MDguNTEgMTM0Ljc4IEwgNDA3LjMzIDEzNy40MyBMIDQwNi4xNiAxNDAuOTAgTCA0MDYuNzMgMTQzLjk0IEwgNDEyLjc0IDE1NC40OSBMIDQxNy42MyAxNjAuOTIgTCA0MTguNzUgMTYzLjM3IEwgNDIxLjU3IDE2NS4yNSBMIDQxOS41MyAxNjcuNjIgTCA0MTkuNjAgMTcxLjE0IEwgNDE4LjI5IDE3Mi43MCBMIDQxOC4xOCAxNzQuNzEgTCA0MTkuMTEgMTc2LjU0IEwgNDE5LjQ1IDE3OC44MyBMIDQyMC43OSAxODEuOTggTCA0MTcuMDUgMTgyLjY3IEwgNDEyLjQ3IDE4Mi41NiBMIDQxMC44NiAxODIuNzQgTCA0MDkuNDUgMTgzLjYwIEwgNDA3LjgxIDE4My4xOCBMIDQwMy4yNCAxODAuMjIgTCA0MDAuODEgMTc5LjU3IEwgMzk5LjE5IDE3OS43NSBMIDM5OC4xNCAxODEuMDMgTCAzOTYuMjYgMTgyLjY4IEwgMzk0LjQ0IDE4My44NCBMIDM5NS4wMyAxODQuODYgTCA0MDQuMDAgMTg3LjUyIEwgNDA2LjEyIDE5MS42MiBMIDQwNC45NiAxOTQuOTYgTCA0MDQuNjQgMTk2LjU5IEwgNDAyLjgxIDE5Ny44OCBMIDQwMC41MSAxOTkuMDEgTCAzOTcuNTcgMTk5LjI5IEwgMzk3LjQ4IDIwMS4xMCBMIDM5OS40MiAyMDYuNDAgTCAzOTguNjMgMjA3LjU1IEwgMzk3LjkyIDIwOS4yMCBMIDM5OS40NCAyMTMuNTcgTCA0MDEuMzMgMjEzLjg4IEwgNDAxLjg5IDIxNC44OCBMIDQwMS44MSAyMTYuNjUgTCA0MDEuNzYgMjE4LjU0IEwgNDAxLjM5IDIyMC41MyBMIDQwMS4xOSAyMjEuNDIgTCA0MDAuMDQgMjIxLjk3IEwgMzk2LjE3IDIyMS42OCBMIDM5My4xMSAyMjMuMzggTCAzODcuMzMgMjI5LjUyIEwgMzg1LjE0IDIzMC41NiBMIDM4Mi45NyAyMzMuMDEgTCAzODMuODYgMjM4LjQxIEwgMzgzLjU5IDIzOC45MCBMIDM4My4xMyAyNDAuMDEgTCAzNzQuOTAgMjM4LjEwIEwgMzc0LjYzIDIzOC4xMyBMIDM2OS4zOSAyMzguODMgTCAzNjYuMDggMjQxLjMxIEwgMzYxLjgzIDI0Mi43MiBMIDM1Mi40NSAyNDEuOTcgTCAzNDMuNTMgMjQyLjkzIEwgMzQxLjQ4IDI0My42NSBMIDMzOS4xOSAyNDQuMDYgTCAzMzcuMTcgMjQ1LjUwIEwgMzM2LjE3IDI0Ny41MyBMIDMzNC4yNCAyNTAuMTAgTCAzMzEuMjkgMjUyLjEzIEwgMzI4LjAwIDI1My42NyBMIDMyNy4zMyAyNTQuOTggTCAzMjYuMjggMjU1LjczIEwgMzI0LjIyIDI1NC43NSBMIDMyMi42NSAyNTQuODAgTCAzMjAuNjQgMjU0LjE0IEwgMzE0LjE2IDI1My40MSBMIDMwNi45OSAyNTIuMjEgTCAzMDMuNTEgMjUxLjA2IEwgMjk5LjYwIDI1MC4xNiBMIDI5NS40MyAyNDkuNDIgTCAyOTEuNzUgMjQ5LjI0IEwgMjg5Ljg3IDI0OC45MSBMIDI4MC44NiAyNDYuOTEgTCAyNzUuMDUgMjQ2Ljc4IEwgMjY3LjMxIDI0NS45NCBMIDI1MS43OSAyNDIuOTMgTCAyNDcuMjQgMjQxLjcxIEwgMjQyLjk3IDI0MS4zNCBMIDIzNy44NyAyNDAuMzAgTCAyMzMuODkgMjM4LjU5IEwgMjMxLjExIDIzNS4zNiBMIDIyOC4wNyAyMzEuMDYgTCAyMjIuNzMgMjI1LjQ1IEwgMjIxLjQ2IDIyMi42NiBMIDIyMi42NSAyMjAuMjEgTCAyMjMuOTQgMjE4LjM3IEwgMjIzLjY5IDIxNy41NyBMIDIyMi40OSAyMTcuMTcgTCAyMTQuNDMgMjE5LjU2IEwgMjA2LjY4IDIyMi41OCBMIDIwMy41MSAyMjIuNjYgTCAyMDAuMzcgMjIxLjk5IEwgMTk2LjI5IDIyMS45NSBMIDE5Mi40NCAyMjIuNzYgTCAxODQuNjIgMjIzLjE3IEwgMTgwLjI0IDIyNS40MCBMIDE3Ny43MiAyMjkuNzUgTCAxNzYuNDYgMjMzLjI2IEwgMTc1LjI0IDIzNC4zOSBMIDE3Mi41MyAyMzQuODEgTCAxNjguMzkgMjM0LjQ5IEwgMTY1LjQxIDIzMy40NyBMIDE2Mi4xOSAyMzAuNDcgTCAxNTcuNTkgMjMwLjA2IEwgMTUzLjQwIDIyOS45OCBMIDE1Mi4yNCAyMjkuNDIgTCAxNTIuMTQgMjI3LjQ4IEwgMTUwLjE2IDIyMy44MSBMIDE0Ny4zMiAyMjIuNjYgTCAxNDAuODcgMjI5LjU3IEwgMTM5LjAwIDIzMC4xOCBMIDEzMy4xNCAyMjguMjcgTCAxMjcuOTIgMjI1LjMxIEwgMTI3LjE5IDIyMy4xNSBMIDEyNi4yMyAyMjEuMzggTCAxMjEuOTIgMjE5LjcxIEwgMTE2LjYyIDIxOC41NiBMIDExNC45NyAyMTguNTYgTCAxMTUuNTMgMjE3LjUyIEwgMTE2LjAwIDIxNS43NiBMIDExNS40OSAyMTQuMzUgTCAxMTQuMTUgMjEyLjkwIEwgMTEzLjM1IDIxMS4zNCBMIDExMy4wMyAyMDkuODMgTCAxMTIuNTYgMjA4LjYwIEwgMTEyLjI0IDIwNy40NSBaIiBzdHlsZT0iZmlsbC1ydWxlOiBldmVub2RkOyBzdHJva2Utd2lkdGg6IDEuNTA7IiAvPjxsaW5lIHgxPSIyOTUuOTkiIHkxPSIxODkuMjkiIHgyPSIzMDMuNjIiIHkyPSIxODkuMjkiIHN0eWxlPSJzdHJva2Utd2lkdGg6IDAuNzU7Ij48L2xpbmU+PGxpbmUgeDE9IjI5OS44MSIgeTE9IjE5My4xMSIgeDI9IjI5OS44MSIgeTI9IjE4NS40NyIgc3R5bGU9InN0cm9rZS13aWR0aDogMC43NTsiPjwvbGluZT48cmVjdCBjbGFzcz0ibGVnZW5kLWJnIiB4PSIzNzYuMTIiIHk9IjE0LjQwIiB3aWR0aD0iMTEzLjQ4IiBoZWlnaHQ9IjU3LjYwIiBzdHlsZT0ic3Ryb2tlLXdpZHRoOiAwLjc1OyBmaWxsOiAjRjVGNkY4OyIgLz48bGluZSB4MT0iMzc5LjM2IiB5MT0iMjguODAiIHgyPSI0MDAuOTYiIHkyPSIyOC44MCIgc3R5bGU9InN0cm9rZS13aWR0aDogMS41MDsiPjwvbGluZT48bGluZSB4MT0iMzc5LjM2IiB5MT0iNDMuMjAiIHgyPSI0MDAuOTYiIHkyPSI0My4yMCIgc3R5bGU9InN0cm9rZS13aWR0aDogMS4xMjsgc3Ryb2tlOiAjN0Y3RjdGOyBzdHJva2UtZGFzaGFycmF5OiA2LjAwLDYuMDA7Ij48L2xpbmU+PGxpbmUgeDE9IjM4Ni4zNCIgeTE9IjU3LjYwIiB4Mj0iMzkzLjk4IiB5Mj0iNTcuNjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6IDAuNzU7Ij48L2xpbmU+PGxpbmUgeDE9IjM5MC4xNiIgeTE9IjYxLjQyIiB4Mj0iMzkwLjE2IiB5Mj0iNTMuNzgiIHN0eWxlPSJzdHJva2Utd2lkdGg6IDAuNzU7Ij48L2xpbmU+PHRleHQgeD0iNDExLjc2IiB5PSIzMy4xMCIgc3R5bGU9ImZvbnQtc2l6ZTogMTIuMDBweDsgZm9udC1mYW1pbHk6ICZxdW90O1JvYm90byZxdW90OywgLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAmcXVvdDtTZWdvZSBVSSZxdW90Oywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmOyIgdGV4dGxlbmd0aD0iMzcuMzRweCIgbGVuZ3RoYWRqdXN0PSJzcGFjaW5nQW5kR2x5cGhzIj5BdXN0cmlhPC90ZXh0Pjx0ZXh0IHg9IjQxMS43NiIgeT0iNDcuNTAiIHN0eWxlPSJmb250LXNpemU6IDEyLjAwcHg7IGZvbnQtZmFtaWx5OiAmcXVvdDtSb2JvdG8mcXVvdDssIC1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJnF1b3Q7U2Vnb2UgVUkmcXVvdDssIHN5c3RlbS11aSwgc2Fucy1zZXJpZjsiIHRleHRsZW5ndGg9IjcyLjQ0cHgiIGxlbmd0aGFkanVzdD0ic3BhY2luZ0FuZEdseXBocyI+QXJlYSBvZiBFZmZlY3Q8L3RleHQ+PHRleHQgeD0iNDExLjc2IiB5PSI2MS45MCIgc3R5bGU9ImZvbnQtc2l6ZTogMTIuMDBweDsgZm9udC1mYW1pbHk6ICZxdW90O1JvYm90byZxdW90OywgLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAmcXVvdDtTZWdvZSBVSSZxdW90Oywgc3lzdGVtLXVpLCBzYW5zLXNlcmlmOyIgdGV4dGxlbmd0aD0iNDUuMzZweCIgbGVuZ3RoYWRqdXN0PSJzcGFjaW5nQW5kR2x5cGhzIj5DZW50cm9pZDwvdGV4dD48L2c+PC9nPjwvc3ZnPg==)
 
 ## Quick Start
 
@@ -20,15 +18,45 @@ outside.
 
 library(areaOfEffect)
 
-# Austria
-result <- aoe(pts, "AT")
+# Your occurrence data
+observations <- data.frame(
+  species = c("A", "B", "C", "D"),
+  lon = c(14.5, 15.2, 16.8, 20.0),
+  lat = c(47.5, 48.1, 47.2, 48.5)
+)
 
-# Austria + Germany
-result <- aoe(pts, c("AT", "DE"))
-
-# Auto-detect countries from points
-result <- aoe(pts)
+# One line - get back a classified dataframe
+result <- aoe(observations, "Austria")
+result$aoe_class
+#> [1] "core" "core" "halo"
+# (point D pruned - outside area of effect)
 ```
+
+## Philosophy
+
+areaOfEffect does not invent new geometry. It standardizes a common
+spatial task: classifying points by their position relative to a
+region’s boundary.
+
+**Instead of choosing arbitrary buffer distances, halos are defined as a
+fixed proportion of region area** — enabling consistent cross-country
+comparisons without CRS expertise.
+
+This is the kind of spatial task ecologists repeatedly reimplement with
+subtle errors. This package handles:
+
+- Coordinate column auto-detection
+- Country lookup by name or ISO code
+- Equal-area projection (done correctly)
+- Area-based buffer calculation
+- Point classification
+- Clean dataframe output
+
+You don’t need to learn CRS theory, when buffering in degrees is wrong,
+or why
+[`st_covers()`](https://r-spatial.github.io/sf/reference/geos_binary_pred.html)
+sometimes returns `FALSE`. You just get a column that says `core` or
+`halo`.
 
 ## Statement of Need
 
@@ -37,34 +65,32 @@ processes do not stop at administrative lines. When sampling within a
 political region, observations near the border are influenced by
 conditions outside that region.
 
-The **area of effect** (AoE) corrects for this border truncation by
-expanding the support outward from its centroid. Points are then
-classified:
+The **area of effect** corrects for this border truncation by expanding
+the support outward. Points are then classified:
 
 - **Core**: inside the original support
 - **Halo**: outside the original support but inside the expanded area of
   effect
 - **Pruned**: outside the area of effect (not returned)
 
-By default, the AoE expands to give **equal core and halo areas**.
-
-Sea boundaries are hard boundaries. An optional mask can enforce such
-constraints.
+By default, the halo has **equal area to the core** — a scale-free,
+proportion-based definition that enables consistent cross-country
+comparisons.
 
 ## Features
 
+- **Dataframe workflow**: Plain dataframes with coordinates go in,
+  classified dataframes come out
 - **Country lookup**: Pass ISO codes or names directly (`"AT"`,
   `"Austria"`)
 - **Auto-detection**: Omit support to detect countries from points
+- **Area-based halos**: Proportion of region area, not arbitrary
+  distances
 - **Multiple supports**: Process admin regions with long format output
 - **Masking**: Coastlines and other hard constraints
 - **S3 methods**: [`print()`](https://rdrr.io/r/base/print.html),
   [`summary()`](https://rdrr.io/r/base/summary.html),
   [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
-- **Diagnostics**:
-  [`aoe_summary()`](https://gillescolling.com/areaOfEffect/reference/aoe_summary.md),
-  [`aoe_area()`](https://gillescolling.com/areaOfEffect/reference/aoe_area.md),
-  [`aoe_geometry()`](https://gillescolling.com/areaOfEffect/reference/aoe_geometry.md)
 
 ## Installation
 
@@ -75,107 +101,81 @@ constraints.
 pak::pak("gcol33/areaOfEffect")
 ```
 
-## Usage Examples
+## Usage
 
-### Single Support
+### From a Dataframe
 
 ``` r
 
 library(areaOfEffect)
+
+# Plain dataframe with coordinates
+df <- data.frame(
+  id = 1:4,
+  longitude = c(14.5, 15.2, 16.8, 20.0),
+  latitude = c(47.5, 48.1, 47.2, 48.5)
+)
+
+# Classify relative to Austria
+result <- aoe(df, "Austria")
+```
+
+### From sf Objects
+
+``` r
+
 library(sf)
 
-# Create example support polygon
-support <- st_as_sf(
-  data.frame(id = 1),
-  geometry = st_sfc(st_polygon(list(
-    cbind(c(0, 100, 100, 0, 0), c(0, 0, 100, 100, 0))
-  ))),
-  crs = 32631
-)
-
-# Create observation points
-pts <- st_as_sf(
-  data.frame(id = 1:4),
-  geometry = st_sfc(
-    st_point(c(50, 50)),   # core
-    st_point(c(10, 10)),   # core
-    st_point(c(150, 50)),  # halo
-    st_point(c(300, 300))  # pruned
-  ),
-  crs = 32631
-)
-
-result <- aoe(pts, support)
-result$aoe_class
-#> [1] "core" "core" "halo"
+# sf points work too
+pts_sf <- st_as_sf(df, coords = c("longitude", "latitude"), crs = 4326)
+result <- aoe(pts_sf, "AT")
 ```
 
-### Multiple Supports
+### Multiple Countries
 
 ``` r
 
-supports <- st_as_sf(
-  data.frame(region = c("A", "B")),
-  geometry = st_sfc(
-    st_polygon(list(cbind(c(0, 50, 50, 0, 0), c(0, 0, 100, 100, 0)))),
-    st_polygon(list(cbind(c(50, 100, 100, 50, 50), c(0, 0, 100, 100, 0))))
-  ),
-  crs = 32631
-)
+# Austria + Germany
+result <- aoe(df, c("AT", "DE"))
 
-result <- aoe(pts, supports)
-# Points may appear in both regions' output
+# Auto-detect countries from points
+result <- aoe(df)
 ```
 
-### With Mask
+### With Mask (e.g., Land Only)
 
 ``` r
 
-land <- st_as_sf(
-  data.frame(id = 1),
-  geometry = st_sfc(st_polygon(list(
-    cbind(c(-50, 200, 200, -50, -50), c(0, 0, 150, 150, 0))
-  ))),
-  crs = 32631
-)
-
-result <- aoe(pts, support, mask = land)
-```
-
-### Diagnostics
-
-``` r
-
-aoe_summary(result)
-#>   support_id n_total n_core n_halo prop_core prop_halo
-#> 1          1       3      2      1     0.667     0.333
+result <- aoe(df, "Austria", mask = land_polygon)
 ```
 
 ## Scale
 
-Default: `sqrt(2) - 1`, which gives equal core and halo areas.
+The `scale` parameter controls halo size as a proportion of core area.
 
-| Scale                     | Multiplier | Area Ratio |
-|---------------------------|------------|------------|
-| **sqrt(2) - 1** (default) | **1.414**  | **1:1**    |
-| 1                         | 2          | 1:3        |
+Default: `sqrt(2) - 1` ≈ 0.414, which gives **equal core and halo
+areas**.
+
+| Scale                   | Halo:Core Area |
+|-------------------------|----------------|
+| `sqrt(2) - 1` (default) | 1:1            |
+| `1`                     | 3:1            |
+| `0.5`                   | 1.25:1         |
 
 ## Documentation
 
-- [Quick
-  Start](https://gillescolling.com/areaOfEffect/articles/quickstart.html)
-- [Theory](https://gillescolling.com/areaOfEffect/articles/theory.html)
+- [Quick Start
+  Vignette](https://gcol33.github.io/areaOfEffect/articles/quickstart.html)
+- [Function
+  Reference](https://gcol33.github.io/areaOfEffect/reference/index.html)
 
 ## Support
 
-> “Software is like sex: it’s better when it’s free.” - Linus Torvalds
-
 I’m a PhD student who builds R packages in my free time because I
-believe good tools should be free and open. I started these projects for
-my own work and figured others might find them useful too.
+believe good tools should be free and open.
 
-If this package saved you some time, buying me a coffee is a nice way to
-say thanks. It helps with my coffee addiction.
+If this package saved you time, buying me a coffee is a nice way to say
+thanks.
 
 [![Buy Me A
 Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gcol33)
@@ -189,7 +189,7 @@ MIT
 ``` bibtex
 @software{areaOfEffect,
   author = {Colling, Gilles},
-  title = {areaOfEffect: Spatial Support at Scale},
+  title = {areaOfEffect: Area-Based Spatial Classification for Ecological Data},
   year = {2025},
   url = {https://github.com/gcol33/areaOfEffect}
 }
@@ -199,38 +199,38 @@ MIT
 
 ## Core
 
-- [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.md) :
+- [`aoe()`](https://gcol33.github.io/areaOfEffect/reference/aoe.md) :
   Classify and Prune Points by Area of Effect
 
 ## Data
 
-- [`countries`](https://gillescolling.com/areaOfEffect/reference/countries.md)
+- [`countries`](https://gcol33.github.io/areaOfEffect/reference/countries.md)
   : World Country Polygons with Pre-calculated AoE Bounds
-- [`get_country()`](https://gillescolling.com/areaOfEffect/reference/get_country.md)
+- [`get_country()`](https://gcol33.github.io/areaOfEffect/reference/get_country.md)
   : Get Country Polygon by Name or ISO Code
 
 ## Diagnostics
 
-- [`aoe_summary()`](https://gillescolling.com/areaOfEffect/reference/aoe_summary.md)
+- [`aoe_summary()`](https://gcol33.github.io/areaOfEffect/reference/aoe_summary.md)
   : Summarize Area of Effect Results
-- [`aoe_area()`](https://gillescolling.com/areaOfEffect/reference/aoe_area.md)
+- [`aoe_area()`](https://gcol33.github.io/areaOfEffect/reference/aoe_area.md)
   : Compute Area Statistics for AoE
-- [`aoe_geometry()`](https://gillescolling.com/areaOfEffect/reference/aoe_geometry.md)
+- [`aoe_geometry()`](https://gcol33.github.io/areaOfEffect/reference/aoe_geometry.md)
   : Extract AoE Geometries
 
 ## S3 Methods
 
-- [`print(`*`<aoe_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/print.aoe_result.md)
+- [`print(`*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/print.aoe_result.md)
   : Print method for aoe_result
-- [`summary(`*`<aoe_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/summary.aoe_result.md)
+- [`summary(`*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/summary.aoe_result.md)
   : Summary method for aoe_result
-- [`plot(`*`<aoe_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/plot.aoe_result.md)
+- [`plot(`*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/plot.aoe_result.md)
   : Plot method for aoe_result
-- [`print(`*`<aoe_area_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/print.aoe_area_result.md)
+- [`print(`*`<aoe_area_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/print.aoe_area_result.md)
   : Print method for aoe_area_result
-- [`print(`*`<aoe_summary_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/print.aoe_summary_result.md)
+- [`print(`*`<aoe_summary_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/print.aoe_summary_result.md)
   : Print method for aoe_summary_result
-- [`` `[`( ``*`<aoe_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/sub-.aoe_result.md)
+- [`` `[`( ``*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/sub-.aoe_result.md)
   : Subset method for aoe_result
 
 # Articles
@@ -238,8 +238,8 @@ MIT
 ### Getting Started
 
 - [Quick
-  Start](https://gillescolling.com/areaOfEffect/articles/quickstart.md):
+  Start](https://gcol33.github.io/areaOfEffect/articles/quickstart.md):
 
 ### Background
 
-- [Theory](https://gillescolling.com/areaOfEffect/articles/theory.md):
+- [Theory](https://gcol33.github.io/areaOfEffect/articles/theory.md):

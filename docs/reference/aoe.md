@@ -12,6 +12,7 @@ aoe(
   points,
   support = NULL,
   scale = sqrt(2) - 1,
+  method = c("buffer", "stamp"),
   reference = NULL,
   mask = NULL,
   coords = NULL
@@ -38,24 +39,45 @@ aoe(
 
 - scale:
 
-  Numeric scale factor (default `sqrt(2) - 1`, approximately 0.414). The
-  multiplier applied to distances from the reference point is
-  `1 + scale`. Common values:
+  Numeric scale factor (default `sqrt(2) - 1`, approximately 0.414).
+  Controls the size of the halo relative to the core:
 
   - `sqrt(2) - 1` (default): equal core/halo areas, ratio 1:1
 
-  - `1`: equal linear distance inside/outside, area ratio 1:3
+  - `1`: area ratio 1:3 (halo is 3x core area)
+
+  For `method = "buffer"`, determines the target halo area as
+  `original_area * ((1 + scale)^2 - 1)`.
+
+  For `method = "stamp"`, the multiplier `1 + scale` is applied to
+  distances
+
+  from the reference point.
+
+- method:
+
+  Method for computing the area of effect:
+
+  - `"buffer"` (default): Uniform buffer around the support boundary.
+    Robust for any polygon shape. Buffer distance is calculated to
+    achieve the target halo area.
+
+  - `"stamp"`: Scale vertices outward from the centroid (or reference
+    point). Preserves shape proportions but only guarantees containment
+    for star-shaped polygons. May leave small gaps for highly concave
+    shapes.
 
 - reference:
 
-  Optional `sf` object with a single POINT geometry. If `NULL`
-  (default), the centroid of each support is used. Only valid when
-  `support` has a single row.
+  Optional `sf` object with a single POINT geometry.
+
+  If `NULL` (default), the centroid of each support is used. Only valid
+  when `support` has a single row and `method = "stamp"`.
 
 - mask:
 
   Optional `sf` object with POLYGON or MULTIPOLYGON geometry. If
-  provided, each area of effect is intersected with this mask (e.g.,
+  provided, each area of effect is intersected with this mask (e. g.,
   land boundary to exclude sea).
 
 - coords:
@@ -87,25 +109,29 @@ The result has S3 methods for
 [`print()`](https://rdrr.io/r/base/print.html),
 [`summary()`](https://rdrr.io/r/base/summary.html), and
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html). Use
-[`aoe_geometry()`](https://gillescolling.com/areaOfEffect/reference/aoe_geometry.md)
+[`aoe_geometry()`](https://gcol33.github.io/areaOfEffect/reference/aoe_geometry.md)
 to extract the AoE polygons.
 
 ## Details
 
-The area of effect is computed by scaling each support outward from its
-centroid. By default, scale is `sqrt(2) - 1` (~0.414), which produces
+By default, the area of effect is computed using a buffer that produces
 equal core and halo areas. This means the AoE has twice the area of the
 original support, split evenly between core (inside) and halo (outside).
 
-The transformation applies: \$\$p' = r + (1 + s)(p - r)\$\$ where \\r\\
-is the reference point (centroid), \\p\\ is each vertex of the support
-boundary, and \\s\\ is the scale factor.
+### Buffer method (default)
 
-With scale \\s\\, the area multiplier is \\(1 + s)^2\\:
+Computes a uniform buffer distance \\d\\ such that the buffered area
+equals the target. The buffer distance is found by solving: \$\$\pi
+d^2 + P \cdot d = A\_{target}\$\$ where \\P\\ is the perimeter and
+\\A\_{target}\\ is the desired halo area.
 
-- Scale 1: multiplier 2, area 4x original, halo:core = 3:1
+### Stamp method
 
-- Scale 0.414: multiplier ~1.414, area 2x original, halo:core = 1:1
+Applies an affine transformation to each vertex: \$\$p' = r + (1 +
+s)(p - r)\$\$ where \\r\\ is the reference point (centroid), \\p\\ is
+each vertex, and \\s\\ is the scale factor. This method preserves shape
+proportions but only guarantees the AoE contains the original for
+star-shaped polygons (where the centroid can "see" all boundary points).
 
 Points exactly on the original support boundary are classified as
 "core".

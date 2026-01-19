@@ -4,7 +4,7 @@
 
 Initial CRAN release. \## Core Functionality
 
-- [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.md)
+- [`aoe()`](https://gcol33.github.io/areaOfEffect/reference/aoe.md)
   classifies points as “core” (inside support) or “halo” (inside scaled
   area of effect but outside original support), pruning points outside
 - Default scale `sqrt(2) - 1` produces equal core and halo areas - a
@@ -24,9 +24,9 @@ Initial CRAN release. \## Core Functionality
 
 ### Helper Functions
 
-- [`aoe_summary()`](https://gillescolling.com/areaOfEffect/reference/aoe_summary.md)
+- [`aoe_summary()`](https://gcol33.github.io/areaOfEffect/reference/aoe_summary.md)
   for counts and proportions per support
-- [`aoe_geometry()`](https://gillescolling.com/areaOfEffect/reference/aoe_geometry.md)
+- [`aoe_geometry()`](https://gcol33.github.io/areaOfEffect/reference/aoe_geometry.md)
   to extract original and AoE polygon geometries
-- [`aoe_area()`](https://gillescolling.com/areaOfEffect/reference/aoe_area.md)
+- [`aoe_area()`](https://gcol33.github.io/areaOfEffect/reference/aoe_area.md)
   for area statistics including halo:core ratio and masking effects

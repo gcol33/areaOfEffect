@@ -3,9 +3,9 @@
 [![R-CMD-check](https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Spatial Support at Scale**
+**Classify occurrence records relative to country borders — without writing sf code.**
 
-Given a set of points and one or more support polygons, `aoe()` classifies points as "core" (inside original support) or "halo" (inside the area of effect but outside original support), pruning all points outside.
+Dataframe in → dataframe out. No CRS headaches. No buffer distance guessing.
 
 <p align="center">
   <img src="man/figures/austria-aoe.svg" alt="Austria with Area of Effect" width="500">
@@ -16,38 +16,58 @@ Given a set of points and one or more support polygons, `aoe()` classifies point
 ```r
 library(areaOfEffect)
 
-# Austria
-result <- aoe(pts, "AT")
+# Your occurrence data
+observations <- data.frame(
+  species = c("A", "B", "C", "D"),
+  lon = c(14.5, 15.2, 16.8, 20.0),
+  lat = c(47.5, 48.1, 47.2, 48.5)
+)
 
-# Austria + Germany
-result <- aoe(pts, c("AT", "DE"))
-
-# Auto-detect countries from points
-result <- aoe(pts)
+# One line - get back a classified dataframe
+result <- aoe(observations, "Austria")
+result$aoe_class
+#> [1] "core" "core" "halo"
+# (point D pruned - outside area of effect)
 ```
+
+## Philosophy
+
+areaOfEffect does not invent new geometry. It standardizes a common spatial task: classifying points by their position relative to a region's boundary.
+
+**Instead of choosing arbitrary buffer distances, halos are defined as a fixed proportion of region area** — enabling consistent cross-country comparisons without CRS expertise.
+
+This is the kind of spatial task ecologists repeatedly reimplement with subtle errors. This package handles:
+
+- Coordinate column auto-detection
+- Country lookup by name or ISO code
+- Equal-area projection (done correctly)
+- Area-based buffer calculation
+- Point classification
+- Clean dataframe output
+
+You don't need to learn CRS theory, when buffering in degrees is wrong, or why `st_covers()` sometimes returns `FALSE`. You just get a column that says `core` or `halo`.
 
 ## Statement of Need
 
 Political borders are not hard ecological boundaries. Biological processes do not stop at administrative lines. When sampling within a political region, observations near the border are influenced by conditions outside that region.
 
-The **area of effect** (AoE) corrects for this border truncation by expanding the support outward from its centroid. Points are then classified:
+The **area of effect** corrects for this border truncation by expanding the support outward. Points are then classified:
 
 - **Core**: inside the original support
 - **Halo**: outside the original support but inside the expanded area of effect
 - **Pruned**: outside the area of effect (not returned)
 
-By default, the AoE expands to give **equal core and halo areas**.
-
-Sea boundaries are hard boundaries. An optional mask can enforce such constraints.
+By default, the halo has **equal area to the core** — a scale-free, proportion-based definition that enables consistent cross-country comparisons.
 
 ## Features
 
+- **Dataframe workflow**: Plain dataframes with coordinates go in, classified dataframes come out
 - **Country lookup**: Pass ISO codes or names directly (`"AT"`, `"Austria"`)
 - **Auto-detection**: Omit support to detect countries from points
+- **Area-based halos**: Proportion of region area, not arbitrary distances
 - **Multiple supports**: Process admin regions with long format output
 - **Masking**: Coastlines and other hard constraints
 - **S3 methods**: `print()`, `summary()`, `plot()`
-- **Diagnostics**: `aoe_summary()`, `aoe_area()`, `aoe_geometry()`
 
 ## Installation
 
@@ -57,99 +77,72 @@ Sea boundaries are hard boundaries. An optional mask can enforce such constraint
 pak::pak("gcol33/areaOfEffect")
 ```
 
-## Usage Examples
+## Usage
 
-### Single Support
+### From a Dataframe
 
 ```r
 library(areaOfEffect)
+
+# Plain dataframe with coordinates
+df <- data.frame(
+  id = 1:4,
+  longitude = c(14.5, 15.2, 16.8, 20.0),
+  latitude = c(47.5, 48.1, 47.2, 48.5)
+)
+
+# Classify relative to Austria
+result <- aoe(df, "Austria")
+```
+
+### From sf Objects
+
+```r
 library(sf)
 
-# Create example support polygon
-support <- st_as_sf(
-  data.frame(id = 1),
-  geometry = st_sfc(st_polygon(list(
-    cbind(c(0, 100, 100, 0, 0), c(0, 0, 100, 100, 0))
-  ))),
-  crs = 32631
-)
-
-# Create observation points
-pts <- st_as_sf(
-  data.frame(id = 1:4),
-  geometry = st_sfc(
-    st_point(c(50, 50)),   # core
-    st_point(c(10, 10)),   # core
-    st_point(c(150, 50)),  # halo
-    st_point(c(300, 300))  # pruned
-  ),
-  crs = 32631
-)
-
-result <- aoe(pts, support)
-result$aoe_class
-#> [1] "core" "core" "halo"
+# sf points work too
+pts_sf <- st_as_sf(df, coords = c("longitude", "latitude"), crs = 4326)
+result <- aoe(pts_sf, "AT")
 ```
 
-### Multiple Supports
+### Multiple Countries
 
 ```r
-supports <- st_as_sf(
-  data.frame(region = c("A", "B")),
-  geometry = st_sfc(
-    st_polygon(list(cbind(c(0, 50, 50, 0, 0), c(0, 0, 100, 100, 0)))),
-    st_polygon(list(cbind(c(50, 100, 100, 50, 50), c(0, 0, 100, 100, 0))))
-  ),
-  crs = 32631
-)
+# Austria + Germany
+result <- aoe(df, c("AT", "DE"))
 
-result <- aoe(pts, supports)
-# Points may appear in both regions' output
+# Auto-detect countries from points
+result <- aoe(df)
 ```
 
-### With Mask
+### With Mask (e.g., Land Only)
 
 ```r
-land <- st_as_sf(
-  data.frame(id = 1),
-  geometry = st_sfc(st_polygon(list(
-    cbind(c(-50, 200, 200, -50, -50), c(0, 0, 150, 150, 0))
-  ))),
-  crs = 32631
-)
-
-result <- aoe(pts, support, mask = land)
-```
-
-### Diagnostics
-
-```r
-aoe_summary(result)
-#>   support_id n_total n_core n_halo prop_core prop_halo
-#> 1          1       3      2      1     0.667     0.333
+result <- aoe(df, "Austria", mask = land_polygon)
 ```
 
 ## Scale
 
-Default: `sqrt(2) - 1`, which gives equal core and halo areas.
+The `scale` parameter controls halo size as a proportion of core area.
 
-| Scale | Multiplier | Area Ratio |
-|-------|------------|------------|
-| **sqrt(2) - 1** (default) | **1.414** | **1:1** |
-| 1 | 2 | 1:3 |
+Default: `sqrt(2) - 1` ≈ 0.414, which gives **equal core and halo areas**.
+
+| Scale | Halo:Core Area |
+|-------|----------------|
+| `sqrt(2) - 1` (default) | 1:1 |
+| `1` | 3:1 |
+| `0.5` | 1.25:1 |
 
 ## Documentation
 
-- [Quick Start](https://gillescolling.com/areaOfEffect/articles/quickstart.html)
-- [Theory](https://gillescolling.com/areaOfEffect/articles/theory.html)
+- [Quick Start Vignette](https://gcol33.github.io/areaOfEffect/articles/quickstart.html)
+- [Function Reference](https://gcol33.github.io/areaOfEffect/reference/index.html)
 
 ## Support
 
-> "Software is like sex: it's better when it's free." - Linus Torvalds
+I'm a PhD student who builds R packages in my free time because I believe good tools should be free and open.
 
-I'm a PhD student who builds R packages in my free time because I believe good tools should be free and open. I started these projects for my own work and figured others might find them useful too.
-
-If this package saved you some time, buying me a coffee is a nice way to say thanks. It helps with my coffee addiction.
+If this package saved you time, buying me a coffee is a nice way to say thanks.
 
 [![Buy Me A Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gcol33)
 
@@ -162,7 +155,7 @@ MIT
 ```bibtex
 @software{areaOfEffect,
   author = {Colling, Gilles},
-  title = {areaOfEffect: Spatial Support at Scale},
+  title = {areaOfEffect: Area-Based Spatial Classification for Ecological Data},
   year = {2025},
   url = {https://github.com/gcol33/areaOfEffect}
 }

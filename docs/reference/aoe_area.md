@@ -15,7 +15,7 @@ aoe_area(x)
 - x:
 
   An `aoe_result` object returned by
-  [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.md).
+  [`aoe()`](https://gcol33.github.io/areaOfEffect/reference/aoe.md).
 
 ## Value
 

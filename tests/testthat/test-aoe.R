@@ -178,7 +178,7 @@ test_that("aoe errors when reference provided with multiple supports", {
   )
 
   expect_error(
-    aoe(pts, supports, scale = 1, reference = ref),
+    aoe(pts, supports, scale = 1, method = "stamp", reference = ref),
     "single row"
   )
 })
@@ -207,7 +207,7 @@ test_that("aoe respects custom reference point", {
     crs = 32631
   )
 
-  result <- aoe(pts, support, scale = 1, reference = custom_ref)
+  result <- aoe(pts, support, scale = 1, method = "stamp", reference = custom_ref)
 
   expect_equal(nrow(result), 1)
   expect_equal(result$aoe_class, "core")

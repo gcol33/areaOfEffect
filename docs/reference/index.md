@@ -2,36 +2,36 @@
 
 ## Core
 
-- [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.md) :
+- [`aoe()`](https://gcol33.github.io/areaOfEffect/reference/aoe.md) :
   Classify and Prune Points by Area of Effect
 
 ## Data
 
-- [`countries`](https://gillescolling.com/areaOfEffect/reference/countries.md)
+- [`countries`](https://gcol33.github.io/areaOfEffect/reference/countries.md)
   : World Country Polygons with Pre-calculated AoE Bounds
-- [`get_country()`](https://gillescolling.com/areaOfEffect/reference/get_country.md)
+- [`get_country()`](https://gcol33.github.io/areaOfEffect/reference/get_country.md)
   : Get Country Polygon by Name or ISO Code
 
 ## Diagnostics
 
-- [`aoe_summary()`](https://gillescolling.com/areaOfEffect/reference/aoe_summary.md)
+- [`aoe_summary()`](https://gcol33.github.io/areaOfEffect/reference/aoe_summary.md)
   : Summarize Area of Effect Results
-- [`aoe_area()`](https://gillescolling.com/areaOfEffect/reference/aoe_area.md)
+- [`aoe_area()`](https://gcol33.github.io/areaOfEffect/reference/aoe_area.md)
   : Compute Area Statistics for AoE
-- [`aoe_geometry()`](https://gillescolling.com/areaOfEffect/reference/aoe_geometry.md)
+- [`aoe_geometry()`](https://gcol33.github.io/areaOfEffect/reference/aoe_geometry.md)
   : Extract AoE Geometries
 
 ## S3 Methods
 
-- [`print(`*`<aoe_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/print.aoe_result.md)
+- [`print(`*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/print.aoe_result.md)
   : Print method for aoe_result
-- [`summary(`*`<aoe_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/summary.aoe_result.md)
+- [`summary(`*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/summary.aoe_result.md)
   : Summary method for aoe_result
-- [`plot(`*`<aoe_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/plot.aoe_result.md)
+- [`plot(`*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/plot.aoe_result.md)
   : Plot method for aoe_result
-- [`print(`*`<aoe_area_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/print.aoe_area_result.md)
+- [`print(`*`<aoe_area_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/print.aoe_area_result.md)
   : Print method for aoe_area_result
-- [`print(`*`<aoe_summary_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/print.aoe_summary_result.md)
+- [`print(`*`<aoe_summary_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/print.aoe_summary_result.md)
   : Print method for aoe_summary_result
-- [`` `[`( ``*`<aoe_result>`*`)`](https://gillescolling.com/areaOfEffect/reference/sub-.aoe_result.md)
+- [`` `[`( ``*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/sub-.aoe_result.md)
   : Subset method for aoe_result
