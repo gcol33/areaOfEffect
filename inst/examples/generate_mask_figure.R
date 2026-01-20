@@ -19,9 +19,9 @@ cat("Computing AoE without mask...\n")
 result_no_mask <- aoe(dummy, "PT")
 aoe_no_mask <- aoe_geometry(result_no_mask, "aoe")
 
-# With mask
-cat("Computing AoE with land mask...\n")
-result_masked <- aoe(dummy, "PT", mask = "land")
+# With mask + area=1 for equal land area
+cat("Computing AoE with land mask (equal land area)...\n")
+result_masked <- aoe(dummy, "PT", mask = "land", area = 1)
 aoe_masked <- aoe_geometry(result_masked, "aoe")
 
 # Get support geometry
