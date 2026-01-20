@@ -5,16 +5,18 @@
 #' @param points An sf data frame with classified points
 #' @param geometries A named list of geometry information per support
 #' @param n_supports Integer, number of supports processed
-#' @param scale Numeric scale factor used
+#' @param scale Numeric scale factor used (NULL if area mode)
+#' @param area Numeric area proportion used (NULL if scale mode)
 #'
 #' @return An aoe_result object
 #' @noRd
-new_aoe_result <- function(points, geometries, n_supports, scale) {
+new_aoe_result <- function(points, geometries, n_supports, scale = NULL, area = NULL) {
   structure(
     points,
     class = c("aoe_result", class(points)),
     aoe_geometries = geometries,
     aoe_scale = scale,
+    aoe_area = area,
     aoe_n_supports = n_supports
   )
 }
@@ -33,13 +35,19 @@ print.aoe_result <- function(x, ...) {
   n_core <- sum(x$aoe_class == "core", na.rm = TRUE)
   n_halo <- sum(x$aoe_class == "halo", na.rm = TRUE)
   scale <- attr(x, "aoe_scale")
+  area <- attr(x, "aoe_area")
 
   cat("Area of Effect Result\n")
   cat(strrep("\u2500", 21), "\n", sep = "")
   cat(sprintf("Points:   %d (%d core, %d halo)\n", n_points, n_core, n_halo))
   cat(sprintf("Supports: %d\n", n_supports))
-  cat(sprintf("Scale:    %.3g (multiplier %.3g, theoretical halo:core %.2f)\n",
-              scale, 1 + scale, (1 + scale)^2 - 1))
+
+  if (!is.null(area)) {
+    cat(sprintf("Area:     %.3g (target halo = %.3g x original)\n", area, area))
+  } else if (!is.null(scale)) {
+    cat(sprintf("Scale:    %.3g (multiplier %.3g, theoretical halo:core %.2f)\n",
+                scale, 1 + scale, (1 + scale)^2 - 1))
+  }
   cat("\n")
 
   # Print as sf
@@ -118,6 +126,7 @@ print.aoe_summary_result <- function(x, ...) {
 
     attr(result, "aoe_geometries") <- new_geoms
     attr(result, "aoe_scale") <- attr(x, "aoe_scale")
+    attr(result, "aoe_area") <- attr(x, "aoe_area")
     attr(result, "aoe_n_supports") <- length(remaining_supports)
     class(result) <- c("aoe_result", class(result)[!class(result) == "aoe_result"])
   }

@@ -86,12 +86,24 @@ aoe_area <- function(x) {
 
   # Calculate masking based on actual scale used
   scale <- attr(x, "aoe_scale")
-  multiplier <- 1 + scale
-  theoretical_aoe <- result$area_core * multiplier^2
-  result$pct_masked <- 100 * (theoretical_aoe - result$area_aoe) / theoretical_aoe
+  area <- attr(x, "aoe_area")
+
+  if (!is.null(scale)) {
+    # Scale mode: calculate theoretical AoE and masking percentage
+    multiplier <- 1 + scale
+    theoretical_aoe <- result$area_core * multiplier^2
+    result$pct_masked <- 100 * (theoretical_aoe - result$area_aoe) / theoretical_aoe
+  } else if (!is.null(area)) {
+    # Area mode: masking is inherent in the target, so pct_masked is not meaningful
+    # Instead, show how much scale was needed to achieve the target area
+    result$pct_masked <- NA_real_
+  } else {
+    result$pct_masked <- NA_real_
+  }
 
   class(result) <- c("aoe_area_result", "data.frame")
   attr(result, "scale") <- scale
+  attr(result, "area") <- area
   row.names(result) <- NULL
   result
 }
@@ -138,13 +150,18 @@ print.aoe_area_result <- function(x, ...) {
 
   print.data.frame(x_print, row.names = FALSE)
 
-  # Show theoretical ratio based on scale
+  # Show theoretical ratio based on scale or area
 
   scale <- attr(x, "scale")
+  area <- attr(x, "area")
+
   if (!is.null(scale)) {
     theoretical_ratio <- (1 + scale)^2 - 1
     cat(sprintf("\nNote: Theoretical halo:core ratio is %.2f (scale=%.3g, no masking)\n",
                 theoretical_ratio, scale))
+  } else if (!is.null(area)) {
+    cat(sprintf("\nNote: Target area proportion was %.3g (halo = %.3g x original)\n",
+                area, area))
   }
 
   invisible(x)

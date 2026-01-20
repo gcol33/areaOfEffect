@@ -732,3 +732,169 @@ test_that("plot.aoe_result runs without error", {
   expect_silent(plot(result, show_aoe = FALSE))
   expect_silent(plot(result, show_original = FALSE))
 })
+
+
+# Tests for area parameter
+
+test_that("area and scale are mutually exclusive", {
+  skip_if_not_installed("sf")
+  library(sf)
+
+  support <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_polygon(list(
+      cbind(c(0, 10, 10, 0, 0), c(0, 0, 10, 10, 0))
+    ))),
+    crs = 32631
+  )
+
+  pts <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_point(c(5, 5))),
+    crs = 32631
+  )
+
+  expect_error(aoe(pts, support, scale = 1, area = 1), "both")
+})
+
+test_that("area parameter validates input", {
+  skip_if_not_installed("sf")
+  library(sf)
+
+  support <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_polygon(list(
+      cbind(c(0, 10, 10, 0, 0), c(0, 0, 10, 10, 0))
+    ))),
+    crs = 32631
+  )
+
+  pts <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_point(c(5, 5))),
+    crs = 32631
+  )
+
+  expect_error(aoe(pts, support, area = 0), "positive")
+  expect_error(aoe(pts, support, area = -1), "positive")
+  expect_error(aoe(pts, support, area = "foo"), "positive")
+})
+
+test_that("area parameter produces correct halo area without mask", {
+  skip_if_not_installed("sf")
+  library(sf)
+
+  # 10x10 square = 100 m² area
+  support <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_polygon(list(
+      cbind(c(0, 10, 10, 0, 0), c(0, 0, 10, 10, 0))
+    ))),
+    crs = 32631
+  )
+
+  pts <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_point(c(5, 5))),
+    crs = 32631
+  )
+
+  # area = 1 means halo area = 100 m² (same as original)
+  result <- aoe(pts, support, area = 1)
+  area_stats <- aoe_area(result)
+
+  # Halo area should equal core area (within tolerance)
+  expect_equal(area_stats$halo_core_ratio[1], 1, tolerance = 0.01)
+
+  # Check attribute is set
+  expect_equal(attr(result, "aoe_area"), 1)
+  expect_null(attr(result, "aoe_scale"))
+})
+
+test_that("area parameter produces correct halo area with mask", {
+  skip_if_not_installed("sf")
+  library(sf)
+
+  # 20x20 square = 400 m² area
+  support <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_polygon(list(
+      cbind(c(40, 60, 60, 40, 40), c(40, 40, 60, 60, 40))
+    ))),
+    crs = 32631
+  )
+
+  # Mask that clips part of the AoE
+  mask <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_polygon(list(
+      cbind(c(30, 70, 70, 30, 30), c(30, 30, 65, 65, 30))
+    ))),
+    crs = 32631
+  )
+
+  pts <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_point(c(50, 50))),
+    crs = 32631
+  )
+
+  # area = 0.5 means halo area should be 200 m² (half of original)
+  result <- aoe(pts, support, area = 0.5, mask = mask)
+  area_stats <- aoe_area(result)
+
+  # Halo area should be 0.5 times core area (within tolerance)
+  # The mask clips the AoE, but the algorithm should find a scale that
+  # produces the correct masked halo area
+  expect_equal(area_stats$halo_core_ratio[1], 0.5, tolerance = 0.02)
+})
+
+test_that("print.aoe_result shows area instead of scale when using area", {
+  skip_if_not_installed("sf")
+  library(sf)
+
+  support <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_polygon(list(
+      cbind(c(0, 10, 10, 0, 0), c(0, 0, 10, 10, 0))
+    ))),
+    crs = 32631
+  )
+
+  pts <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_point(c(5, 5))),
+    crs = 32631
+  )
+
+  result <- aoe(pts, support, area = 1)
+
+  expect_output(print(result), "Area:")
+})
+
+test_that("subsetting aoe_result preserves area attribute", {
+  skip_if_not_installed("sf")
+  library(sf)
+
+  support <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_polygon(list(
+      cbind(c(0, 10, 10, 0, 0), c(0, 0, 10, 10, 0))
+    ))),
+    crs = 32631
+  )
+
+  pts <- st_as_sf(
+    data.frame(id = 1:2),
+    geometry = st_sfc(
+      st_point(c(5, 5)),
+      st_point(c(12, 5))
+    ),
+    crs = 32631
+  )
+
+  result <- aoe(pts, support, area = 1)
+  subset_result <- result[1, ]
+
+  expect_equal(attr(subset_result, "aoe_area"), 1)
+})

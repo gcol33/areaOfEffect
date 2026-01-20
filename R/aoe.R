@@ -23,8 +23,19 @@
 #'   `original_area * ((1 + scale)^2 - 1)`.
 #'
 #'   For `method = "stamp"`, the multiplier `1 + scale` is applied to distances
-#'
 #'   from the reference point.
+#'
+#'   Cannot be used together with `area`.
+#' @param area Numeric area proportion (alternative to `scale`).
+#'   Specifies the target halo area as a proportion of the original support area.
+#'   For example, `area = 1` means halo area equals the original support area.
+#'
+#'   Unlike `scale`, this parameter accounts for masking: the function finds
+#'   the scale that produces the target halo area *after* mask intersection.
+#'   This is useful when you need a specific effective area regardless of
+#'   how much gets clipped by coastlines or borders.
+#'
+#'   Cannot be used together with `scale`.
 #' @param method Method for computing the area of effect:
 #'   - `"buffer"` (default): Uniform buffer around the support boundary.
 #'     Robust for any polygon shape. Buffer distance is calculated to achieve
@@ -36,10 +47,10 @@
 #'
 #'   If `NULL` (default), the centroid of each support is used.
 #'   Only valid when `support` has a single row and `method = "stamp"`.
-#' @param mask Optional `sf` object with POLYGON or MULTIPOLYGON geometry.
-#'   If provided, each area of effect is intersected with this mask
-#'   (e.
-#'   g., land boundary to exclude sea).
+#' @param mask Optional mask for clipping the area of effect. Can be:
+#'   - `sf` object with POLYGON or MULTIPOLYGON geometry
+#'   - `"land"`: use the bundled global land mask to exclude sea areas
+#'   If provided, each area of effect is intersected with this mask.
 #' @param coords Column names for coordinates when `points` is a data.frame,
 #'   e.g. `c("lon", "lat")`. If `NULL`, auto-detects common names.
 #'
@@ -114,7 +125,8 @@
 #' # Points near the boundary may appear in both regions' AoE
 #'
 #' @export
-aoe <- function(points, support = NULL, scale = sqrt(2) - 1, method = c("buffer", "stamp"),
+aoe <- function(points, support = NULL, scale = NULL, area = NULL,
+                method = c("buffer", "stamp"),
                 reference = NULL, mask = NULL, coords = NULL) {
   method <- match.arg(method)
   # Handle support: NULL = auto-detect, character = country lookup
@@ -122,6 +134,11 @@ aoe <- function(points, support = NULL, scale = sqrt(2) - 1, method = c("buffer"
     support <- detect_countries(points, coords)
   } else if (is.character(support)) {
     support <- do.call(rbind, lapply(support, get_country))
+  }
+
+  # Handle mask: "land" = use global land mask
+  if (is.character(mask) && length(mask) == 1 && tolower(mask) == "land") {
+    mask <- land
   }
 
   # Convert to sf (data.frame assumes support's CRS)
@@ -134,11 +151,28 @@ aoe <- function(points, support = NULL, scale = sqrt(2) - 1, method = c("buffer"
   # Input validation
   validate_inputs(points, support, reference, mask)
 
+  # Validate scale/area (mutually exclusive)
+  if (!is.null(scale) && !is.null(area)) {
+    stop("Cannot specify both `scale` and `area`. Use one or the other.", call. = FALSE)
+  }
 
-  # Validate scale
+  # Default to scale if neither specified
+  if (is.null(scale) && is.null(area)) {
+    scale <- sqrt(2) - 1
+  }
 
-  if (!is.numeric(scale) || length(scale) != 1 || scale <= 0) {
-    stop("`scale` must be a single positive number", call. = FALSE)
+  use_area <- !is.null(area)
+
+  if (!is.null(scale)) {
+    if (!is.numeric(scale) || length(scale) != 1 || scale <= 0) {
+      stop("`scale` must be a single positive number", call. = FALSE)
+    }
+  }
+
+  if (!is.null(area)) {
+    if (!is.numeric(area) || length(area) != 1 || area <= 0) {
+      stop("`area` must be a single positive number", call. = FALSE)
+    }
   }
 
   n_supports <- nrow(support)
@@ -189,8 +223,8 @@ aoe <- function(points, support = NULL, scale = sqrt(2) - 1, method = c("buffer"
     as.character(seq_len(n_supports))
   }
 
-  # Compute multiplier from scale
-  multiplier <- 1 + scale
+  # Compute multiplier from scale (if using scale mode)
+  multiplier <- if (!is.null(scale)) 1 + scale else NULL
 
   # Process each support and collect geometries
   geometries <- list()
@@ -203,6 +237,8 @@ aoe <- function(points, support = NULL, scale = sqrt(2) - 1, method = c("buffer"
       support_id = sid,
       method = method,
       scale = scale,
+      area = area,
+      use_area = use_area,
       reference = reference,
       mask_geom = mask_geom,
       target_crs = target_crs,
@@ -240,7 +276,7 @@ aoe <- function(points, support = NULL, scale = sqrt(2) - 1, method = c("buffer"
   row.names(result) <- NULL
 
   # Always return aoe_result (sf-based) for full functionality
-  new_aoe_result(result, geometries, n_supports, scale)
+  new_aoe_result(result, geometries, n_supports, scale = scale, area = area)
 }
 
 
@@ -250,47 +286,68 @@ aoe <- function(points, support = NULL, scale = sqrt(2) - 1, method = c("buffer"
 #' @param support_row Single row from support sf
 #' @param support_id Identifier for this support
 #' @param method Method for computing AoE ("buffer" or "stamp")
-#' @param scale Scale factor for halo area
+#' @param scale Scale factor for halo area (NULL if using area mode)
+#' @param area Target area proportion (NULL if using scale mode)
+#' @param use_area Logical, TRUE if using area mode
 #' @param reference Optional reference point (sf or NULL)
 #' @param mask_geom Prepared mask geometry (sfc or NULL)
 #' @param target_crs Target CRS
-#' @param multiplier Scaling multiplier (1 + scale)
+#' @param multiplier Scaling multiplier (1 + scale), NULL if using area mode
 #'
 #' @return A list with:
 #'   - `points`: sf object with classified points for this support, or NULL if empty
 #'   - `geometries`: list with original, aoe_raw, and aoe_final geometries
 #' @noRd
 process_single_support <- function(points, support_row, support_id,
-                                   method, scale, reference, mask_geom,
-                                   target_crs, multiplier) {
+                                   method, scale, area, use_area, reference,
+                                   mask_geom, target_crs, multiplier) {
 
   # Prepare support geometry
   support_geom <- sf::st_geometry(support_row)[[1]]
   support_geom <- sf::st_sfc(support_geom, crs = target_crs)
   support_geom <- sf::st_make_valid(support_geom)
 
-  # Compute AoE geometry based on method
-  if (method == "buffer") {
-    # Buffer method: compute buffer distance for target halo area
-    aoe_geom_raw <- buffer_geometry(support_geom, scale = scale, crs = target_crs)
-  } else {
-    # Stamp method: scale vertices from reference point
+  # Get reference point for stamp method
+  ref_point <- NULL
+  if (method == "stamp") {
     if (is.null(reference)) {
       ref_point <- sf::st_centroid(support_geom)
     } else {
       reference <- sf::st_transform(reference, target_crs)
       ref_point <- sf::st_geometry(reference)[[1]]
     }
-    aoe_geom_raw <- scale_geometry(support_geom, ref_point,
-                                   multiplier = multiplier, crs = target_crs)
   }
-  aoe_geom_raw <- sf::st_make_valid(aoe_geom_raw)
 
-  # Apply mask if provided
-  aoe_geom_final <- aoe_geom_raw
-  if (!is.null(mask_geom)) {
-    aoe_geom_final <- sf::st_intersection(aoe_geom_raw, mask_geom)
-    aoe_geom_final <- sf::st_make_valid(aoe_geom_final)
+  # Area mode: find scale that achieves target masked halo area
+  if (use_area) {
+    result <- find_scale_for_area(
+      support_geom = support_geom,
+      target_proportion = area,
+      mask_geom = mask_geom,
+      method = method,
+      ref_point = ref_point,
+      crs = target_crs
+    )
+    scale <- result$scale
+    multiplier <- 1 + scale
+    aoe_geom_raw <- result$aoe_raw
+    aoe_geom_final <- result$aoe_final
+  } else {
+    # Scale mode: compute AoE geometry directly
+    if (method == "buffer") {
+      aoe_geom_raw <- buffer_geometry(support_geom, scale = scale, crs = target_crs)
+    } else {
+      aoe_geom_raw <- scale_geometry(support_geom, ref_point,
+                                     multiplier = multiplier, crs = target_crs)
+    }
+    aoe_geom_raw <- sf::st_make_valid(aoe_geom_raw)
+
+    # Apply mask if provided
+    aoe_geom_final <- aoe_geom_raw
+    if (!is.null(mask_geom)) {
+      aoe_geom_final <- sf::st_intersection(aoe_geom_raw, mask_geom)
+      aoe_geom_final <- sf::st_make_valid(aoe_geom_final)
+    }
   }
 
   # Store geometries
@@ -513,4 +570,121 @@ scale_geometry <- function(geom, reference, multiplier, crs) {
   sf::st_crs(geom_result) <- crs
 
   geom_result
+}
+
+
+#' Find scale that achieves target masked halo area
+#'
+#' Uses the secant method with a one-shot initial correction for fast convergence.
+#' Typically converges in 3-5 evaluations.
+#'
+#' @param support_geom Support geometry (sfc)
+#' @param target_proportion Target halo area as proportion of original area
+#' @param mask_geom Mask geometry (sfc or NULL)
+#' @param method "buffer" or "stamp"
+#' @param ref_point Reference point for stamp method (sfc or NULL)
+#' @param crs Target CRS
+#' @param tol Relative tolerance (default 0.0001 = 0.01%)
+#' @param max_iter Maximum iterations (default 10)
+#'
+#' @return List with scale, aoe_raw, and aoe_final
+#' @noRd
+find_scale_for_area <- function(support_geom, target_proportion, mask_geom,
+                                 method, ref_point, crs,
+                                 tol = 0.0001, max_iter = 10) {
+
+  original_area <- as.numeric(sf::st_area(support_geom))
+  target_halo <- original_area * target_proportion
+
+  # Analytical solution (exact when no mask)
+  analytical_scale <- sqrt(1 + target_proportion) - 1
+
+  # Fast path: no mask means analytical solution is exact
+  if (is.null(mask_geom)) {
+    mult <- 1 + analytical_scale
+    if (method == "buffer") {
+      aoe_raw <- buffer_geometry(support_geom, scale = analytical_scale, crs = crs)
+    } else {
+      aoe_raw <- scale_geometry(support_geom, ref_point, multiplier = mult, crs = crs)
+    }
+    aoe_raw <- sf::st_make_valid(aoe_raw)
+    return(list(scale = analytical_scale, aoe_raw = aoe_raw, aoe_final = aoe_raw))
+  }
+
+  # Helper: compute AoE at given scale
+  compute_aoe <- function(s) {
+    mult <- 1 + s
+    if (method == "buffer") {
+      aoe_raw <- buffer_geometry(support_geom, scale = s, crs = crs)
+    } else {
+      aoe_raw <- scale_geometry(support_geom, ref_point, multiplier = mult, crs = crs)
+    }
+    aoe_raw <- sf::st_make_valid(aoe_raw)
+
+    aoe_final <- aoe_raw
+    if (!is.null(mask_geom)) {
+      aoe_final <- sf::st_intersection(aoe_raw, mask_geom)
+      aoe_final <- sf::st_make_valid(aoe_final)
+    }
+
+    aoe_area <- as.numeric(sf::st_area(aoe_final))
+    halo_area <- max(0, aoe_area - original_area)
+
+    list(aoe_raw = aoe_raw, aoe_final = aoe_final, halo_area = halo_area)
+  }
+
+  # Initial guess: analytical scale (which would be exact without mask)
+  s0 <- analytical_scale
+  result0 <- compute_aoe(s0)
+  f0 <- result0$halo_area - target_halo
+
+  # Check if already within tolerance
+  if (abs(f0) / target_halo < tol) {
+    return(list(scale = s0, aoe_raw = result0$aoe_raw, aoe_final = result0$aoe_final))
+  }
+
+  # One-shot correction for second guess
+  # Halo area ~ scale^2, so scale ~ sqrt(area)
+  ratio <- target_halo / max(result0$halo_area, target_halo * 0.01)
+  s1 <- s0 * sqrt(ratio)
+  s1 <- max(s1, 0.001)  # Ensure positive
+
+  result1 <- compute_aoe(s1)
+  f1 <- result1$halo_area - target_halo
+
+  # Check if one-shot correction was enough
+
+  if (abs(f1) / target_halo < tol) {
+    return(list(scale = s1, aoe_raw = result1$aoe_raw, aoe_final = result1$aoe_final))
+  }
+
+  # Secant method iterations
+  for (i in seq_len(max_iter)) {
+    # Secant step
+    if (abs(f1 - f0) < 1e-10) break  # Avoid division by zero
+
+    s_new <- s1 - f1 * (s1 - s0) / (f1 - f0)
+    s_new <- max(s_new, 0.001)  # Ensure positive
+
+    result_new <- compute_aoe(s_new)
+    f_new <- result_new$halo_area - target_halo
+
+    # Check convergence
+    if (abs(f_new) / target_halo < tol) {
+      return(list(scale = s_new, aoe_raw = result_new$aoe_raw, aoe_final = result_new$aoe_final))
+    }
+
+    # Update for next iteration
+    s0 <- s1
+    f0 <- f1
+    s1 <- s_new
+    f1 <- f_new
+    result1 <- result_new
+  }
+
+  # Return best result even if not fully converged
+  warning("find_scale_for_area did not converge to tolerance in ", max_iter,
+          " iterations. Relative error: ", sprintf("%.4f%%", 100 * abs(f1) / target_halo),
+          call. = FALSE)
+  list(scale = s1, aoe_raw = result1$aoe_raw, aoe_final = result1$aoe_final)
 }

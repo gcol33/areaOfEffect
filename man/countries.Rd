@@ -5,7 +5,7 @@
 \alias{countries}
 \title{World Country Polygons with Pre-calculated AoE Bounds}
 \format{
-An \code{sf} data frame with 237 rows and 8 variables:
+An \code{sf} data frame with 237 rows and 9 variables:
 \describe{
 \item{iso2}{ISO 3166-1 alpha-2 country code (e.g., "FR", "BE")}
 \item{iso3}{ISO 3166-1 alpha-3 country code (e.g., "FRA", "BEL")}
@@ -14,6 +14,7 @@ An \code{sf} data frame with 237 rows and 8 variables:
 \item{bbox}{Original bounding box (xmin, ymin, xmax, ymax) in Mollweide}
 \item{bbox_equal_area}{AoE bounding box at scale sqrt(2)-1 (equal areas)}
 \item{bbox_equal_ray}{AoE bounding box at scale 1 (equal linear distance)}
+\item{halo_equal_area_scale}{Scale factor that produces halo area = country area (with land mask)}
 \item{geometry}{Country polygon in WGS84 (EPSG:4326)}
 }
 }

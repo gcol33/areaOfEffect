@@ -7,7 +7,8 @@
 aoe(
   points,
   support = NULL,
-  scale = sqrt(2) - 1,
+  scale = NULL,
+  area = NULL,
   method = c("buffer", "stamp"),
   reference = NULL,
   mask = NULL,
@@ -36,8 +37,20 @@ For \code{method = "buffer"}, determines the target halo area as
 \code{original_area * ((1 + scale)^2 - 1)}.
 
 For \code{method = "stamp"}, the multiplier \code{1 + scale} is applied to distances
+from the reference point.
 
-from the reference point.}
+Cannot be used together with \code{area}.}
+
+\item{area}{Numeric area proportion (alternative to \code{scale}).
+Specifies the target halo area as a proportion of the original support area.
+For example, \code{area = 1} means halo area equals the original support area.
+
+Unlike \code{scale}, this parameter accounts for masking: the function finds
+the scale that produces the target halo area \emph{after} mask intersection.
+This is useful when you need a specific effective area regardless of
+how much gets clipped by coastlines or borders.
+
+Cannot be used together with \code{scale}.}
 
 \item{method}{Method for computing the area of effect:
 \itemize{
@@ -54,10 +67,12 @@ star-shaped polygons. May leave small gaps for highly concave shapes.
 If \code{NULL} (default), the centroid of each support is used.
 Only valid when \code{support} has a single row and \code{method = "stamp"}.}
 
-\item{mask}{Optional \code{sf} object with POLYGON or MULTIPOLYGON geometry.
-If provided, each area of effect is intersected with this mask
-(e.
-g., land boundary to exclude sea).}
+\item{mask}{Optional mask for clipping the area of effect. Can be:
+\itemize{
+\item \code{sf} object with POLYGON or MULTIPOLYGON geometry
+\item \code{"land"}: use the bundled global land mask to exclude sea areas
+If provided, each area of effect is intersected with this mask.
+}}
 
 \item{coords}{Column names for coordinates when \code{points} is a data.frame,
 e.g. \code{c("lon", "lat")}. If \code{NULL}, auto-detects common names.}
