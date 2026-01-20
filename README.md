@@ -5,6 +5,8 @@
 
 **Classify occurrence records relative to country borders, without writing sf code.**
 
+Ecological processes like dispersal are isotropic: a species spreads equally in all directions. Political borders are not. When you sample within a country, the border truncates the process, creating anisotropic artifacts near edges. The **area of effect** expands sampling outward to correct for this mismatch.
+
 Dataframe in → dataframe out. No CRS headaches. No buffer distance guessing.
 
 <p align="center">
@@ -30,17 +32,11 @@ result$aoe_class
 # (point D pruned - outside area of effect)
 ```
 
-## Why?
+## Why Equal Area?
 
-When you sample occurrence data within a country, observations near the border are influenced by conditions outside that country. A species recorded 500m from the Austrian border doesn't care that it's "in Austria". Its presence depends on habitat on both sides.
+Points are classified as **core** (inside the country), **halo** (outside but within the buffer), or **pruned** (too far out).
 
-The **area of effect** expands the sampling region outward and classifies each point:
-
-- **Core**: inside the original country
-- **Halo**: outside the country but within the expanded buffer
-- **Pruned**: too far out (dropped from results)
-
-By default, the halo has equal area to the core. This proportion-based definition scales automatically, so you don't need to pick a buffer distance in meters or worry about projection distortion.
+By default, the halo has equal area to the core. Why? Because buffer distance in meters is arbitrary and scale-dependent. A 10km buffer means something different for Luxembourg than for Brazil. Equal area gives a consistent correction factor across regions, and scales automatically without CRS expertise.
 
 ## What It Handles
 
