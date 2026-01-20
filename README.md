@@ -40,7 +40,7 @@ By default, the halo has equal area to the core. Why? Because buffer distance in
 
 ## What It Handles
 
-The package wraps sf operations that ecologists tend to get wrong:
+The package wraps sf boilerplate that's easy to get wrong:
 
 - Coordinate column detection (handles `lon`/`long`/`longitude`/`x`, etc.)
 - Country lookup by name or ISO code
@@ -95,10 +95,23 @@ result <- aoe(df, c("AT", "DE"))
 result <- aoe(df)
 ```
 
-### With Mask (e.g., Land Only)
+### Coastline Masking
+
+For coastal countries, the buffer extends into the sea. If you're working with terrestrial data, that's useless area. The `mask` parameter clips the halo to land:
 
 ```r
-result <- aoe(df, "Austria", mask = land_polygon)
+# Use the bundled Natural Earth land polygon
+result <- aoe(df, "Portugal", mask = "land")
+
+# Or bring your own mask
+result <- aoe(df, "Portugal", mask = my_land_polygon)
+```
+
+The `area` parameter goes further: it finds the buffer size that gives you the target halo area *after* clipping. So `area = 1` guarantees equal land area in core and halo, even for countries like Japan where half the buffer would otherwise be ocean.
+
+```r
+# Equal land area, not equal total area
+result <- aoe(df, "Japan", mask = "land", area = 1)
 ```
 
 ## Scale
