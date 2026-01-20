@@ -99,6 +99,10 @@ result <- aoe(df)
 
 For coastal countries, the buffer extends into the sea. If you're working with terrestrial data, that's useless area. The `mask` parameter clips the halo to land:
 
+<p align="center">
+  <img src="man/figures/portugal-mask.svg" alt="Portugal with coastline masking" width="500">
+</p>
+
 ```r
 # Use the bundled Natural Earth land polygon
 result <- aoe(df, "Portugal", mask = "land")
