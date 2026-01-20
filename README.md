@@ -3,7 +3,7 @@
 [![R-CMD-check](https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Classify occurrence records relative to country borders — without writing sf code.**
+**Classify occurrence records relative to country borders, without writing sf code.**
 
 Dataframe in → dataframe out. No CRS headaches. No buffer distance guessing.
 
@@ -30,44 +30,28 @@ result$aoe_class
 # (point D pruned - outside area of effect)
 ```
 
-## Philosophy
+## Why?
 
-areaOfEffect does not invent new geometry. It standardizes a common spatial task: classifying points by their position relative to a region's boundary.
+When you sample occurrence data within a country, observations near the border are influenced by conditions outside that country. A species recorded 500m from the Austrian border doesn't care that it's "in Austria". Its presence depends on habitat on both sides.
 
-**Instead of choosing arbitrary buffer distances, halos are defined as a fixed proportion of region area** — enabling consistent cross-country comparisons without CRS expertise.
+The **area of effect** expands the sampling region outward and classifies each point:
 
-This is the kind of spatial task ecologists repeatedly reimplement with subtle errors. This package handles:
+- **Core**: inside the original country
+- **Halo**: outside the country but within the expanded buffer
+- **Pruned**: too far out (dropped from results)
 
-- Coordinate column auto-detection
+By default, the halo has equal area to the core. This proportion-based definition scales automatically, so you don't need to pick a buffer distance in meters or worry about projection distortion.
+
+## What It Handles
+
+The package wraps sf operations that ecologists tend to get wrong:
+
+- Coordinate column detection (handles `lon`/`long`/`longitude`/`x`, etc.)
 - Country lookup by name or ISO code
-- Equal-area projection (done correctly)
-- Area-based buffer calculation
-- Point classification
-- Clean dataframe output
-
-You don't need to learn CRS theory, when buffering in degrees is wrong, or why `st_covers()` sometimes returns `FALSE`. You just get a column that says `core` or `halo`.
-
-## Statement of Need
-
-Political borders are not hard ecological boundaries. Biological processes do not stop at administrative lines. When sampling within a political region, observations near the border are influenced by conditions outside that region.
-
-The **area of effect** corrects for this border truncation by expanding the support outward. Points are then classified:
-
-- **Core**: inside the original support
-- **Halo**: outside the original support but inside the expanded area of effect
-- **Pruned**: outside the area of effect (not returned)
-
-By default, the halo has **equal area to the core** — a scale-free, proportion-based definition that enables consistent cross-country comparisons.
-
-## Features
-
-- **Dataframe workflow**: Plain dataframes with coordinates go in, classified dataframes come out
-- **Country lookup**: Pass ISO codes or names directly (`"AT"`, `"Austria"`)
-- **Auto-detection**: Omit support to detect countries from points
-- **Area-based halos**: Proportion of region area, not arbitrary distances
-- **Multiple supports**: Process admin regions with long format output
-- **Masking**: Coastlines and other hard constraints
-- **S3 methods**: `print()`, `summary()`, `plot()`
+- Equal-area projection for accurate buffering
+- Area-proportional buffer calculation
+- Point-in-polygon classification
+- Coastline masking (optional)
 
 ## Installation
 
@@ -140,9 +124,11 @@ Default: `sqrt(2) - 1` ≈ 0.414, which gives **equal core and halo areas**.
 
 ## Support
 
-I'm a PhD student who builds R packages in my free time because I believe good tools should be free and open.
+> "Software is like sex: it's better when it's free." — Linus Torvalds
 
-If this package saved you time, buying me a coffee is a nice way to say thanks.
+I'm a PhD student who builds R packages in my free time because I believe good tools should be free and open. I started these projects for my own work and figured others might find them useful too.
+
+If this package saved you some time, buying me a coffee is a nice way to say thanks. It helps with my coffee addiction.
 
 [![Buy Me A Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gcol33)
 
