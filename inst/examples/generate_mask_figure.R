@@ -41,7 +41,8 @@ support_ea <- st_transform(support_geom, crs_ea)
 # Plot
 plot(st_geometry(aoe_no_mask_ea), border = "gray50", lty = 2, lwd = 1.5,
      xlim = st_bbox(aoe_no_mask_ea)[c(1,3)],
-     ylim = st_bbox(aoe_no_mask_ea)[c(2,4)])
+     ylim = st_bbox(aoe_no_mask_ea)[c(2,4)],
+     axes = FALSE, xaxt = "n", yaxt = "n")
 plot(st_geometry(aoe_masked_ea), col = rgb(0.3, 0.5, 0.7, 0.3),
      border = "steelblue", lty = 2, lwd = 1.5, add = TRUE)
 plot(st_geometry(support_ea), border = "black", lwd = 2, add = TRUE)
