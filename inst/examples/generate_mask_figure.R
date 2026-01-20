@@ -48,11 +48,9 @@ plot(st_geometry(support_ea), border = "black", lwd = 2, add = TRUE)
 
 legend("topright",
        legend = c("Portugal", "AoE (unmasked)", "AoE (land only)"),
-       col = c("black", "gray50", NA),
-       lty = c(1, 2, NA),
-       lwd = c(2, 1.5, NA),
-       fill = c(NA, NA, rgb(0.3, 0.5, 0.7, 0.5)),
-       border = c(NA, NA, "steelblue"),
+       col = c("black", "gray50", "steelblue"),
+       lty = c(1, 2, 2),
+       lwd = c(2, 1.5, 1.5),
        bty = "n")
 
 dev.off()
