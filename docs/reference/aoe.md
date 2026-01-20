@@ -11,7 +11,8 @@ outside.
 aoe(
   points,
   support = NULL,
-  scale = sqrt(2) - 1,
+  scale = NULL,
+  area = NULL,
   method = c("buffer", "stamp"),
   reference = NULL,
   mask = NULL,
@@ -50,9 +51,22 @@ aoe(
   `original_area * ((1 + scale)^2 - 1)`.
 
   For `method = "stamp"`, the multiplier `1 + scale` is applied to
-  distances
+  distances from the reference point.
 
-  from the reference point.
+  Cannot be used together with `area`.
+
+- area:
+
+  Numeric area proportion (alternative to `scale`). Specifies the target
+  halo area as a proportion of the original support area. For example,
+  `area = 1` means halo area equals the original support area.
+
+  Unlike `scale`, this parameter accounts for masking: the function
+  finds the scale that produces the target halo area *after* mask
+  intersection. This is useful when you need a specific effective area
+  regardless of how much gets clipped by coastlines or borders.
+
+  Cannot be used together with `scale`.
 
 - method:
 
@@ -76,9 +90,12 @@ aoe(
 
 - mask:
 
-  Optional `sf` object with POLYGON or MULTIPOLYGON geometry. If
-  provided, each area of effect is intersected with this mask (e. g.,
-  land boundary to exclude sea).
+  Optional mask for clipping the area of effect. Can be:
+
+  - `sf` object with POLYGON or MULTIPOLYGON geometry
+
+  - `"land"`: use the bundled global land mask to exclude sea areas If
+    provided, each area of effect is intersected with this mask.
 
 - coords:
 

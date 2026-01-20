@@ -29,9 +29,13 @@ reference:
 - title: Core
   contents:
   - aoe
+  - aoe_expand
+  - aoe_sample
 - title: Data
   contents:
   - countries
+  - country_halos
+  - land
   - get_country
 - title: Diagnostics
   contents:
@@ -41,9 +45,11 @@ reference:
 - title: S3 Methods
   contents:
   - print.aoe_result
+  - print.aoe_expand_result
+  - print.aoe_area_result
+  - print.aoe_summary_result
   - summary.aoe_result
   - plot.aoe_result
-  - starts_with("print.aoe_")
   - "`[.aoe_result`"
 
 articles:

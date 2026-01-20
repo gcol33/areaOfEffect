@@ -11,7 +11,7 @@ countries
 
 ## Format
 
-An `sf` data frame with 237 rows and 8 variables:
+An `sf` data frame with 237 rows and 9 variables:
 
 - iso2:
 
@@ -40,6 +40,10 @@ An `sf` data frame with 237 rows and 8 variables:
 - bbox_equal_ray:
 
   AoE bounding box at scale 1 (equal linear distance)
+
+- halo_equal_area_scale:
+
+  Scale factor that produces halo area = country area (with land mask)
 
 - geometry:
 

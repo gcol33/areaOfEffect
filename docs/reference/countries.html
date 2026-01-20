@@ -22,7 +22,7 @@ with pre-calculated bounding boxes for area of effect analysis."></head><body><p
 
     <a class="navbar-brand me-2" href="../index.html">areaOfEffect</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@ with pre-calculated bounding boxes for area of effect analysis.</p>
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>An <code>sf</code> data frame with 237 rows and 8 variables:</p><dl><dt>iso2</dt>
+    <p>An <code>sf</code> data frame with 237 rows and 9 variables:</p><dl><dt>iso2</dt>
 <dd><p>ISO 3166-1 alpha-2 country code (e.g., "FR", "BE")</p></dd>
 
 <dt>iso3</dt>
@@ -91,6 +91,9 @@ with pre-calculated bounding boxes for area of effect analysis.</p>
 
 <dt>bbox_equal_ray</dt>
 <dd><p>AoE bounding box at scale 1 (equal linear distance)</p></dd>
+
+<dt>halo_equal_area_scale</dt>
+<dd><p>Scale factor that produces halo area = country area (with land mask)</p></dd>
 
 <dt>geometry</dt>
 <dd><p>Country polygon in WGS84 (EPSG:4326)</p></dd>

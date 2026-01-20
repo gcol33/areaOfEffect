@@ -305,6 +305,7 @@ result_expand <- aoe_expand(pts_sparse, support, min_points = 10)
 Two safety caps prevent unreasonable expansion:
 
 - `max_area = 2` (default): halo area cannot exceed 2× the original
+
 - `max_dist`: maximum expansion distance in CRS units
 
 ```{r expand-caps, eval=FALSE}
