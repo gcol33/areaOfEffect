@@ -69,14 +69,23 @@
 #' sampled <- aoe_sample(result, n = 20, ratio = c(core = 0.7, halo = 0.3))
 #'
 #' @seealso [aoe()] for computing AoE classifications
+#' @param ... Additional arguments passed to methods.
 #' @export
-aoe_sample <- function(x, n = NULL, ratio = c(core = 0.5, halo = 0.5),
-                       replace = FALSE, by = c("overall", "support")) {
+aoe_sample <- function(x, ...) {
+  UseMethod("aoe_sample")
+}
 
-if (!inherits(x, "aoe_result")) {
-    stop("`x` must be an aoe_result object (from aoe() or aoe_expand())",
-         call. = FALSE)
-  }
+#' @rdname aoe_sample
+#' @export
+aoe_sample.default <- function(x, ...) {
+  stop("`x` must be an aoe_result or aoe_border_result object", call. = FALSE)
+}
+
+#' @rdname aoe_sample
+#' @export
+aoe_sample.aoe_result <- function(x, n = NULL, ratio = c(core = 0.5, halo = 0.5),
+                                   replace = FALSE, by = c("overall", "support"),
+                                   ...) {
 
   by <- match.arg(by)
 

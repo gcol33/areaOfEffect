@@ -7,12 +7,19 @@ want balanced representation for modelling.
 ## Usage
 
 ``` r
+aoe_sample(x, ...)
+
+# Default S3 method
+aoe_sample(x, ...)
+
+# S3 method for class 'aoe_result'
 aoe_sample(
   x,
   n = NULL,
   ratio = c(core = 0.5, halo = 0.5),
   replace = FALSE,
-  by = c("overall", "support")
+  by = c("overall", "support"),
+  ...
 )
 ```
 
@@ -23,6 +30,10 @@ aoe_sample(
   An `aoe_result` object returned by
   [`aoe()`](https://gcol33.github.io/areaOfEffect/reference/aoe.md) or
   [`aoe_expand()`](https://gcol33.github.io/areaOfEffect/reference/aoe_expand.md).
+
+- ...:
+
+  Additional arguments passed to methods.
 
 - n:
 

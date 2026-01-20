@@ -29,6 +29,7 @@ reference:
 - title: Core
   contents:
   - aoe
+  - aoe_border
   - aoe_expand
   - aoe_sample
 - title: Data
@@ -48,8 +49,11 @@ reference:
   - print.aoe_expand_result
   - print.aoe_area_result
   - print.aoe_summary_result
+  - print.aoe_border_result
   - summary.aoe_result
   - plot.aoe_result
+  - plot.aoe_border_result
+  - aoe_sample.aoe_border_result
   - "`[.aoe_result`"
 
 articles:

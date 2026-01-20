@@ -22,6 +22,7 @@ Imports:
     methods,
     sf
 Suggests:
+    lwgeom,
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,

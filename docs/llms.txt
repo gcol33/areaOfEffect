@@ -4,8 +4,14 @@
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Classify occurrence records relative to country borders — without
+**Classify occurrence records relative to country borders, without
 writing sf code.**
+
+Ecological processes like dispersal are isotropic: a species spreads
+equally in all directions. Political borders are not. When you sample
+within a country, the border truncates the process, creating anisotropic
+artifacts near edges. The **area of effect** expands sampling outward to
+correct for this mismatch.
 
 Dataframe in → dataframe out. No CRS headaches. No buffer distance
 guessing.
@@ -32,65 +38,30 @@ result$aoe_class
 # (point D pruned - outside area of effect)
 ```
 
-## Philosophy
+## Why Equal Area?
 
-areaOfEffect does not invent new geometry. It standardizes a common
-spatial task: classifying points by their position relative to a
-region’s boundary.
+Points are classified as **core** (inside the country), **halo**
+(outside but within the buffer), or **pruned** (too far out).
 
-**Instead of choosing arbitrary buffer distances, halos are defined as a
-fixed proportion of region area** — enabling consistent cross-country
-comparisons without CRS expertise.
+By default, the halo has equal area to the core. Why? Because buffer
+distance in meters is arbitrary and scale-dependent. A 10km buffer means
+something different for Luxembourg than for Brazil. Equal area gives a
+consistent correction factor across regions, and scales automatically
+without CRS expertise.
 
-This is the kind of spatial task ecologists repeatedly reimplement with
-subtle errors. This package handles:
+## What It Handles
 
-- Coordinate column auto-detection
-- Country lookup by name or ISO code
-- Equal-area projection (done correctly)
-- Area-based buffer calculation
-- Point classification
-- Clean dataframe output
+The package wraps sf boilerplate that’s easy to get wrong:
 
-You don’t need to learn CRS theory, when buffering in degrees is wrong,
-or why
-[`st_covers()`](https://r-spatial.github.io/sf/reference/geos_binary_pred.html)
-sometimes returns `FALSE`. You just get a column that says `core` or
-`halo`.
-
-## Statement of Need
-
-Political borders are not hard ecological boundaries. Biological
-processes do not stop at administrative lines. When sampling within a
-political region, observations near the border are influenced by
-conditions outside that region.
-
-The **area of effect** corrects for this border truncation by expanding
-the support outward. Points are then classified:
-
-- **Core**: inside the original support
-- **Halo**: outside the original support but inside the expanded area of
-  effect
-- **Pruned**: outside the area of effect (not returned)
-
-By default, the halo has **equal area to the core** — a scale-free,
-proportion-based definition that enables consistent cross-country
-comparisons.
-
-## Features
-
-- **Dataframe workflow**: Plain dataframes with coordinates go in,
-  classified dataframes come out
-- **Country lookup**: Pass ISO codes or names directly (`"AT"`,
-  `"Austria"`)
-- **Auto-detection**: Omit support to detect countries from points
-- **Area-based halos**: Proportion of region area, not arbitrary
-  distances
-- **Multiple supports**: Process admin regions with long format output
-- **Masking**: Coastlines and other hard constraints
-- **S3 methods**: [`print()`](https://rdrr.io/r/base/print.html),
-  [`summary()`](https://rdrr.io/r/base/summary.html),
-  [`plot()`](https://rdrr.io/r/graphics/plot.default.html)
+- **Dataframes or sf objects**: pass either, get classified results back
+- **Bundled country boundaries**: just pass `"Austria"` or `"AT"`, no
+  need to find shapefiles
+- Coordinate column detection (handles `lon`/`long`/`longitude`/`x`,
+  etc.)
+- Equal-area projection for accurate buffering
+- Area-proportional buffer calculation
+- Point-in-polygon classification
+- Coastline masking (optional, with bundled land polygon)
 
 ## Installation
 
@@ -142,11 +113,32 @@ result <- aoe(df, c("AT", "DE"))
 result <- aoe(df)
 ```
 
-### With Mask (e.g., Land Only)
+### Coastline Masking
+
+For coastal countries, the buffer (scaled to equal area by default)
+extends into the sea. If you’re working with terrestrial data, that’s
+useless area. The `mask` parameter clips the halo to land:
+
+![Portugal with coastline masking](reference/figures/portugal-mask.svg)
 
 ``` r
 
-result <- aoe(df, "Austria", mask = land_polygon)
+# Use the bundled Natural Earth land polygon
+result <- aoe(df, "Portugal", mask = "land")
+
+# Or bring your own mask
+result <- aoe(df, "Portugal", mask = my_land_polygon)
+```
+
+The `area` parameter goes further: it finds the buffer size that gives
+you the target halo area *after* clipping. So `area = 1` guarantees
+equal land area in core and halo, even for countries like Japan where
+half the buffer would otherwise be ocean.
+
+``` r
+
+# Equal land area, not equal total area
+result <- aoe(df, "Japan", mask = "land", area = 1)
 ```
 
 ## Scale
@@ -171,11 +163,14 @@ areas**.
 
 ## Support
 
-I’m a PhD student who builds R packages in my free time because I
-believe good tools should be free and open.
+> “Software is like sex: it’s better when it’s free.” — Linus Torvalds
 
-If this package saved you time, buying me a coffee is a nice way to say
-thanks.
+I’m a PhD student who builds R packages in my free time because I
+believe good tools should be free and open. I started these projects for
+my own work and figured others might find them useful too.
+
+If this package saved you some time, buying me a coffee is a nice way to
+say thanks. It helps with my coffee addiction.
 
 [![Buy Me A
 Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gcol33)
@@ -201,6 +196,8 @@ MIT
 
 - [`aoe()`](https://gcol33.github.io/areaOfEffect/reference/aoe.md) :
   Classify and Prune Points by Area of Effect
+- [`aoe_border()`](https://gcol33.github.io/areaOfEffect/reference/aoe_border.md)
+  : Classify Points by Distance from a Border
 - [`aoe_expand()`](https://gcol33.github.io/areaOfEffect/reference/aoe_expand.md)
   : Adaptive AoE Expansion to Capture Minimum Points
 - [`aoe_sample()`](https://gcol33.github.io/areaOfEffect/reference/aoe_sample.md)
@@ -236,10 +233,16 @@ MIT
   : Print method for aoe_area_result
 - [`print(`*`<aoe_summary_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/print.aoe_summary_result.md)
   : Print method for aoe_summary_result
+- [`print(`*`<aoe_border_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/print.aoe_border_result.md)
+  : Print method for aoe_border_result
 - [`summary(`*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/summary.aoe_result.md)
   : Summary method for aoe_result
 - [`plot(`*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/plot.aoe_result.md)
   : Plot method for aoe_result
+- [`plot(`*`<aoe_border_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/plot.aoe_border_result.md)
+  : Plot method for aoe_border_result
+- [`aoe_sample(`*`<aoe_border_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/aoe_sample.aoe_border_result.md)
+  : Stratified Sampling from Border AoE Results
 - [`` `[`( ``*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/sub-.aoe_result.md)
   : Subset method for aoe_result
 

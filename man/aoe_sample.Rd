@@ -2,18 +2,27 @@
 % Please edit documentation in R/aoe_sample.R
 \name{aoe_sample}
 \alias{aoe_sample}
+\alias{aoe_sample.default}
+\alias{aoe_sample.aoe_result}
 \title{Stratified Sampling from AoE Results}
 \usage{
-aoe_sample(
+aoe_sample(x, ...)
+
+\method{aoe_sample}{default}(x, ...)
+
+\method{aoe_sample}{aoe_result}(
   x,
   n = NULL,
   ratio = c(core = 0.5, halo = 0.5),
   replace = FALSE,
-  by = c("overall", "support")
+  by = c("overall", "support"),
+  ...
 )
 }
 \arguments{
 \item{x}{An \code{aoe_result} object returned by \code{\link[=aoe]{aoe()}} or \code{\link[=aoe_expand]{aoe_expand()}}.}
+
+\item{...}{Additional arguments passed to methods.}
 
 \item{n}{Total number of points to sample. If \code{NULL}, uses all available
 points subject to the ratio constraint (i.e., downsamples the larger group).}

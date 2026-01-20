@@ -4,6 +4,8 @@
 
 - [`aoe()`](https://gcol33.github.io/areaOfEffect/reference/aoe.md) :
   Classify and Prune Points by Area of Effect
+- [`aoe_border()`](https://gcol33.github.io/areaOfEffect/reference/aoe_border.md)
+  : Classify Points by Distance from a Border
 - [`aoe_expand()`](https://gcol33.github.io/areaOfEffect/reference/aoe_expand.md)
   : Adaptive AoE Expansion to Capture Minimum Points
 - [`aoe_sample()`](https://gcol33.github.io/areaOfEffect/reference/aoe_sample.md)
@@ -39,9 +41,15 @@
   : Print method for aoe_area_result
 - [`print(`*`<aoe_summary_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/print.aoe_summary_result.md)
   : Print method for aoe_summary_result
+- [`print(`*`<aoe_border_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/print.aoe_border_result.md)
+  : Print method for aoe_border_result
 - [`summary(`*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/summary.aoe_result.md)
   : Summary method for aoe_result
 - [`plot(`*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/plot.aoe_result.md)
   : Plot method for aoe_result
+- [`plot(`*`<aoe_border_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/plot.aoe_border_result.md)
+  : Plot method for aoe_border_result
+- [`aoe_sample(`*`<aoe_border_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/aoe_sample.aoe_border_result.md)
+  : Stratified Sampling from Border AoE Results
 - [`` `[`( ``*`<aoe_result>`*`)`](https://gcol33.github.io/areaOfEffect/reference/sub-.aoe_result.md)
   : Subset method for aoe_result

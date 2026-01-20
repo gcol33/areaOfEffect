@@ -52,7 +52,8 @@ legend("topright",
        col = c("black", "gray50", "steelblue"),
        lty = c(1, 2, 2),
        lwd = c(2, 1.5, 1.5),
-       bty = "n")
+       bty = "n",
+       inset = 0.02)
 
 dev.off()
 cat("Created: man/figures/portugal-mask.svg\n")

@@ -88,7 +88,8 @@ legend("topright",
        legend = c("Austria (core)", "Area of Effect"),
        col = c("black", "steelblue"),
        lty = c(1, 2),
-       lwd = c(2, 1.5))
+       lwd = c(2, 1.5),
+       inset = 0.02)
 ```
 
 ![Austria (black) with its area of effect (dashed blue). The halo has
@@ -231,7 +232,7 @@ support_coast <- st_as_sf(
 )
 
 # Create land mask (irregular coastline)
-land <- st_as_sf(
+land_mask <- st_as_sf(
   data.frame(id = 1),
   geometry = st_sfc(st_polygon(list(cbind(
     c(0, 100, 100, 70, 50, 30, 0, 0),
@@ -253,14 +254,14 @@ pts_coast <- st_as_sf(
 )
 
 # Apply with mask
-result_coast <- aoe(pts_coast, support_coast, mask = land)
+result_coast <- aoe(pts_coast, support_coast, mask = land_mask)
 
 # Get geometries for visualization
 aoe_masked <- aoe_geometry(result_coast, "aoe")
 support_geom <- aoe_geometry(result_coast, "original")
 
 par(mar = c(1, 1, 1, 1), bty = "n")
-plot(st_geometry(land), col = NA, border = "steelblue", lwd = 2,
+plot(st_geometry(land_mask), col = NA, border = "steelblue", lwd = 2,
      xlim = c(-10, 110), ylim = c(-10, 90))
 plot(st_geometry(aoe_masked), col = rgb(0.5, 0.5, 0.5, 0.3),
      border = "steelblue", lty = 2, add = TRUE)
@@ -281,13 +282,74 @@ legend("topleft",
        lty = c(1, 2, 1, NA, NA, NA),
        lwd = c(2, 1, 2, NA, NA, NA),
        pch = c(NA, NA, NA, 16, 16, 4),
-       pt.cex = c(NA, NA, NA, 1.5, 1.5, 1.2))
+       pt.cex = c(NA, NA, NA, 1.5, 1.5, 1.2),
+       inset = 0.02)
 ```
 
 ![AoE with land mask. The AoE is clipped to the land
 boundary.](quickstart_files/figure-html/mask-example-1.svg)
 
 AoE with land mask. The AoE is clipped to the land boundary.
+
+### Real-World Example: Portugal
+
+The package includes bundled country boundaries and a global land mask.
+Use `mask = "land"` to clip AoE to coastlines:
+
+``` r
+
+# Create a point inside Portugal (approximate center of mainland)
+dummy <- st_as_sf(
+  data.frame(id = 1),
+  geometry = st_sfc(st_point(c(-8, 39.5))),
+  crs = 4326
+)
+
+# Without mask
+result_no_mask <- aoe(dummy, "PT")
+aoe_no_mask <- aoe_geometry(result_no_mask, "aoe")
+
+# With mask + area=1 for equal land area
+result_masked <- aoe(dummy, "PT", mask = "land", area = 1)
+aoe_masked <- aoe_geometry(result_masked, "aoe")
+
+# Get support geometry
+support_geom <- aoe_geometry(result_masked, "original")
+
+# Transform to equal area for plotting
+crs_ea <- st_crs("+proj=laea +lat_0=39.5 +lon_0=-8 +datum=WGS84")
+aoe_no_mask_ea <- st_transform(aoe_no_mask, crs_ea)
+aoe_masked_ea <- st_transform(aoe_masked, crs_ea)
+support_ea <- st_transform(support_geom, crs_ea)
+
+# Plot
+par(mar = c(1, 1, 1, 1), bty = "n")
+plot(st_geometry(aoe_no_mask_ea), border = "gray50", lty = 2, lwd = 1.5,
+     xlim = st_bbox(aoe_no_mask_ea)[c(1,3)],
+     ylim = st_bbox(aoe_no_mask_ea)[c(2,4)],
+     axes = FALSE, xaxt = "n", yaxt = "n")
+plot(st_geometry(aoe_masked_ea), col = rgb(0.3, 0.5, 0.7, 0.3),
+     border = "steelblue", lty = 2, lwd = 1.5, add = TRUE)
+plot(st_geometry(support_ea), border = "black", lwd = 2, add = TRUE)
+
+legend("topright",
+       legend = c("Portugal", "AoE (unmasked)", "AoE (land only)"),
+       col = c("black", "gray50", "steelblue"),
+       lty = c(1, 2, 2),
+       lwd = c(2, 1.5, 1.5),
+       bty = "n",
+       inset = 0.02)
+```
+
+![Portugal with land-masked AoE. The halo extends into Spain but not
+into the Atlantic.](quickstart_files/figure-html/portugal-mask-1.svg)
+
+Portugal with land-masked AoE. The halo extends into Spain but not into
+the Atlantic.
+
+The `area = 1` parameter ensures the halo has equal land area to the
+core, even after the ocean is masked out. Without this, coastline
+clipping would reduce the effective halo area.
 
 ## Scale Parameter
 
@@ -432,6 +494,102 @@ For multiple supports, use `by = "support"` to sample within each:
 sampled <- aoe_sample(result_multi, by = "support")
 ```
 
+## Border Classification with `aoe_border()`
+
+When your study involves a boundary *line* rather than a polygon (e.g.,
+a river, mountain range, or political border), use
+[`aoe_border()`](https://gcol33.github.io/areaOfEffect/reference/aoe_border.md)
+to classify points by their distance from and side of the border.
+
+``` r
+
+# Create a diagonal border line
+border_line <- st_as_sf(
+  data.frame(id = 1),
+  geometry = st_sfc(st_linestring(matrix(
+    c(0, 0,
+      100, 100), ncol = 2, byrow = TRUE
+  ))),
+  crs = 32631
+)
+
+# Create points on both sides
+set.seed(42)
+pts_border <- st_as_sf(
+  data.frame(id = 1:30),
+  geometry = st_sfc(c(
+    # Points on side 1 (above the line)
+    lapply(1:15, function(i) st_point(c(runif(1, 10, 90), runif(1, 10, 90) + 20))),
+    # Points on side 2 (below the line)
+    lapply(1:15, function(i) st_point(c(runif(1, 10, 90), runif(1, 10, 90) - 20)))
+  )),
+  crs = 32631
+)
+
+# Classify by distance from border
+result_border <- aoe_border(
+  pts_border, border_line,
+  width = 30,
+  side_names = c("north", "south")
+)
+
+# Built-in plot method
+plot(result_border)
+```
+
+![Border classification. Points are classified by side (blue vs orange)
+and distance (core vs halo) from the border
+line.](quickstart_files/figure-html/border-example-1.svg)
+
+Border classification. Points are classified by side (blue vs orange)
+and distance (core vs halo) from the border line.
+
+The
+[`aoe_border()`](https://gcol33.github.io/areaOfEffect/reference/aoe_border.md)
+function:
+
+- Creates symmetric buffer zones on both sides of the border
+
+- Classifies points as “core” (near border) or “halo” (farther away)
+
+- Assigns each point to a side based on position relative to the line
+
+### Area-Based Border Zones
+
+Use the `area` parameter to specify target zone areas instead of fixed
+widths:
+
+``` r
+
+# Each side's core zone has area 5000 (in CRS units²)
+result <- aoe_border(pts, border, area = 5000)
+```
+
+### Sampling from Border Results
+
+[`aoe_sample()`](https://gcol33.github.io/areaOfEffect/reference/aoe_sample.md)
+also works with border results, allowing stratification by side or
+class:
+
+``` r
+
+# Balance by side (equal north/south)
+set.seed(123)
+balanced_side <- aoe_sample(result_border, ratio = c(north = 0.5, south = 0.5))
+table(balanced_side$side)
+#> 
+#> north south 
+#>    12    12
+
+# Balance by distance class
+set.seed(123)
+balanced_class <- aoe_sample(result_border, by = "class")
+table(balanced_class$aoe_class)
+#> 
+#> core halo 
+#>   11   11
+```
+
 ## Diagnostics
 
 ``` r
@@ -463,6 +621,10 @@ aoe_summary(result)
 - Use
   [`aoe_sample()`](https://gcol33.github.io/areaOfEffect/reference/aoe_sample.md)
   for balanced core/halo sampling
+
+- Use
+  [`aoe_border()`](https://gcol33.github.io/areaOfEffect/reference/aoe_border.md)
+  for border/line-based classification
 
 - Use
   [`aoe_summary()`](https://gcol33.github.io/areaOfEffect/reference/aoe_summary.md)

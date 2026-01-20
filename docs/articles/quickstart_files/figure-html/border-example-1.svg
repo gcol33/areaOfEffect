@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='504.00pt' height='360.00pt' viewBox='0 0 504.00 360.00'>
+<g class='svglite'>
+<defs>
+  <style type='text/css'><![CDATA[
+    /* theme-aware-processed */
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite circle {
+      fill: none;
+      stroke: #3E3F3A;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite > g > rect {
+      fill: none;
+      stroke: #3E3F3A;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+      fill: #3E3F3A;
+    }
+    .svglite g.glyphgroup path {
+      fill: inherit;
+      stroke: none;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #F5F6F8;'/>
+<defs>
+  <clipPath id='cpMC4wMHw1MDQuMDB8MC4wMHwzNjAuMDA='>
+    <rect x='0.00' y='0.00' width='504.00' height='360.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw1MDQuMDB8MC4wMHwzNjAuMDA=)'>
+</g>
+<defs>
+  <clipPath id='cpNTkuMDR8NDczLjc2fDU5LjA0fDI4Ni41Ng=='>
+    <rect x='59.04' y='59.04' width='414.72' height='227.52' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpNTkuMDR8NDczLjc2fDU5LjA0fDI4Ni41Ng==)'>
+<rect class='legend-bg' x='59.04' y='59.04' width='414.72' height='227.52' style='stroke-width: 0.75; stroke: #F5F6F8; fill: #F5F6F8;' />
+<path d='M 288.28 81.38 L 290.88 79.39 L 293.57 77.54 L 296.36 75.83 L 299.23 74.27 L 302.18 72.87 L 305.20 71.61 L 308.28 70.52 L 311.42 69.59 L 314.60 68.83 L 317.81 68.24 L 321.05 67.81 L 324.31 67.55 L 327.58 67.47 L 330.85 67.55 L 334.11 67.81 L 337.35 68.24 L 340.56 68.83 L 343.74 69.59 L 346.88 70.52 L 349.96 71.61 L 352.98 72.87 L 355.93 74.27 L 358.80 75.83 L 361.59 77.54 L 364.28 79.39 L 366.88 81.38 L 369.36 83.51 L 371.73 85.76 L 349.66 107.83 L 348.47 106.71 L 347.23 105.65 L 345.93 104.65 L 344.58 103.72 L 343.19 102.87 L 341.75 102.09 L 340.28 101.39 L 338.77 100.76 L 337.23 100.22 L 335.66 99.75 L 334.07 99.37 L 332.46 99.07 L 330.84 98.86 L 329.21 98.73 L 327.58 98.69 L 325.95 98.73 L 324.32 98.86 L 322.70 99.07 L 321.09 99.37 L 319.50 99.75 L 317.93 100.22 L 316.39 100.76 L 314.88 101.39 L 313.41 102.09 L 311.97 102.87 L 310.58 103.72 L 309.23 104.65 L 307.93 105.65 L 306.69 106.71 L 305.50 107.83 L 201.43 211.90 L 200.31 213.09 L 199.25 214.33 L 198.25 215.63 L 197.32 216.98 L 196.47 218.37 L 195.69 219.81 L 194.99 221.28 L 194.36 222.79 L 193.82 224.33 L 193.35 225.90 L 192.97 227.49 L 192.67 229.10 L 192.46 230.72 L 192.33 232.35 L 192.29 233.98 L 192.33 235.61 L 192.46 237.24 L 192.67 238.86 L 192.97 240.47 L 193.35 242.06 L 193.82 243.63 L 194.36 245.17 L 194.99 246.68 L 195.69 248.15 L 196.47 249.59 L 197.32 250.98 L 198.25 252.33 L 199.25 253.63 L 200.31 254.87 L 201.43 256.06 L 179.36 278.13 L 177.11 275.76 L 174.98 273.28 L 172.99 270.68 L 171.14 267.99 L 169.43 265.20 L 167.87 262.33 L 166.47 259.38 L 165.21 256.36 L 164.12 253.28 L 163.19 250.14 L 162.43 246.96 L 161.84 243.75 L 161.41 240.51 L 161.15 237.25 L 161.07 233.98 L 161.15 230.71 L 161.41 227.45 L 161.84 224.21 L 162.43 221.00 L 163.19 217.82 L 164.12 214.68 L 165.21 211.60 L 166.47 208.58 L 167.87 205.63 L 169.43 202.76 L 171.14 199.97 L 172.99 197.28 L 174.98 194.68 L 177.11 192.20 L 179.36 189.83 L 283.43 85.76 L 285.80 83.51 L 288.28 81.38 Z' style='fill-rule: evenodd; fill: #3366CC; fill-opacity: 0.15; stroke-width: 0.75; stroke: none;' />
+<path d='M 376.11 90.61 L 378.10 93.21 L 379.95 95.90 L 381.66 98.69 L 383.22 101.56 L 384.62 104.51 L 385.87 107.53 L 386.97 110.61 L 387.89 113.75 L 388.66 116.93 L 389.25 120.14 L 389.68 123.38 L 389.94 126.64 L 390.02 129.91 L 389.94 133.18 L 389.68 136.44 L 389.25 139.68 L 388.66 142.89 L 387.89 146.07 L 386.97 149.20 L 385.87 152.29 L 384.62 155.31 L 383.22 158.26 L 381.66 161.13 L 379.95 163.92 L 378.10 166.61 L 376.11 169.21 L 373.98 171.69 L 371.73 174.06 L 267.66 278.13 L 265.29 280.38 L 262.81 282.51 L 260.21 284.50 L 257.52 286.35 L 254.73 288.06 L 251.86 289.62 L 248.91 291.02 L 245.89 292.27 L 242.80 293.37 L 239.67 294.29 L 236.49 295.06 L 233.28 295.65 L 230.04 296.08 L 226.78 296.34 L 223.51 296.42 L 220.24 296.34 L 216.98 296.08 L 213.74 295.65 L 210.53 295.06 L 207.35 294.29 L 204.21 293.37 L 201.13 292.27 L 198.11 291.02 L 195.16 289.62 L 192.29 288.06 L 189.50 286.35 L 186.81 284.50 L 184.21 282.51 L 181.73 280.38 L 179.36 278.13 L 179.36 278.13 L 201.43 256.06 L 201.43 256.06 L 202.62 257.18 L 203.86 258.24 L 205.16 259.24 L 206.50 260.16 L 207.90 261.02 L 209.33 261.80 L 210.81 262.50 L 212.32 263.13 L 213.86 263.67 L 215.43 264.14 L 217.02 264.52 L 218.63 264.82 L 220.25 265.03 L 221.88 265.16 L 223.51 265.20 L 225.14 265.16 L 226.77 265.03 L 228.39 264.82 L 230.00 264.52 L 231.59 264.14 L 233.16 263.67 L 234.70 263.13 L 236.21 262.50 L 237.68 261.80 L 239.12 261.02 L 240.51 260.16 L 241.86 259.24 L 243.16 258.24 L 244.40 257.18 L 245.59 256.06 L 349.66 151.99 L 350.78 150.80 L 351.84 149.56 L 352.84 148.26 L 353.76 146.91 L 354.62 145.52 L 355.40 144.08 L 356.10 142.61 L 356.73 141.10 L 357.27 139.56 L 357.74 137.99 L 358.12 136.40 L 358.42 134.79 L 358.63 133.17 L 358.76 131.54 L 358.80 129.91 L 358.76 128.28 L 358.63 126.65 L 358.42 125.03 L 358.12 123.42 L 357.74 121.83 L 357.27 120.26 L 356.73 118.72 L 356.10 117.21 L 355.40 115.73 L 354.62 114.30 L 353.76 112.90 L 352.84 111.56 L 351.84 110.26 L 350.78 109.02 L 349.66 107.83 L 371.73 85.76 L 373.98 88.13 L 376.11 90.61 Z' style='fill-rule: evenodd; fill: #CC6633; fill-opacity: 0.15; stroke-width: 0.75; stroke: none;' />
+<path d='M 306.69 106.71 L 307.93 105.65 L 309.23 104.65 L 310.58 103.72 L 311.97 102.87 L 313.41 102.09 L 314.88 101.39 L 316.39 100.76 L 317.93 100.22 L 319.50 99.75 L 321.09 99.37 L 322.70 99.07 L 324.32 98.86 L 325.95 98.73 L 327.58 98.69 L 329.21 98.73 L 330.84 98.86 L 332.46 99.07 L 334.07 99.37 L 335.66 99.75 L 337.23 100.22 L 338.77 100.76 L 340.28 101.39 L 341.75 102.09 L 343.19 102.87 L 344.58 103.72 L 345.93 104.65 L 347.23 105.65 L 348.47 106.71 L 349.66 107.83 L 201.43 256.06 L 200.31 254.87 L 199.25 253.63 L 198.25 252.33 L 197.32 250.98 L 196.47 249.59 L 195.69 248.15 L 194.99 246.68 L 194.36 245.17 L 193.82 243.63 L 193.35 242.06 L 192.97 240.47 L 192.67 238.86 L 192.46 237.24 L 192.33 235.61 L 192.29 233.98 L 192.33 232.35 L 192.46 230.72 L 192.67 229.10 L 192.97 227.49 L 193.35 225.90 L 193.82 224.33 L 194.36 222.79 L 194.99 221.28 L 195.69 219.81 L 196.47 218.37 L 197.32 216.98 L 198.25 215.63 L 199.25 214.33 L 200.31 213.09 L 201.43 211.90 L 305.50 107.83 L 306.69 106.71 Z' style='fill-rule: evenodd; fill: #3366CC; fill-opacity: 0.30; stroke-width: 0.75; stroke: none;' />
+<path d='M 350.78 109.02 L 351.84 110.26 L 352.84 111.56 L 353.76 112.90 L 354.62 114.30 L 355.40 115.73 L 356.10 117.21 L 356.73 118.72 L 357.27 120.26 L 357.74 121.83 L 358.12 123.42 L 358.42 125.03 L 358.63 126.65 L 358.76 128.28 L 358.80 129.91 L 358.76 131.54 L 358.63 133.17 L 358.42 134.79 L 358.12 136.40 L 357.74 137.99 L 357.27 139.56 L 356.73 141.10 L 356.10 142.61 L 355.40 144.08 L 354.62 145.52 L 353.76 146.91 L 352.84 148.26 L 351.84 149.56 L 350.78 150.80 L 349.66 151.99 L 245.59 256.06 L 244.40 257.18 L 243.16 258.24 L 241.86 259.24 L 240.51 260.16 L 239.12 261.02 L 237.68 261.80 L 236.21 262.50 L 234.70 263.13 L 233.16 263.67 L 231.59 264.14 L 230.00 264.52 L 228.39 264.82 L 226.77 265.03 L 225.14 265.16 L 223.51 265.20 L 221.88 265.16 L 220.25 265.03 L 218.63 264.82 L 217.02 264.52 L 215.43 264.14 L 213.86 263.67 L 212.32 263.13 L 210.81 262.50 L 209.33 261.80 L 207.90 261.02 L 206.50 260.16 L 205.16 259.24 L 203.86 258.24 L 202.62 257.18 L 201.43 256.06 L 201.43 256.06 L 349.66 107.83 L 350.78 109.02 Z' style='fill-rule: evenodd; fill: #CC6633; fill-opacity: 0.30; stroke-width: 0.75; stroke: none;' />
+<polyline points='223.51,233.98 327.58,129.91 ' style='stroke-width: 1.50;' />
+<circle cx='310.08' cy='124.74' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<circle cx='257.74' cy='133.62' r='3.24' style='stroke-width: 0.75; stroke: #4682B4;' />
+<circle cx='287.35' cy='159.54' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<circle cx='295.24' cy='191.55' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
+<circle cx='288.62' cy='144.06' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<circle cx='272.03' cy='142.89' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<circle cx='311.73' cy='181.49' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
+<circle cx='272.41' cy='124.50' r='3.24' style='stroke-width: 0.75; stroke: #4682B4;' />
+<circle cx='315.36' cy='192.98' r='3.24' style='stroke-width: 0.75; stroke: #FF8C00;' />
+<circle cx='273.46' cy='156.11' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<circle cx='309.18' cy='191.21' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
+<circle cx='316.25' cy='123.94' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<circle cx='240.78' cy='159.95' r='3.24' style='stroke-width: 0.75; stroke: #4682B4;' />
+<circle cx='266.40' cy='127.35' r='3.24' style='stroke-width: 0.75; stroke: #4682B4;' />
+<circle cx='271.13' cy='133.16' r='3.24' style='stroke-width: 0.75; stroke: #4682B4;' />
+<circle cx='295.33' cy='176.86' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
+<circle cx='266.23' cy='187.34' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<circle cx='234.24' cy='175.04' r='3.24' style='stroke-width: 0.75; stroke: #4682B4;' />
+<circle cx='234.53' cy='227.10' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
+<circle cx='309.40' cy='193.45' r='3.24' style='stroke-width: 0.75; stroke: #FF8C00;' />
+<circle cx='265.52' cy='208.11' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
+<circle cx='237.03' cy='163.33' r='3.24' style='stroke-width: 0.75; stroke: #4682B4;' />
+<circle cx='269.86' cy='164.66' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<circle cx='307.83' cy='191.10' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
+<circle cx='314.76' cy='192.86' r='3.24' style='stroke-width: 0.75; stroke: #FF8C00;' />
+<circle cx='261.68' cy='215.52' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #FF8C00;' />
+<circle cx='267.09' cy='179.06' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<circle cx='237.16' cy='182.04' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<circle cx='290.30' cy='230.13' r='3.24' style='stroke-width: 0.75; stroke: #FF8C00;' />
+<circle cx='255.65' cy='201.56' r='3.24' style='stroke-width: 0.75; stroke: none; fill: #4682B4;' />
+<rect x='363.30' y='69.84' width='8.64' height='7.20' style='stroke-width: 0.75; stroke: none; fill: #3366CC; fill-opacity: 0.30;' />
+<rect x='363.30' y='84.24' width='8.64' height='7.20' style='stroke-width: 0.75; stroke: none; fill: #3366CC; fill-opacity: 0.15;' />
+<rect x='363.30' y='98.64' width='8.64' height='7.20' style='stroke-width: 0.75; stroke: none; fill: #CC6633; fill-opacity: 0.30;' />
+<rect x='363.30' y='113.04' width='8.64' height='7.20' style='stroke-width: 0.75; stroke: none; fill: #CC6633; fill-opacity: 0.15;' />
+<rect x='363.30' y='127.44' width='8.64' height='7.20' style='stroke-width: 0.75; stroke: none;' /> fill: #F5F6F8;' />
+<line x1='371.94' y1='131.04' x2='393.54' y2='131.04' style='stroke-width: 1.50;' />
+<text x='404.34' y='77.74' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='62.02px' lengthAdjust='spacingAndGlyphs'>north (core)</text>
+<text x='404.34' y='92.14' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='61.36px' lengthAdjust='spacingAndGlyphs'>north (halo)</text>
+<text x='404.34' y='106.54' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='64.02px' lengthAdjust='spacingAndGlyphs'>south (core)</text>
+<text x='404.34' y='120.94' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='63.36px' lengthAdjust='spacingAndGlyphs'>south (halo)</text>
+<text x='404.34' y='135.34' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='36.02px' lengthAdjust='spacingAndGlyphs'>Border</text>
+</g>
+</g>
+</svg>
