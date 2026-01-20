@@ -278,7 +278,7 @@ bbox <- st_bbox(aoe_no_mask_ea)
 x_range <- bbox[3] - bbox[1]
 par(mar = c(1, 1, 1, 1), bty = "n")
 plot(st_geometry(aoe_no_mask_ea), border = "gray50", lty = 2, lwd = 1.5,
-     xlim = c(bbox[1], bbox[3] + x_range * 0.25),
+     xlim = c(bbox[1], bbox[3] + x_range * 0.5),
      ylim = bbox[c(2,4)],
      axes = FALSE, xaxt = "n", yaxt = "n")
 plot(st_geometry(aoe_masked_ea), col = rgb(0.3, 0.5, 0.7, 0.3),
@@ -291,7 +291,7 @@ legend("topright",
        lty = c(1, 2, 2),
        lwd = c(2, 1.5, 1.5),
        bty = "n",
-       inset = 0.02)
+       inset = 0.05)
 ```
 
 The `area = 1` parameter ensures the halo has equal land area to the core, even after
