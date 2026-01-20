@@ -42,12 +42,13 @@ By default, the halo has equal area to the core. Why? Because buffer distance in
 
 The package wraps sf boilerplate that's easy to get wrong:
 
+- **Dataframes or sf objects**: pass either, get classified results back
+- **Bundled country boundaries**: just pass `"Austria"` or `"AT"`, no need to find shapefiles
 - Coordinate column detection (handles `lon`/`long`/`longitude`/`x`, etc.)
-- Country lookup by name or ISO code
 - Equal-area projection for accurate buffering
 - Area-proportional buffer calculation
 - Point-in-polygon classification
-- Coastline masking (optional)
+- Coastline masking (optional, with bundled land polygon)
 
 ## Installation
 
