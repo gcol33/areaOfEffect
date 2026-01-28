@@ -89,8 +89,8 @@ utils::globalVariables(c("countries", "land", "country_halos"))
 #'
 #' @export
 get_country <- function(x) {
-  # Access lazy-loaded data explicitly to support :: calls
-  countries_data <- areaOfEffect::countries
+  # Access lazy-loaded data via getExportedValue to support :: calls
+  countries_data <- getExportedValue("areaOfEffect", "countries")
 
   x_upper <- toupper(x)
   x_lower <- tolower(x)
