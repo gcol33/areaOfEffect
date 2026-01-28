@@ -138,7 +138,7 @@ aoe <- function(points, support = NULL, scale = NULL, area = NULL,
 
   # Handle mask: "land" = use global land mask
   if (is.character(mask) && length(mask) == 1 && tolower(mask) == "land") {
-    mask <- land
+    mask <- areaOfEffect::land
   }
 
   # Convert to sf (data.frame assumes support's CRS)
@@ -379,11 +379,12 @@ process_single_support <- function(points, support_row, support_id,
 #' Auto-detect countries containing points
 #' @noRd
 detect_countries <- function(points, coords) {
+  countries_data <- areaOfEffect::countries
   pts_sf <- to_sf(points, sf::st_crs(4326), coords)
   pts_sf <- sf::st_transform(pts_sf, 4326)
-  hits <- lengths(sf::st_intersects(countries, pts_sf)) > 0
+  hits <- lengths(sf::st_intersects(countries_data, pts_sf)) > 0
   if (!any(hits)) stop("No countries contain the provided points", call. = FALSE)
-  result <- countries[hits, ]
+  result <- countries_data[hits, ]
   message("Countries: ", paste(result$name, collapse = ", "))
   result
 }

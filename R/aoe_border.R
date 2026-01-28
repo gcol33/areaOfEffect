@@ -101,7 +101,7 @@ aoe_border <- function(points, border, width = NULL, area = NULL,
 
   # Handle mask: "land" = use global land mask
   if (is.character(mask) && length(mask) == 1 && tolower(mask) == "land") {
-    mask <- land
+    mask <- areaOfEffect::land
   }
 
   # Convert inputs to sf

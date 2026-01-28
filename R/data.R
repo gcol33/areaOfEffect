@@ -89,26 +89,29 @@ utils::globalVariables(c("countries", "land", "country_halos"))
 #'
 #' @export
 get_country <- function(x) {
+  # Access lazy-loaded data explicitly to support :: calls
+  countries_data <- areaOfEffect::countries
+
   x_upper <- toupper(x)
   x_lower <- tolower(x)
 
   # Try ISO2
-  idx <- which(toupper(countries$iso2) == x_upper)
-  if (length(idx) == 1) return(countries[idx, ])
+  idx <- which(toupper(countries_data$iso2) == x_upper)
+  if (length(idx) == 1) return(countries_data[idx, ])
 
   # Try ISO3
-  idx <- which(toupper(countries$iso3) == x_upper)
-  if (length(idx) == 1) return(countries[idx, ])
+  idx <- which(toupper(countries_data$iso3) == x_upper)
+  if (length(idx) == 1) return(countries_data[idx, ])
 
   # Try exact name
-  idx <- which(tolower(countries$name) == x_lower)
-  if (length(idx) == 1) return(countries[idx, ])
+  idx <- which(tolower(countries_data$name) == x_lower)
+  if (length(idx) == 1) return(countries_data[idx, ])
 
   # Partial match on name
-  idx <- grep(x, countries$name, ignore.case = TRUE)
-  if (length(idx) == 1) return(countries[idx, ])
+  idx <- grep(x, countries_data$name, ignore.case = TRUE)
+  if (length(idx) == 1) return(countries_data[idx, ])
   if (length(idx) > 1) {
-    stop("Multiple matches: ", paste(countries$name[idx], collapse = ", "),
+    stop("Multiple matches: ", paste(countries_data$name[idx], collapse = ", "),
          call. = FALSE)
   }
 

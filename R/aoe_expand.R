@@ -117,7 +117,7 @@ if (missing(min_points) || !is.numeric(min_points) ||
 
   # Handle mask: "land" = use global land mask
   if (is.character(mask) && length(mask) == 1 && tolower(mask) == "land") {
-    mask <- land
+    mask <- areaOfEffect::land
   }
 
   # Convert to sf
