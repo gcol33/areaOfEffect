@@ -2,10 +2,14 @@
 library(areaOfEffect)
 library(sf)
 
-# Create output directory
-out_dir <- normalizePath("~/iCloudDrive/claude/areaOfEffect", mustWork = FALSE)
+# Create output directory in tempdir (CRAN policy: never write to user filespace)
+out_dir <- file.path(tempdir(), "areaOfEffect_images")
 if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
 cat("Output directory:", out_dir, "\n")
+
+# Save and restore par on exit
+oldpar <- par(no.readonly = TRUE)
+on.exit(par(oldpar), add = TRUE)
 
 # Create support polygon
 support <- st_as_sf(

@@ -2,6 +2,10 @@
 library(areaOfEffect)
 library(sf)
 
+# Save and restore par on exit
+oldpar <- par(no.readonly = TRUE)
+on.exit(par(oldpar), add = TRUE)
+
 cat("Generating Portugal coastline masking figure...\n")
 
 # Get Portugal
