@@ -51,6 +51,12 @@
 #'   - `sf` object with POLYGON or MULTIPOLYGON geometry
 #'   - `"land"`: use the bundled global land mask to exclude sea areas
 #'   If provided, each area of effect is intersected with this mask.
+#' @param largest_polygon Logical (default `TRUE`). When the support contains
+#'   multiple polygons (e.g., mainland plus islands), use only the largest
+#'   polygon by area. This is typically the mainland. Points near dropped
+#'   polygons will be pruned entirely (not classified). Set to `FALSE` to
+#'   include all polygons, in which case `area = "equal"` uses total area
+#'   with redistribution across all polygons.
 #' @param coords Column names for coordinates when `points` is a data.frame,
 #'   e.g. `c("lon", "lat")`. If `NULL`, auto-detects common names.
 #'
@@ -127,7 +133,8 @@
 #' @export
 aoe <- function(points, support = NULL, scale = NULL, area = NULL,
                 method = c("buffer", "stamp"),
-                reference = NULL, mask = NULL, coords = NULL) {
+                reference = NULL, mask = NULL, largest_polygon = TRUE,
+                coords = NULL) {
   method <- match.arg(method)
   # Handle support: NULL = auto-detect, character = country lookup
   if (is.null(support) || (is.character(support) && length(support) == 1 && tolower(support) == "auto")) {
@@ -150,6 +157,9 @@ aoe <- function(points, support = NULL, scale = NULL, area = NULL,
 
   # Input validation
   validate_inputs(points, support, reference, mask)
+
+  # Filter to largest polygon if requested
+  support <- filter_largest_polygon(support, largest_polygon)
 
   # Validate scale/area (mutually exclusive)
   if (!is.null(scale) && !is.null(area)) {
@@ -490,6 +500,76 @@ validate_inputs <- function(points, support, reference, mask) {
   }
 
   invisible(NULL)
+}
+
+
+#' Filter support to largest polygon per row
+#'
+#' When `largest_polygon = TRUE`, extracts only the largest polygon from each
+#' support row (which may be a MULTIPOLYGON). This handles cases like countries
+#' with islands, keeping only the mainland.
+#'
+#' @param support sf object with support polygons
+#' @param largest_polygon Logical flag
+#'
+#' @return Modified sf object (possibly with fewer/simpler geometries)
+#' @noRd
+filter_largest_polygon <- function(support, largest_polygon) {
+  if (!largest_polygon) return(support)
+
+  # Process each row: extract largest polygon from MULTIPOLYGONs
+  geoms <- sf::st_geometry(support)
+  n_original <- length(geoms)
+  total_dropped <- 0
+  total_area_kept <- 0
+
+  total_area_all <- 0
+
+
+  new_geoms <- lapply(seq_len(n_original), function(i) {
+    g <- geoms[[i]]
+    geom_type <- sf::st_geometry_type(g)
+
+    if (geom_type == "POLYGON") {
+      # Single polygon, nothing to filter
+      total_area_all <<- total_area_all + as.numeric(sf::st_area(sf::st_sfc(g, crs = sf::st_crs(support))))
+      total_area_kept <<- total_area_kept + as.numeric(sf::st_area(sf::st_sfc(g, crs = sf::st_crs(support))))
+      return(g)
+    }
+
+    # MULTIPOLYGON: cast to individual polygons
+    polys <- sf::st_cast(sf::st_sfc(g, crs = sf::st_crs(support)), "POLYGON")
+    n_polys <- length(polys)
+
+    if (n_polys == 1) {
+      total_area_all <<- total_area_all + as.numeric(sf::st_area(polys))
+      total_area_kept <<- total_area_kept + as.numeric(sf::st_area(polys))
+      return(polys[[1]])
+    }
+
+    # Multiple polygons: find largest by area
+    areas <- as.numeric(sf::st_area(polys))
+    largest_idx <- which.max(areas)
+
+    total_dropped <<- total_dropped + (n_polys - 1)
+    total_area_all <<- total_area_all + sum(areas)
+    total_area_kept <<- total_area_kept + areas[largest_idx]
+
+    polys[[largest_idx]]
+  })
+
+  # Inform user if polygons were dropped
+  if (total_dropped > 0) {
+    pct_area <- total_area_kept / total_area_all * 100
+    message(sprintf(
+      "Using largest polygon (%.1f%% of total area); %d smaller polygon(s) dropped. Set largest_polygon = FALSE to include all.",
+      pct_area, total_dropped
+    ))
+  }
+
+  # Reconstruct sf with simplified geometries
+  sf::st_geometry(support) <- sf::st_sfc(new_geoms, crs = sf::st_crs(support))
+  support
 }
 
 

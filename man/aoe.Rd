@@ -12,6 +12,7 @@ aoe(
   method = c("buffer", "stamp"),
   reference = NULL,
   mask = NULL,
+  largest_polygon = TRUE,
   coords = NULL
 )
 }
@@ -73,6 +74,13 @@ Only valid when \code{support} has a single row and \code{method = "stamp"}.}
 \item \code{"land"}: use the bundled global land mask to exclude sea areas
 If provided, each area of effect is intersected with this mask.
 }}
+
+\item{largest_polygon}{Logical (default \code{TRUE}). When the support contains
+multiple polygons (e.g., mainland plus islands), use only the largest
+polygon by area. This is typically the mainland. Points near dropped
+polygons will be pruned entirely (not classified). Set to \code{FALSE} to
+include all polygons, in which case \code{area = "equal"} uses total area
+with redistribution across all polygons.}
 
 \item{coords}{Column names for coordinates when \code{points} is a data.frame,
 e.g. \code{c("lon", "lat")}. If \code{NULL}, auto-detects common names.}

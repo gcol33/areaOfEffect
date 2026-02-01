@@ -898,3 +898,91 @@ test_that("subsetting aoe_result preserves area attribute", {
 
   expect_equal(attr(subset_result, "aoe_area"), 1)
 })
+
+
+# Tests for largest_polygon parameter
+
+test_that("largest_polygon filters to largest polygon in MULTIPOLYGON", {
+  skip_if_not_installed("sf")
+  library(sf)
+
+  # Create MULTIPOLYGON with 'mainland' (100x100) and 'island' (10x10)
+  mainland <- st_polygon(list(cbind(c(0, 100, 100, 0, 0), c(0, 0, 100, 100, 0))))
+  island <- st_polygon(list(cbind(c(150, 160, 160, 150, 150), c(40, 40, 50, 50, 40))))
+
+  multi <- st_multipolygon(list(mainland, island))
+  support <- st_as_sf(data.frame(id = 1), geometry = st_sfc(multi, crs = 32631))
+
+  # Points: one on mainland, one on island
+  pts <- st_as_sf(
+    data.frame(id = 1:2),
+    geometry = st_sfc(
+      st_point(c(50, 50)),   # mainland
+      st_point(c(155, 45))   # island
+    ),
+    crs = 32631
+  )
+
+  # With largest_polygon = TRUE (default), island point should be pruned
+  expect_message(
+    result1 <- aoe(pts, support),
+    "largest polygon"
+  )
+  expect_equal(nrow(result1), 1)
+  expect_equal(result1$id[1], 1)
+
+  # With largest_polygon = FALSE, both points classified
+  result2 <- aoe(pts, support, largest_polygon = FALSE)
+  expect_equal(nrow(result2), 2)
+})
+
+test_that("largest_polygon does nothing for single POLYGON", {
+  skip_if_not_installed("sf")
+  library(sf)
+
+  support <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_polygon(list(
+      cbind(c(0, 10, 10, 0, 0), c(0, 0, 10, 10, 0))
+    ))),
+    crs = 32631
+  )
+
+  pts <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_point(c(5, 5))),
+    crs = 32631
+  )
+
+  # No message when there's only one polygon
+  expect_silent(result <- aoe(pts, support))
+  expect_equal(nrow(result), 1)
+})
+
+test_that("largest_polygon message shows correct statistics", {
+  skip_if_not_installed("sf")
+  library(sf)
+
+  # Mainland = 10000 m², island = 100 m² (99% mainland)
+  mainland <- st_polygon(list(cbind(c(0, 100, 100, 0, 0), c(0, 0, 100, 100, 0))))
+  island <- st_polygon(list(cbind(c(150, 160, 160, 150, 150), c(40, 40, 50, 50, 40))))
+
+  multi <- st_multipolygon(list(mainland, island))
+  support <- st_as_sf(data.frame(id = 1), geometry = st_sfc(multi, crs = 32631))
+
+  pts <- st_as_sf(
+    data.frame(id = 1),
+    geometry = st_sfc(st_point(c(50, 50))),
+    crs = 32631
+  )
+
+  # Message should show ~99% and 1 dropped polygon
+  expect_message(
+    aoe(pts, support),
+    "99"
+  )
+  expect_message(
+    aoe(pts, support),
+    "1 smaller polygon"
+  )
+})
