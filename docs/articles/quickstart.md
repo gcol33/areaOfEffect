@@ -307,10 +307,12 @@ dummy <- st_as_sf(
 
 # Without mask
 result_no_mask <- aoe(dummy, "PT")
+#> Using largest polygon (96.8% of total area); 8 smaller polygon(s) dropped. Set largest_polygon = FALSE to include all.
 aoe_no_mask <- aoe_geometry(result_no_mask, "aoe")
 
 # With mask + area=1 for equal land area
 result_masked <- aoe(dummy, "PT", mask = "land", area = 1)
+#> Using largest polygon (96.8% of total area); 8 smaller polygon(s) dropped. Set largest_polygon = FALSE to include all.
 aoe_masked <- aoe_geometry(result_masked, "aoe")
 
 # Get support geometry
@@ -322,11 +324,14 @@ aoe_no_mask_ea <- st_transform(aoe_no_mask, crs_ea)
 aoe_masked_ea <- st_transform(aoe_masked, crs_ea)
 support_ea <- st_transform(support_geom, crs_ea)
 
-# Plot
+# Plot - expand xlim for legend, crop bottom margin
+bbox <- st_bbox(aoe_no_mask_ea)
+x_range <- bbox[3] - bbox[1]
+y_range <- bbox[4] - bbox[2]
 par(mar = c(1, 1, 1, 1), bty = "n")
 plot(st_geometry(aoe_no_mask_ea), border = "gray50", lty = 2, lwd = 1.5,
-     xlim = st_bbox(aoe_no_mask_ea)[c(1,3)],
-     ylim = st_bbox(aoe_no_mask_ea)[c(2,4)],
+     xlim = c(bbox[1], bbox[3]),
+     ylim = c(bbox[2] + y_range * 0.25, bbox[4]),
      axes = FALSE, xaxt = "n", yaxt = "n")
 plot(st_geometry(aoe_masked_ea), col = rgb(0.3, 0.5, 0.7, 0.3),
      border = "steelblue", lty = 2, lwd = 1.5, add = TRUE)
@@ -338,7 +343,7 @@ legend("topright",
        lty = c(1, 2, 2),
        lwd = c(2, 1.5, 1.5),
        bty = "n",
-       inset = 0.02)
+       inset = 0.05)
 ```
 
 ![Portugal with land-masked AoE. The halo extends into Spain but not

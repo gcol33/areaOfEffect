@@ -30,5 +30,12 @@ Natural Earth <https://www.naturalearthdata.com/>
 
 ``` r
 # Use as mask to exclude sea
-# aoe(points, support, mask = land)
+# \donttest{
+dummy <- sf::st_as_sf(
+  data.frame(id = 1),
+  geometry = sf::st_sfc(sf::st_point(c(14.5, 47.5))),
+  crs = 4326
+)
+result <- aoe(dummy, "AT", mask = land)
+# }
 ```

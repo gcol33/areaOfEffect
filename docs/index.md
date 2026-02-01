@@ -157,9 +157,9 @@ areas**.
 ## Documentation
 
 - [Quick Start
-  Vignette](https://gcol33.github.io/areaOfEffect/articles/quickstart.html)
+  Vignette](https://gillescolling.com/areaOfEffect/articles/quickstart.html)
 - [Function
-  Reference](https://gcol33.github.io/areaOfEffect/reference/index.html)
+  Reference](https://gillescolling.com/areaOfEffect/reference/index.html)
 
 ## Support
 
