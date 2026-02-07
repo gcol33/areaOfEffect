@@ -17,8 +17,8 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 The `areaOfEffect` package classifies spatial points relative to polygon
 boundaries, labeling each point as **core** (inside), **halo** (in a
 buffer zone), or pruning it (too far). It handles projection, buffering,
-and point-in-polygon operations automatically. Pass a dataframe and a
-region name, get classified points back.
+and point-in-polygon operations automatically. Pass a dataframe with a
+country name or your own sf polygon, get classified points back.
 
 ![Austria with Area of Effect](reference/figures/austria-aoe.svg)
 
@@ -148,10 +148,10 @@ result <- aoe(df, "Portugal", mask = "land")
 result <- aoe(df, "Portugal", mask = my_land_polygon)
 ```
 
-The `area` parameter goes further: it finds the buffer size that gives
-you the target halo area *after* clipping. So `area = 1` guarantees
-equal land area in core and halo, even for countries like Japan where
-half the buffer would otherwise be ocean.
+The `area` parameter finds the buffer size that gives you the target
+halo area *after* clipping. So `area = 1` guarantees equal land area in
+core and halo, even for countries like Japan where half the buffer would
+otherwise be ocean.
 
 ``` r
 
