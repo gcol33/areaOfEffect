@@ -120,6 +120,15 @@ pts_sf <- st_as_sf(df, coords = c("longitude", "latitude"), crs = 4326)
 result <- aoe(pts_sf, "AT")
 ```
 
+### Custom Polygons
+
+``` r
+
+# Use your own sf polygon instead of country names
+my_region <- st_read("my_study_area.shp")
+result <- aoe(df, my_region)
+```
+
 ### Multiple Countries
 
 ``` r

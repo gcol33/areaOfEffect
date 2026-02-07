@@ -221,9 +221,17 @@
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">pts_sf</span>, <span class="st">"AT"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="multiple-countries">Multiple Countries<a class="anchor" aria-label="anchor" href="#multiple-countries"></a>
+<h3 id="custom-polygons">Custom Polygons<a class="anchor" aria-label="anchor" href="#custom-polygons"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use your own sf polygon instead of country names</span></span>
+<span><span class="va">my_region</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="st">"my_study_area.shp"</span><span class="op">)</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">df</span>, <span class="va">my_region</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="multiple-countries">Multiple Countries<a class="anchor" aria-label="anchor" href="#multiple-countries"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Austria + Germany</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AT"</span>, <span class="st">"DE"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -314,14 +322,14 @@
 </g>
 </g>
 </svg></div></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use the bundled Natural Earth land polygon</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">df</span>, <span class="st">"Portugal"</span>, mask <span class="op">=</span> <span class="st">"land"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Or bring your own mask</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">df</span>, <span class="st">"Portugal"</span>, mask <span class="op">=</span> <span class="va">my_land_polygon</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>area</code> parameter finds the buffer size that gives you the target halo area <em>after</em> clipping. So <code>area = 1</code> guarantees equal land area in core and halo, even for countries like Japan where half the buffer would otherwise be ocean.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Equal land area, not equal total area</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">df</span>, <span class="st">"Japan"</span>, mask <span class="op">=</span> <span class="st">"land"</span>, area <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -379,13 +387,13 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">@software{areaOfEffect,</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">  author = {Colling, Gilles},</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">  title = {areaOfEffect: Classify Points by Distance to Polygon Boundaries},</span></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">  year = {2025},</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">  url = {https://CRAN.R-project.org/package=areaOfEffect},</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">  doi = {10.32614/CRAN.package.areaOfEffect}</span></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co">@software{areaOfEffect,</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">  author = {Colling, Gilles},</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">  title = {areaOfEffect: Classify Points by Distance to Polygon Boundaries},</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">  year = {2025},</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">  url = {https://CRAN.R-project.org/package=areaOfEffect},</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">  doi = {10.32614/CRAN.package.areaOfEffect}</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
