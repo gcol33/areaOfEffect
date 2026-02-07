@@ -335,9 +335,13 @@ aoe_no_mask_ea <- st_transform(aoe_no_mask, crs_ea)
 aoe_masked_ea <- st_transform(aoe_masked, crs_ea)
 support_ea <- st_transform(support_geom, crs_ea)
 
-# Plot
+# Plot with padding to avoid clipping
+bbox <- st_bbox(aoe_no_mask_ea)
+pad <- (bbox[4] - bbox[2]) * 0.05
 par(mar = c(1, 1, 1, 1), bty = "n")
-plot(st_geometry(aoe_no_mask_ea), border = "gray50", lty = 2, lwd = 1.5)
+plot(st_geometry(aoe_no_mask_ea), border = "gray50", lty = 2, lwd = 1.5,
+     xlim = c(bbox[1] - pad, bbox[3] + pad),
+     ylim = c(bbox[2] - pad, bbox[4] + pad))
 plot(st_geometry(aoe_masked_ea), col = rgb(0.3, 0.5, 0.7, 0.3),
      border = "steelblue", lty = 2, lwd = 1.5, add = TRUE)
 plot(st_geometry(support_ea), border = "black", lwd = 2, add = TRUE)
