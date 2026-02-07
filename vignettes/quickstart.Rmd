@@ -132,13 +132,16 @@ geoms <- aoe_geometry(result, "both")
 austria_geom <- geoms[geoms$type == "original", ]
 aoe_geom <- geoms[geoms$type == "aoe", ]
 
-# Plot with ggplot2
-ggplot() +
-  geom_sf(data = aoe_geom, fill = aoe_colors$aoe_fill, color = aoe_colors$aoe_border,
-          linetype = "dashed", linewidth = 1) +
-  geom_sf(data = austria_geom, fill = NA, color = aoe_colors$support, linewidth = 1.2) +
-  labs(title = NULL) +
-  theme_aoe()
+# Plot
+par(mar = c(1, 1, 1, 1), bty = "n")
+plot(st_geometry(aoe_geom), border = "steelblue", lty = 2, lwd = 1.5)
+plot(st_geometry(austria_geom), border = "black", lwd = 2, add = TRUE)
+legend("topright",
+       legend = c("Austria (core)", "Area of Effect"),
+       col = c("black", "steelblue"),
+       lty = c(1, 2),
+       lwd = c(2, 1.5),
+       inset = 0.02)
 ```
 
 ## Basic Usage with Custom Polygons
@@ -288,7 +291,7 @@ ggplot() +
     values = c("core" = aoe_colors$point_core, "halo" = aoe_colors$point_halo),
     labels = c("Core", "Halo")
   ) +
-  annotate("text", x = 90, y = 80, label = "SEA", color = aoe_colors$aoe_border,
+  annotate("text", x = 90, y = 80, label = "SEA", color = "black",
            fontface = "bold", size = 5) +
   coord_sf(xlim = c(-10, 110), ylim = c(-10, 90)) +
   labs(color = "Class") +
