@@ -21,6 +21,7 @@ Imports:
     methods,
     sf
 Suggests:
+    ggplot2,
     lwgeom,
     testthat (>= 3.0.0),
     knitr,

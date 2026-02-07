@@ -25,7 +25,7 @@ comparisons.
 
 library(areaOfEffect)
 library(sf)
-#> Linking to GEOS 3.13.1, GDAL 3.11.4, PROJ 9.7.0; sf_use_s2() is TRUE
+library(ggplot2)
 ```
 
 ### From a Dataframe
@@ -80,24 +80,21 @@ geoms <- aoe_geometry(result, "both")
 austria_geom <- geoms[geoms$type == "original", ]
 aoe_geom <- geoms[geoms$type == "aoe", ]
 
-# Plot
-par(mar = c(1, 1, 1, 1), bty = "n")
-plot(st_geometry(aoe_geom), border = "steelblue", lty = 2, lwd = 1.5)
-plot(st_geometry(austria_geom), border = "black", lwd = 2, add = TRUE)
-legend("topright",
-       legend = c("Austria (core)", "Area of Effect"),
-       col = c("black", "steelblue"),
-       lty = c(1, 2),
-       lwd = c(2, 1.5),
-       inset = 0.02)
+# Plot with ggplot2
+ggplot() +
+  geom_sf(data = aoe_geom, fill = aoe_colors$aoe_fill, color = aoe_colors$aoe_border,
+          linetype = "dashed", linewidth = 1) +
+  geom_sf(data = austria_geom, fill = NA, color = aoe_colors$support, linewidth = 1.2) +
+  labs(title = NULL) +
+  theme_aoe()
 ```
 
-![Austria (black) with its area of effect (dashed blue). The halo has
+![Austria (dark) with its area of effect (blue dashed). The halo has
 equal area to the
 core.](quickstart_files/figure-html/austria-visual-1.svg)
 
-Austria (black) with its area of effect (dashed blue). The halo has
-equal area to the core.
+Austria (dark) with its area of effect (blue dashed). The halo has equal
+area to the core.
 
 ## Basic Usage with Custom Polygons
 
@@ -241,9 +238,22 @@ land_mask <- st_as_sf(
   crs = 32631
 )
 
+# Create sea area (inverse of land for visualization)
+sea_area <- st_as_sf(
+ data.frame(id = 1),
+ geometry = st_sfc(st_polygon(list(cbind(
+   c(-20, 120, 120, -20, -20),
+   c(-20, -20, 100, 100, -20)
+ )))),
+ crs = 32631
+)
+sea_area <- st_difference(sea_area, land_mask)
+#> Warning: attribute variables are assumed to be spatially constant throughout
+#> all geometries
+
 # Create some points
 pts_coast <- st_as_sf(
-  data.frame(id = 1:4),
+  data.frame(id = 1:4, class = c("core", "core", "halo", "pruned")),
   geometry = st_sfc(
     st_point(c(60, 40)),  # core
     st_point(c(50, 30)),  # core
@@ -254,36 +264,34 @@ pts_coast <- st_as_sf(
 )
 
 # Apply with mask
-result_coast <- aoe(pts_coast, support_coast, mask = land_mask)
+result_coast <- aoe(pts_coast[1:3, ], support_coast, mask = land_mask)
 
 # Get geometries for visualization
 aoe_masked <- aoe_geometry(result_coast, "aoe")
 support_geom <- aoe_geometry(result_coast, "original")
 
-par(mar = c(1, 1, 1, 1), bty = "n")
-plot(st_geometry(land_mask), col = NA, border = "steelblue", lwd = 2,
-     xlim = c(-10, 110), ylim = c(-10, 90))
-plot(st_geometry(aoe_masked), col = rgb(0.5, 0.5, 0.5, 0.3),
-     border = "steelblue", lty = 2, add = TRUE)
-plot(st_geometry(support_geom), border = "black", lwd = 2, add = TRUE)
+# Prepare point data for plotting
+result_coast$class <- result_coast$aoe_class
+pruned_pt <- pts_coast[4, ]
 
-# Add points with colors
-cols <- ifelse(result_coast$aoe_class == "core", "forestgreen", "darkorange")
-plot(st_geometry(result_coast), col = cols, pch = 16, cex = 1.5, add = TRUE)
-
-# Show pruned point
-plot(st_geometry(pts_coast)[4], col = "gray60", pch = 4, cex = 1.2, add = TRUE)
-
-text(85, 75, "SEA", col = "steelblue", font = 2, cex = 1.2)
-
-legend("topleft",
-       legend = c("Support", "AoE (masked)", "Coastline", "Core", "Halo", "Pruned"),
-       col = c("black", "steelblue", "steelblue", "forestgreen", "darkorange", "gray60"),
-       lty = c(1, 2, 1, NA, NA, NA),
-       lwd = c(2, 1, 2, NA, NA, NA),
-       pch = c(NA, NA, NA, 16, 16, 4),
-       pt.cex = c(NA, NA, NA, 1.5, 1.5, 1.2),
-       inset = 0.02)
+# Plot with ggplot2
+ggplot() +
+  geom_sf(data = sea_area, fill = aoe_colors$sea, color = NA) +
+  geom_sf(data = land_mask, fill = aoe_colors$land, color = aoe_colors$mask, linewidth = 0.8) +
+  geom_sf(data = aoe_masked, fill = aoe_colors$aoe_fill, color = aoe_colors$aoe_border,
+          linetype = "dashed", linewidth = 1) +
+  geom_sf(data = support_geom, fill = NA, color = aoe_colors$support, linewidth = 1.2) +
+  geom_sf(data = result_coast, aes(color = class), size = 4) +
+  geom_sf(data = pruned_pt, color = aoe_colors$point_pruned, shape = 4, size = 4, stroke = 1.5) +
+  scale_color_manual(
+    values = c("core" = aoe_colors$point_core, "halo" = aoe_colors$point_halo),
+    labels = c("Core", "Halo")
+  ) +
+  annotate("text", x = 90, y = 80, label = "SEA", color = aoe_colors$aoe_border,
+           fontface = "bold", size = 5) +
+  coord_sf(xlim = c(-10, 110), ylim = c(-10, 90)) +
+  labs(color = "Class") +
+  theme_aoe()
 ```
 
 ![AoE with land mask. The AoE is clipped to the land
@@ -324,26 +332,25 @@ aoe_no_mask_ea <- st_transform(aoe_no_mask, crs_ea)
 aoe_masked_ea <- st_transform(aoe_masked, crs_ea)
 support_ea <- st_transform(support_geom, crs_ea)
 
-# Plot - expand xlim for legend, crop bottom margin
-bbox <- st_bbox(aoe_no_mask_ea)
-x_range <- bbox[3] - bbox[1]
-y_range <- bbox[4] - bbox[2]
-par(mar = c(1, 1, 1, 1), bty = "n")
-plot(st_geometry(aoe_no_mask_ea), border = "gray50", lty = 2, lwd = 1.5,
-     xlim = c(bbox[1], bbox[3]),
-     ylim = c(bbox[2] + y_range * 0.25, bbox[4]),
-     axes = FALSE, xaxt = "n", yaxt = "n")
-plot(st_geometry(aoe_masked_ea), col = rgb(0.3, 0.5, 0.7, 0.3),
-     border = "steelblue", lty = 2, lwd = 1.5, add = TRUE)
-plot(st_geometry(support_ea), border = "black", lwd = 2, add = TRUE)
+# Prepare legend data
+legend_data <- data.frame(
+  type = factor(c("Portugal", "AoE (unmasked)", "AoE (land only)"),
+                levels = c("Portugal", "AoE (unmasked)", "AoE (land only)"))
+)
 
-legend("topright",
-       legend = c("Portugal", "AoE (unmasked)", "AoE (land only)"),
-       col = c("black", "gray50", "steelblue"),
-       lty = c(1, 2, 2),
-       lwd = c(2, 1.5, 1.5),
-       bty = "n",
-       inset = 0.05)
+# Crop to focus on relevant area
+bbox <- st_bbox(aoe_no_mask_ea)
+y_range <- bbox[4] - bbox[2]
+
+# Plot with ggplot2
+ggplot() +
+  geom_sf(data = aoe_no_mask_ea, fill = NA, color = aoe_colors$mask,
+          linetype = "dashed", linewidth = 1) +
+  geom_sf(data = aoe_masked_ea, fill = aoe_colors$aoe_fill, color = aoe_colors$aoe_border,
+          linetype = "dashed", linewidth = 1) +
+  geom_sf(data = support_ea, fill = NA, color = aoe_colors$support, linewidth = 1.2) +
+  coord_sf(ylim = c(bbox[2] + y_range * 0.2, bbox[4])) +
+  theme_aoe()
 ```
 
 ![Portugal with land-masked AoE. The halo extends into Spain but not
@@ -538,8 +545,27 @@ result_border <- aoe_border(
   side_names = c("north", "south")
 )
 
-# Built-in plot method
-plot(result_border)
+# Extract geometries for ggplot2
+geoms <- attr(result_border, "border_geometries")
+
+# Plot with ggplot2
+ggplot() +
+  # Halo zones (background)
+  geom_sf(data = geoms$side1_halo, fill = paste0(aoe_colors$side_a, "20"), color = NA) +
+  geom_sf(data = geoms$side2_halo, fill = paste0(aoe_colors$side_b, "20"), color = NA) +
+  # Core zones
+  geom_sf(data = geoms$side1_core, fill = paste0(aoe_colors$side_a, "40"), color = NA) +
+  geom_sf(data = geoms$side2_core, fill = paste0(aoe_colors$side_b, "40"), color = NA) +
+  # Border line
+  geom_sf(data = geoms$border, color = aoe_colors$support, linewidth = 1.5) +
+  # Points
+  geom_sf(data = result_border,
+          aes(color = side, shape = aoe_class), size = 3) +
+  scale_color_manual(values = c("north" = aoe_colors$side_a, "south" = aoe_colors$side_b)) +
+  scale_shape_manual(values = c("core" = 16, "halo" = 1),
+                     labels = c("Core", "Halo")) +
+  labs(color = "Side", shape = "Class") +
+  theme_aoe()
 ```
 
 ![Border classification. Points are classified by side (blue vs orange)
