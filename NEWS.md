@@ -1,3 +1,15 @@
+# areaOfEffect 0.2.5
+
+* Reposition package as general spatial classification tool (not ecology-specific)
+* Updated README with Statement of Need section and clearer feature descriptions
+* Updated DESCRIPTION title and description to be domain-agnostic
+* Added CRAN badges and installation instructions
+
+# areaOfEffect 0.2.4
+
+* Fixed `\dontrun{}` in `aoe_sample.aoe_border_result` example - replaced with
+  complete, self-contained example that runs in < 5 seconds (CRAN policy compliance)
+
 # areaOfEffect 0.1.0
 
 Initial CRAN release.

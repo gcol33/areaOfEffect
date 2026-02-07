@@ -10,13 +10,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/gcol33/areaOfEffect/blob/HEAD/DESCRIPTION)
 
-Colling G (2026). *areaOfEffect: Spatial Support at Scale*. R package
-version 0.2.3, <https://gillescolling.com/areaOfEffect/>.
+Colling G (2026). *areaOfEffect: Classify Points by Distance to Polygon
+Boundaries*. R package version 0.2.5,
+<https://gillescolling.com/areaOfEffect/>.
 
     @Manual{,
-      title = {areaOfEffect: Spatial Support at Scale},
+      title = {areaOfEffect: Classify Points by Distance to Polygon Boundaries},
       author = {Gilles Colling},
       year = {2026},
-      note = {R package version 0.2.3},
+      note = {R package version 0.2.5},
       url = {https://gillescolling.com/areaOfEffect/},
     }

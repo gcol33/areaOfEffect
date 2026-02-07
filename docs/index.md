@@ -1,20 +1,24 @@
 # areaOfEffect
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/areaOfEffect)](https://CRAN.R-project.org/package=areaOfEffect)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/areaOfEffect)](https://cran.r-project.org/package=areaOfEffect)
+[![Monthly
+downloads](https://cranlogs.r-pkg.org/badges/areaOfEffect)](https://cran.r-project.org/package=areaOfEffect)
 [![R-CMD-check](https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml)
+[![Codecov test
+coverage](https://codecov.io/gh/gcol33/areaOfEffect/graph/badge.svg)](https://app.codecov.io/gh/gcol33/areaOfEffect)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Classify occurrence records relative to country borders, without
-writing sf code.**
+**Classify Points by Distance to Polygon Boundaries**
 
-Ecological processes like dispersal are isotropic: a species spreads
-equally in all directions. Political borders are not. When you sample
-within a country, the border truncates the process, creating anisotropic
-artifacts near edges. The **area of effect** expands sampling outward to
-correct for this mismatch.
-
-Dataframe in → dataframe out. No CRS headaches. No buffer distance
-guessing.
+The `areaOfEffect` package classifies spatial points relative to polygon
+boundaries, labeling each point as **core** (inside), **halo** (in a
+buffer zone), or pruning it (too far). It handles projection, buffering,
+and point-in-polygon operations automatically. Pass a dataframe and a
+region name, get classified points back.
 
 ![Austria with Area of Effect](reference/figures/austria-aoe.svg)
 
@@ -24,38 +28,49 @@ guessing.
 
 library(areaOfEffect)
 
-# Your occurrence data
+# Your point data
 observations <- data.frame(
-  species = c("A", "B", "C", "D"),
+  id = c("A", "B", "C", "D"),
   lon = c(14.5, 15.2, 16.8, 20.0),
   lat = c(47.5, 48.1, 47.2, 48.5)
 )
 
-# One line - get back a classified dataframe
+# Classify relative to Austria
 result <- aoe(observations, "Austria")
 result$aoe_class
 #> [1] "core" "core" "halo"
-# (point D pruned - outside area of effect)
+# (point D pruned - outside buffer zone)
 ```
 
-## Why Equal Area?
+## Statement of Need
 
-Points are classified as **core** (inside the country), **halo**
-(outside but within the buffer), or **pruned** (too far out).
+Classifying points by their position relative to polygon boundaries is a
+common spatial task: which customers are inside vs. near a service area,
+which sensors fall within vs. outside a study region, which events
+occurred inside vs. near a border. The underlying sf operations are
+straightforward but repetitive: load boundaries, handle CRS, compute
+buffers, run intersections.
 
-By default, the halo has equal area to the core. Why? Because buffer
-distance in meters is arbitrary and scale-dependent. A 10km buffer means
-something different for Luxembourg than for Brazil. Equal area gives a
-consistent correction factor across regions, and scales automatically
-without CRS expertise.
+This package wraps that boilerplate into a single function. It also
+solves a less obvious problem: **what buffer distance should you use?**
+A 10km buffer means something different for Luxembourg than for Brazil.
+By default, `areaOfEffect` computes a buffer that produces equal core
+and halo areas, giving a scale-independent definition of “near the
+boundary.”
 
-## What It Handles
+For coastal or irregular regions, the buffer can extend into areas you
+don’t care about (ocean, neighboring countries). The `mask` parameter
+clips the halo to relevant areas, and the `area` parameter adjusts the
+buffer to achieve your target area *after* masking.
 
-The package wraps sf boilerplate that’s easy to get wrong:
+## Features
 
 - **Dataframes or sf objects**: pass either, get classified results back
 - **Bundled country boundaries**: just pass `"Austria"` or `"AT"`, no
   need to find shapefiles
+- **Border classification**:
+  [`aoe_border()`](https://gcol33.github.io/areaOfEffect/reference/aoe_border.md)
+  classifies points by distance to a line (e.g., international borders)
 - Coordinate column detection (handles `lon`/`long`/`longitude`/`x`,
   etc.)
 - Equal-area projection for accurate buffering
@@ -67,7 +82,10 @@ The package wraps sf boilerplate that’s easy to get wrong:
 
 ``` r
 
-# Install from GitHub
+# Install from CRAN
+install.packages("areaOfEffect")
+
+# Or install development version from GitHub
 # install.packages("pak")
 pak::pak("gcol33/areaOfEffect")
 ```
@@ -184,8 +202,9 @@ MIT
 ``` bibtex
 @software{areaOfEffect,
   author = {Colling, Gilles},
-  title = {areaOfEffect: Area-Based Spatial Classification for Ecological Data},
+  title = {areaOfEffect: Classify Points by Distance to Polygon Boundaries},
   year = {2025},
-  url = {https://github.com/gcol33/areaOfEffect}
+  url = {https://CRAN.R-project.org/package=areaOfEffect},
+  doi = {10.32614/CRAN.package.areaOfEffect}
 }
 ```

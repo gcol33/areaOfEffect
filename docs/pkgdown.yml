@@ -1,10 +1,10 @@
-pandoc: 3.8.2.1
+pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   quickstart: quickstart.html
   theory: theory.html
-last_built: 2026-02-01T19:42Z
+last_built: 2026-02-07T00:55Z
 urls:
   reference: https://gcol33.github.io/areaOfEffect/reference
   article: https://gcol33.github.io/areaOfEffect/articles

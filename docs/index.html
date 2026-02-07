@@ -5,15 +5,15 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Spatial Support at Scale • areaOfEffect</title>
+<title>Classify Points by Distance to Polygon Boundaries • areaOfEffect</title>
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
-<meta property="og:title" content="Spatial Support at Scale">
-<meta name="description" content='Formalizes spatial support at scale for ecological and geographical analysis. Given points and support polygons, classifies points as "core" (inside original support) or "halo" (inside scaled support but outside original), pruning all others. The default scale produces equal core and halo areas - a geometrically derived choice requiring no tuning. An optional mask enforces hard boundaries such as coastlines. Political borders are treated as soft boundaries with no ecological meaning.'>
-<meta property="og:description" content='Formalizes spatial support at scale for ecological and geographical analysis. Given points and support polygons, classifies points as "core" (inside original support) or "halo" (inside scaled support but outside original), pruning all others. The default scale produces equal core and halo areas - a geometrically derived choice requiring no tuning. An optional mask enforces hard boundaries such as coastlines. Political borders are treated as soft boundaries with no ecological meaning.'>
+<meta property="og:title" content="Classify Points by Distance to Polygon Boundaries">
+<meta name="description" content='Classifies spatial points relative to polygon boundaries, labeling each point as "core" (inside), "halo" (in a buffer zone), or pruning it (outside both). Handles projection, buffering, and point-in-polygon operations automatically. The default buffer produces equal core and halo areas, providing a scale-independent definition of "near the boundary." An optional mask clips the buffer to relevant areas such as coastlines.'>
+<meta property="og:description" content='Classifies spatial points relative to polygon boundaries, labeling each point as "core" (inside), "halo" (in a buffer zone), or pruning it (outside both). Handles projection, buffering, and point-in-polygon operations automatically. The default buffer produces equal core and halo areas, providing a scale-independent definition of "near the boundary." An optional mask clips the buffer to relevant areas such as coastlines.'>
 </head>
 <body>
 <p>
@@ -37,7 +37,7 @@
 
     <a class="navbar-brand me-2" href="index.html">areaOfEffect</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,10 +79,9 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="areaofeffect">areaOfEffect<a class="anchor" aria-label="anchor" href="#areaofeffect"></a>
 </h1></div>
-<p><a href="https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
-<p><strong>Classify occurrence records relative to country borders, without writing sf code.</strong></p>
-<p>Ecological processes like dispersal are isotropic: a species spreads equally in all directions. Political borders are not. When you sample within a country, the border truncates the process, creating anisotropic artifacts near edges. The <strong>area of effect</strong> expands sampling outward to correct for this mismatch.</p>
-<p>Dataframe in → dataframe out. No CRS headaches. No buffer distance guessing.</p>
+<p><a href="https://CRAN.R-project.org/package=areaOfEffect" class="external-link"><img src="https://www.r-pkg.org/badges/version/areaOfEffect" alt="CRAN status"></a> <a href="https://cran.r-project.org/package=areaOfEffect" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/areaOfEffect" alt="CRAN downloads"></a> <a href="https://cran.r-project.org/package=areaOfEffect" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/areaOfEffect" alt="Monthly downloads"></a> <a href="https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a> <a href="https://app.codecov.io/gh/gcol33/areaOfEffect" class="external-link"><img src="https://codecov.io/gh/gcol33/areaOfEffect/graph/badge.svg" alt="Codecov test coverage"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
+<p><strong>Classify Points by Distance to Polygon Boundaries</strong></p>
+<p>The <code>areaOfEffect</code> package classifies spatial points relative to polygon boundaries, labeling each point as <strong>core</strong> (inside), <strong>halo</strong> (in a buffer zone), or pruning it (too far). It handles projection, buffering, and point-in-polygon operations automatically. Pass a dataframe and a region name, get classified points back.</p>
 <p align="center">
 <div class="svg-container"><button type="button" class="btn btn-primary btn-copy-svg" title="Copy SVG to clipboard" aria-label="Copy SVG to clipboard" data-bs-toggle="tooltip" data-bs-placement="left"><i class="fa fa-copy"></i></button>
 <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='504.00pt' height='360.00pt' viewBox='0 0 504.00 360.00' class="inline-svg" style="max-width:100%;width:100%;height:auto;">
@@ -144,34 +143,36 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gillescolling.com/areaOfEffect/" class="external-link">areaOfEffect</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Your occurrence data</span></span>
+<span><span class="co"># Your point data</span></span>
 <span><span class="va">observations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span><span class="op">)</span>,</span>
+<span>  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span><span class="op">)</span>,</span>
 <span>  lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">14.5</span>, <span class="fl">15.2</span>, <span class="fl">16.8</span>, <span class="fl">20.0</span><span class="op">)</span>,</span>
 <span>  lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">47.5</span>, <span class="fl">48.1</span>, <span class="fl">47.2</span>, <span class="fl">48.5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># One line - get back a classified dataframe</span></span>
+<span><span class="co"># Classify relative to Austria</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/aoe.html">aoe</a></span><span class="op">(</span><span class="va">observations</span>, <span class="st">"Austria"</span><span class="op">)</span></span>
 <span><span class="va">result</span><span class="op">$</span><span class="va">aoe_class</span></span>
 <span><span class="co">#&gt; [1] "core" "core" "halo"</span></span>
-<span><span class="co"># (point D pruned - outside area of effect)</span></span></code></pre></div>
+<span><span class="co"># (point D pruned - outside buffer zone)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="why-equal-area">Why Equal Area?<a class="anchor" aria-label="anchor" href="#why-equal-area"></a>
+<h2 id="statement-of-need">Statement of Need<a class="anchor" aria-label="anchor" href="#statement-of-need"></a>
 </h2>
-<p>Points are classified as <strong>core</strong> (inside the country), <strong>halo</strong> (outside but within the buffer), or <strong>pruned</strong> (too far out).</p>
-<p>By default, the halo has equal area to the core. Why? Because buffer distance in meters is arbitrary and scale-dependent. A 10km buffer means something different for Luxembourg than for Brazil. Equal area gives a consistent correction factor across regions, and scales automatically without CRS expertise.</p>
+<p>Classifying points by their position relative to polygon boundaries is a common spatial task: which customers are inside vs. near a service area, which sensors fall within vs. outside a study region, which events occurred inside vs. near a border. The underlying sf operations are straightforward but repetitive: load boundaries, handle CRS, compute buffers, run intersections.</p>
+<p>This package wraps that boilerplate into a single function. It also solves a less obvious problem: <strong>what buffer distance should you use?</strong> A 10km buffer means something different for Luxembourg than for Brazil. By default, <code>areaOfEffect</code> computes a buffer that produces equal core and halo areas, giving a scale-independent definition of “near the boundary.”</p>
+<p>For coastal or irregular regions, the buffer can extend into areas you don’t care about (ocean, neighboring countries). The <code>mask</code> parameter clips the halo to relevant areas, and the <code>area</code> parameter adjusts the buffer to achieve your target area <em>after</em> masking.</p>
 </div>
 <div class="section level2">
-<h2 id="what-it-handles">What It Handles<a class="anchor" aria-label="anchor" href="#what-it-handles"></a>
+<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
-<p>The package wraps sf boilerplate that’s easy to get wrong:</p>
 <ul>
 <li>
 <strong>Dataframes or sf objects</strong>: pass either, get classified results back</li>
 <li>
 <strong>Bundled country boundaries</strong>: just pass <code>"Austria"</code> or <code>"AT"</code>, no need to find shapefiles</li>
+<li>
+<strong>Border classification</strong>: <code><a href="reference/aoe_border.html">aoe_border()</a></code> classifies points by distance to a line (e.g., international borders)</li>
 <li>Coordinate column detection (handles <code>lon</code>/<code>long</code>/<code>longitude</code>/<code>x</code>, etc.)</li>
 <li>Equal-area projection for accurate buffering</li>
 <li>Area-proportional buffer calculation</li>
@@ -183,7 +184,10 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
+<code class="sourceCode R"><span><span class="co"># Install from CRAN</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"areaOfEffect"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or install development version from GitHub</span></span>
 <span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu">pak</span><span class="op">(</span><span class="st">"gcol33/areaOfEffect"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -377,15 +381,17 @@
 </h2>
 <div class="sourceCode" id="cb8"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">@software{areaOfEffect,</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">  author = {Colling, Gilles},</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">  title = {areaOfEffect: Area-Based Spatial Classification for Ecological Data},</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">  title = {areaOfEffect: Classify Points by Distance to Polygon Boundaries},</span></span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">  year = {2025},</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">  url = {https://github.com/gcol33/areaOfEffect}</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">  url = {https://CRAN.R-project.org/package=areaOfEffect},</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">  doi = {10.32614/CRAN.package.areaOfEffect}</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://cloud.r-project.org/package=areaOfEffect" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/gcol33/areaOfEffect/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/gcol33/areaOfEffect/issues" class="external-link">Report a bug</a></li>
 </ul>
