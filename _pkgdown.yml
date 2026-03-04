@@ -1,21 +1,25 @@
 url: https://gcol33.github.io/areaOfEffect/
-
 template:
   bootstrap: 5
   bootswatch: sandstone
-  light-switch: true
+  light-switch: yes
+  math-rendering: mathjax
   includes:
     in_header: pkgdown/mathjax-config.html
-
 figures:
   dev: svglite::svglite
   fig.ext: svg
-  bg: "#F5F6F8"
-
+  bg: '#F5F6F8'
 navbar:
   structure:
-    left: [intro, reference, articles]
-    right: [search, lightswitch, github]
+    left:
+    - intro
+    - reference
+    - articles
+    right:
+    - search
+    - lightswitch
+    - github
   components:
     intro:
       text: Get Started
@@ -24,7 +28,6 @@ navbar:
       icon: fab fa-github
       href: https://github.com/gcol33/areaOfEffect
       aria-label: GitHub
-
 reference:
 - title: Core
   contents:
@@ -54,18 +57,14 @@ reference:
   - plot.aoe_result
   - plot.aoe_border_result
   - aoe_sample.aoe_border_result
-  - "`[.aoe_result`"
-
+  - '`[.aoe_result`'
 articles:
-- title: "Getting Started"
+- title: Getting Started
   navbar: ~
-  contents:
-    - quickstart
-- title: "Background"
+  contents: quickstart
+- title: Background
   navbar: ~
-  contents:
-    - theory
-
+  contents: theory
 footer:
   structure:
     left: developed_by

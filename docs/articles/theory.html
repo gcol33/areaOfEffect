@@ -6,7 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Theory • areaOfEffect</title>
-<script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -306,10 +312,10 @@ the AoE are pruned.
 </h2>
 <p>The <code>scale</code> parameter controls how large the halo is
 relative to the core. The relationship between scale and area is:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Total AoE area</mtext><mo>=</mo><mtext mathvariant="normal">Core area</mtext><mo>×</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>s</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\text{Total AoE area} = \text{Core area} \times (1 + s)^2</annotation></semantics></math></p>
-<p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math>
-is the scale parameter.</p>
+<p><span class="math display">\[\text{Total AoE area} = \text{Core area}
+\times (1 + s)^2\]</span></p>
+<p>where <span class="math inline">\(s\)</span> is the scale
+parameter.</p>
 <p>Two values have special meaning:</p>
 <ul>
 <li><p><strong><code>sqrt(2) - 1</code> ≈ 0.414</strong> (default):
@@ -353,13 +359,12 @@ toward internal or external dominance.</p>
 <div class="section level3">
 <h3 id="the-geometric-inevitability">The Geometric Inevitability<a class="anchor" aria-label="anchor" href="#the-geometric-inevitability"></a>
 </h3>
-<p>The formula
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><msqrt><mn>2</mn></msqrt><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">s = \sqrt{2} - 1</annotation></semantics></math>
-is not a tuned parameter. It’s the <em>unique</em> solution to the
+<p>The formula <span class="math inline">\(s = \sqrt{2} - 1\)</span> is
+not a tuned parameter. It’s the <em>unique</em> solution to the
 constraint “core equals halo”:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>s</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mo>−</mo><mn>1</mn><mo>=</mo><mn>1</mn><mo>⟹</mo><mi>s</mi><mo>=</mo><msqrt><mn>2</mn></msqrt><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">
+<p><span class="math display">\[
 (1 + s)^2 - 1 = 1 \implies s = \sqrt{2} - 1
-</annotation></semantics></math></p>
+\]</span></p>
 <p>There’s something satisfying about a default that isn’t chosen but
 <em>derived</em>. It removes a degree of freedom from the analyst and
 replaces it with a principled constraint.</p>
@@ -399,15 +404,13 @@ The buffer distance is computed to achieve the target halo area.</p>
 <li><p>Consistent behavior for concave shapes</p></li>
 </ul>
 <p><strong>How it works:</strong></p>
-<p>The buffer distance
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
-is found by solving:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>π</mi><msup><mi>d</mi><mn>2</mn></msup><mo>+</mo><mi>P</mi><mo>⋅</mo><mi>d</mi><mo>=</mo><msub><mi>A</mi><mtext mathvariant="normal">halo</mtext></msub></mrow><annotation encoding="application/x-tex">\pi d^2 + P \cdot d = A_{\text{halo}}</annotation></semantics></math></p>
-<p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>P</mi><annotation encoding="application/x-tex">P</annotation></semantics></math>
-is the perimeter and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>A</mi><mtext mathvariant="normal">halo</mtext></msub><annotation encoding="application/x-tex">A_{\text{halo}}</annotation></semantics></math>
-is the target halo area.</p>
+<p>The buffer distance <span class="math inline">\(d\)</span> is found
+by solving:</p>
+<p><span class="math display">\[\pi d^2 + P \cdot d =
+A_{\text{halo}}\]</span></p>
+<p>where <span class="math inline">\(P\)</span> is the perimeter and
+<span class="math inline">\(A_{\text{halo}}\)</span> is the target halo
+area.</p>
 </div>
 <div class="section level3">
 <h3 id="stamp-method-alternative">Stamp Method (Alternative)<a class="anchor" aria-label="anchor" href="#stamp-method-alternative"></a>

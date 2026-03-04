@@ -74,11 +74,9 @@ the AoE are pruned.
 The `scale` parameter controls how large the halo is relative to the
 core. The relationship between scale and area is:
 
-``` math
-\text{Total AoE area} = \text{Core area} \times (1 + s)^2
-```
+\\\text{Total AoE area} = \text{Core area} \times (1 + s)^2\\
 
-where $`s`$ is the scale parameter.
+where \\s\\ is the scale parameter.
 
 Two values have special meaning:
 
@@ -120,12 +118,10 @@ toward internal or external dominance.
 
 ### The Geometric Inevitability
 
-The formula $`s = \sqrt{2} - 1`$ is not a tuned parameter. It’s the
+The formula \\s = \sqrt{2} - 1\\ is not a tuned parameter. It’s the
 *unique* solution to the constraint “core equals halo”:
 
-``` math
-(1 + s)^2 - 1 = 1 \implies s = \sqrt{2} - 1
-```
+\\ (1 + s)^2 - 1 = 1 \implies s = \sqrt{2} - 1 \\
 
 There’s something satisfying about a default that isn’t chosen but
 *derived*. It removes a degree of freedom from the analyst and replaces
@@ -166,13 +162,11 @@ buffer distance is computed to achieve the target halo area.
 
 **How it works:**
 
-The buffer distance $`d`$ is found by solving:
+The buffer distance \\d\\ is found by solving:
 
-``` math
-\pi d^2 + P \cdot d = A_{\text{halo}}
-```
+\\\pi d^2 + P \cdot d = A\_{\text{halo}}\\
 
-where $`P`$ is the perimeter and $`A_{\text{halo}}`$ is the target halo
+where \\P\\ is the perimeter and \\A\_{\text{halo}}\\ is the target halo
 area.
 
 ### Stamp Method (Alternative)
