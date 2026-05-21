@@ -86,7 +86,7 @@ buffer to achieve your target area *after* masking.
 install.packages("areaOfEffect")
 
 # Or install development version from GitHub
-# install.packages("pak")
+install.packages("pak")
 pak::pak("gcol33/areaOfEffect")
 ```
 

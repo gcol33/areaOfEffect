@@ -60,7 +60,7 @@ For coastal or irregular regions, the buffer can extend into areas you don't car
 install.packages("areaOfEffect")
 
 # Or install development version from GitHub
-# install.packages("pak")
+install.packages("pak")
 pak::pak("gcol33/areaOfEffect")
 ```
 
