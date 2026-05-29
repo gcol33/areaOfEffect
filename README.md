@@ -1,6 +1,6 @@
 # areaOfEffect
 
-*near is a question, not a number*
+*the area a point actually affects*
 
 [![CRAN status](https://www.r-pkg.org/badges/version/areaOfEffect)](https://CRAN.R-project.org/package=areaOfEffect)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/areaOfEffect)](https://cran.r-project.org/package=areaOfEffect)
