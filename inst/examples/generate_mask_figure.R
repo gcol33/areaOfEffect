@@ -20,12 +20,12 @@ dummy <- st_as_sf(
 
 # Without mask
 cat("Computing AoE without mask...\n")
-result_no_mask <- aoe(dummy, "PT")
+result_no_mask <- aoe(dummy, "PT", largest_polygon = FALSE)
 aoe_no_mask <- aoe_geometry(result_no_mask, "aoe")
 
 # With mask + area=1 for equal land area
 cat("Computing AoE with land mask (equal land area)...\n")
-result_masked <- aoe(dummy, "PT", mask = "land", area = 1)
+result_masked <- aoe(dummy, "PT", mask = "land", area = 1, largest_polygon = FALSE)
 aoe_masked <- aoe_geometry(result_masked, "aoe")
 
 # Get support geometry
@@ -42,10 +42,15 @@ aoe_no_mask_ea <- st_transform(aoe_no_mask, crs_ea)
 aoe_masked_ea <- st_transform(aoe_masked, crs_ea)
 support_ea <- st_transform(support_geom, crs_ea)
 
-# Plot
+# Plot. The map is width-bound (the Azores sit far west of the mainland), so the
+# mainland and its halo land in the upper-right under the legend. Extend xlim to
+# the right to shift the map left and open a clear column for the top-right legend.
+bb <- st_bbox(aoe_no_mask_ea)
+xlim <- c(bb[1], bb[3] + 0.23 * (bb[3] - bb[1]))
+
 plot(st_geometry(aoe_no_mask_ea), border = "gray50", lty = 2, lwd = 1.5,
-     xlim = st_bbox(aoe_no_mask_ea)[c(1,3)],
-     ylim = st_bbox(aoe_no_mask_ea)[c(2,4)],
+     xlim = xlim,
+     ylim = bb[c(2, 4)],
      axes = FALSE, xaxt = "n", yaxt = "n")
 plot(st_geometry(aoe_masked_ea), col = rgb(0.3, 0.5, 0.7, 0.3),
      border = "steelblue", lty = 2, lwd = 1.5, add = TRUE)
