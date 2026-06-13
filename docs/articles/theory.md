@@ -58,7 +58,7 @@ Points within the AoE are classified into two categories:
 Points outside the AoE are **pruned** (removed). They are too distant to
 be meaningfully related to the support region.
 
-    #> Linking to GEOS 3.13.1, GDAL 3.11.4, PROJ 9.7.0; sf_use_s2() is TRUE
+    #> Linking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE
 
 ![Point classification by AoE. Core points (green) are inside the
 original support. Halo points (orange) are in the expanded region.

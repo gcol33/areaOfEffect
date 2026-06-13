@@ -3,15 +3,24 @@
 <g class='svglite'>
 <defs>
   <style type='text/css'><![CDATA[
-    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+    /* theme-aware-processed */
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite circle {
       fill: none;
-      stroke: #000000;
+      stroke: #3E3F3A;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite > g > rect {
+      fill: none;
+      stroke: #3E3F3A;
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-miterlimit: 10.00;
     }
     .svglite text {
       white-space: pre;
+      fill: #3E3F3A;
     }
     .svglite g.glyphgroup path {
       fill: inherit;
@@ -19,7 +28,7 @@
     }
   ]]></style>
 </defs>
-<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<rect class='svg-bg' width='100%' height='100%' style='stroke: none; fill: #F5F6F8;'/>
 <defs>
   <clipPath id='cpMC4wMHw1MDQuMDB8MC4wMHwzNjAuMDA='>
     <rect x='0.00' y='0.00' width='504.00' height='360.00' />
@@ -33,7 +42,7 @@
   </clipPath>
 </defs>
 <g clip-path='url(#cpMTQuNDB8NDg5LjYwfDE0LjQwfDM0NS42MA==)'>
-<rect x='14.40' y='14.40' width='475.20' height='331.20' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FFFFFF;' />
+<rect rx='4' x='14.40' y='14.40' width='475.20' height='331.20' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #F5F6F8;' />
 <path d='M 44.21 103.97 L 44.56 102.64 L 44.90 101.31 L 43.54 101.46 L 43.89 100.13 L 42.54 100.29 L 42.88 98.96 L 41.53 99.12 L 41.19 99.15 L 41.28 98.82 L 40.94 98.86 L 41.03 98.53 L 40.35 98.61 L 40.53 97.94 L 39.17 98.10 L 36.47 98.41 L 35.12 98.57 L 34.77 99.89 L 34.09 99.97 L 33.92 100.63 L 33.74 101.30 L 33.06 101.37 L 32.35 104.03 L 32.00 105.36 L 32.68 105.28 L 32.50 105.95 L 32.32 106.61 L 33.00 106.54 L 32.65 107.87 L 33.33 107.79 L 33.15 108.46 L 33.83 108.39 L 33.66 109.05 L 34.68 108.94 L 34.59 109.27 L 34.93 109.24 L 34.67 110.24 L 36.03 110.09 L 36.54 110.03 L 36.50 110.20 L 36.67 110.18 L 36.53 110.68 L 37.22 110.60 L 37.90 110.53 L 38.58 110.45 L 38.40 111.12 L 39.77 110.97 L 39.94 110.30 L 40.62 110.23 L 40.79 109.55 L 41.48 109.48 L 42.84 109.33 L 43.18 107.99 L 43.52 106.65 L 43.87 105.31 L 44.21 103.97 Z' style='fill-rule: evenodd; stroke-width: 1.12; stroke: #7F7F7F; stroke-dasharray: 6.00,6.00;' />
 <path d='M 76.97 122.84 L 77.28 121.48 L 75.90 121.62 L 74.53 121.76 L 73.15 121.91 L 71.77 122.05 L 70.39 122.20 L 69.01 122.34 L 67.64 122.49 L 66.26 122.63 L 64.88 122.78 L 64.72 123.46 L 64.03 123.53 L 63.91 124.05 L 63.74 124.06 L 63.70 124.24 L 63.18 124.29 L 63.02 124.98 L 62.33 125.05 L 62.17 125.73 L 61.48 125.81 L 61.16 127.18 L 61.85 127.11 L 61.69 127.79 L 62.38 127.72 L 62.22 128.41 L 61.89 129.79 L 62.59 129.71 L 62.43 130.40 L 63.12 130.33 L 62.96 131.02 L 63.65 130.95 L 63.49 131.64 L 64.10 131.58 L 64.08 131.66 L 64.16 131.66 L 64.02 132.26 L 64.54 132.21 L 64.50 132.38 L 64.68 132.36 L 64.56 132.88 L 65.25 132.81 L 65.09 133.50 L 66.39 133.37 L 66.37 133.46 L 66.46 133.45 L 66.16 134.74 L 67.55 134.60 L 67.23 135.99 L 68.62 135.85 L 68.31 137.24 L 69.70 137.10 L 71.09 136.96 L 70.78 138.35 L 72.17 138.21 L 73.57 138.08 L 74.96 137.94 L 76.35 137.80 L 77.74 137.66 L 79.14 137.52 L 80.53 137.38 L 81.92 137.24 L 82.07 136.55 L 82.77 136.48 L 82.92 135.78 L 83.61 135.71 L 86.39 135.43 L 86.09 136.83 L 87.49 136.69 L 88.88 136.55 L 88.58 137.95 L 91.37 137.68 L 91.51 136.98 L 92.21 136.91 L 92.91 136.84 L 93.02 136.31 L 93.19 136.30 L 93.23 136.12 L 94.44 136.00 L 94.59 135.30 L 95.28 135.23 L 95.43 134.53 L 96.12 134.46 L 96.41 133.07 L 96.70 131.67 L 96.99 130.28 L 97.28 128.88 L 96.59 128.95 L 96.73 128.26 L 96.04 128.33 L 96.19 127.63 L 95.49 127.70 L 95.64 127.01 L 94.95 127.08 L 95.09 126.38 L 94.40 126.45 L 94.55 125.76 L 93.86 125.83 L 94.00 125.14 L 92.67 125.28 L 92.68 125.23 L 92.63 125.24 L 92.77 124.59 L 92.08 124.66 L 91.39 124.73 L 91.54 124.04 L 88.78 124.32 L 89.08 122.94 L 87.70 123.08 L 86.32 123.22 L 86.02 124.61 L 84.64 124.75 L 84.41 125.78 L 84.06 125.82 L 83.99 126.17 L 82.95 126.27 L 82.26 126.34 L 82.41 125.65 L 81.72 125.72 L 81.88 125.03 L 80.49 125.18 L 80.80 123.80 L 79.42 123.94 L 78.73 124.01 L 78.88 123.32 L 78.19 123.39 L 78.35 122.71 L 76.98 122.85 L 76.98 122.84 L 76.97 122.84 Z' style='fill-rule: evenodd; stroke-width: 1.12; stroke: #7F7F7F; stroke-dasharray: 6.00,6.00;' />
 <path d='M 119.49 151.65 L 120.19 151.58 L 120.45 150.15 L 119.05 150.28 L 119.31 148.85 L 117.91 148.99 L 118.18 147.56 L 116.78 147.69 L 116.08 147.76 L 116.21 147.05 L 115.51 147.11 L 115.65 146.40 L 114.25 146.54 L 111.45 146.80 L 111.72 145.38 L 110.32 145.51 L 109.62 145.58 L 109.76 144.87 L 109.06 144.94 L 109.20 144.23 L 106.40 144.50 L 103.61 144.77 L 102.21 144.90 L 101.93 146.32 L 101.82 146.85 L 101.65 146.86 L 101.61 147.04 L 101.08 147.09 L 100.94 147.80 L 100.80 148.51 L 100.66 149.22 L 100.52 149.93 L 100.38 150.64 L 101.08 150.57 L 100.80 151.99 L 100.52 153.42 L 101.93 153.29 L 101.65 154.71 L 103.06 154.58 L 102.78 156.01 L 104.19 155.88 L 103.91 157.31 L 105.32 157.18 L 106.73 157.05 L 107.43 156.98 L 107.30 157.70 L 108.00 157.63 L 107.87 158.35 L 109.28 158.22 L 111.39 158.03 L 111.26 158.74 L 111.96 158.68 L 111.83 159.40 L 113.24 159.27 L 113.37 158.55 L 114.08 158.49 L 114.78 158.42 L 115.49 158.36 L 115.62 157.64 L 117.73 157.44 L 118.06 155.65 L 118.41 155.62 L 118.48 155.26 L 118.83 155.23 L 118.96 154.51 L 119.66 154.44 L 119.93 153.01 L 119.22 153.08 L 119.36 152.36 L 119.49 151.65 Z' style='fill-rule: evenodd; stroke-width: 1.12; stroke: #7F7F7F; stroke-dasharray: 6.00,6.00;' />
@@ -62,9 +71,9 @@
 <line x1='352.94' y1='35.42' x2='374.54' y2='35.42' style='stroke-width: 1.50;' />
 <line x1='352.94' y1='49.82' x2='374.54' y2='49.82' style='stroke-width: 1.12; stroke: #7F7F7F; stroke-dasharray: 6.00,6.00;' />
 <line x1='352.94' y1='64.22' x2='374.54' y2='64.22' style='stroke-width: 1.12; stroke: #4682B4; stroke-dasharray: 6.00,6.00;' />
-<text x='385.34' y='39.72' style='font-size: 12.00px; font-family: "Arial";' textLength='44.69px' lengthAdjust='spacingAndGlyphs'>Portugal</text>
-<text x='385.34' y='54.12' style='font-size: 12.00px; font-family: "Arial";' textLength='89.36px' lengthAdjust='spacingAndGlyphs'>AoE (unmasked)</text>
-<text x='385.34' y='68.52' style='font-size: 12.00px; font-family: "Arial";' textLength='82.03px' lengthAdjust='spacingAndGlyphs'>AoE (land only)</text>
+<text x='385.34' y='39.72' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='44.69px' lengthAdjust='spacingAndGlyphs'>Portugal</text>
+<text x='385.34' y='54.12' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='89.36px' lengthAdjust='spacingAndGlyphs'>AoE (unmasked)</text>
+<text x='385.34' y='68.52' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='82.03px' lengthAdjust='spacingAndGlyphs'>AoE (land only)</text>
 </g>
 </g>
 </svg>

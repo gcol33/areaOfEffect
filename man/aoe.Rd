@@ -127,7 +127,7 @@ but only guarantees the AoE contains the original for star-shaped polygons
 
 Points exactly on the original support boundary are classified as "core".
 
-The support geometry is validated internally using \code{\link[sf:valid]{sf::st_make_valid()}}.
+The support geometry is validated internally using \code{\link[sf:st_make_valid]{sf::st_make_valid()}}.
 }
 }
 \examples{

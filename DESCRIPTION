@@ -16,7 +16,6 @@ BugReports: https://github.com/gcol33/areaOfEffect/issues
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Imports:
     methods,
     sf
@@ -32,3 +31,4 @@ Config/testthat/edition: 3
 Depends: 
     R (>= 3.5)
 LazyData: true
+Config/roxygen2/version: 8.0.0
