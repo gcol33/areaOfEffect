@@ -89,10 +89,11 @@ target *after* clipping, so equal-area still holds on the land that remains.
 </p>
 
 ```r
-# clip the halo to land using the bundled Natural Earth polygon
-aoe(df, "Portugal", mask = "land")
+# clip the halo to land, then solve for equal core/halo land area;
+# largest_polygon = FALSE keeps Portugal's offshore islands
+aoe(df, "Portugal", mask = "land", area = 1, largest_polygon = FALSE)
 
-# equal land area in core and halo, even where half the buffer would be sea
+# the same call anywhere the buffer would otherwise spill into the sea
 aoe(df, "Japan", mask = "land", area = 1)
 ```
 
