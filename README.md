@@ -1,7 +1,5 @@
 # areaOfEffect
 
-> Small exact engines for scientific computing in R.
-
 *the area a point actually affects*
 
 [![CRAN status](https://www.r-pkg.org/badges/version/areaOfEffect)](https://CRAN.R-project.org/package=areaOfEffect)
