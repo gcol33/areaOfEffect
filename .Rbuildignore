@@ -26,3 +26,4 @@
 ^build_site\.R$
 ^IMPLEMENTATION_PLAN\.md$
 ^data-raw$
+^dev_notes$
