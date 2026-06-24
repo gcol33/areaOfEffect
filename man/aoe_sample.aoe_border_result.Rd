@@ -42,8 +42,27 @@ Sample points from an \code{aoe_border_result} with control over side and/or
 core/halo balance.
 }
 \examples{
-\dontrun{
-result <- aoe_border(pts, border, width = 1000,
+library(sf)
+
+border <- st_as_sf(
+  data.frame(id = 1),
+  geometry = st_sfc(st_linestring(matrix(
+    c(0, 0, 100, 100), ncol = 2, byrow = TRUE
+  ))),
+  crs = 32631
+)
+
+pts <- st_as_sf(
+  data.frame(id = 1:6),
+  geometry = st_sfc(
+    st_point(c(10, 20)), st_point(c(30, 10)),
+    st_point(c(50, 80)), st_point(c(80, 40)),
+    st_point(c(5, 5)),   st_point(c(40, 60))
+  ),
+  crs = 32631
+)
+
+result <- aoe_border(pts, border, width = 20,
                      side_names = c("west", "east"))
 
 # Equal sampling from each side
@@ -52,6 +71,5 @@ balanced <- aoe_sample(result, ratio = c(west = 0.5, east = 0.5))
 # Sample by core/halo instead
 by_class <- aoe_sample(result, ratio = c(core = 0.5, halo = 0.5),
                        by = "class")
-}
 
 }
