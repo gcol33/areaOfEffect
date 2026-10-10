@@ -3,24 +3,15 @@
 <g class='svglite'>
 <defs>
   <style type='text/css'><![CDATA[
-    /* theme-aware-processed */
-    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite circle {
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
       fill: none;
-      stroke: #3E3F3A;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-miterlimit: 10.00;
-    }
-    .svglite > g > rect {
-      fill: none;
-      stroke: #3E3F3A;
+      stroke: #000000;
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-miterlimit: 10.00;
     }
     .svglite text {
       white-space: pre;
-      fill: #3E3F3A;
     }
     .svglite g.glyphgroup path {
       fill: inherit;
@@ -42,7 +33,7 @@
   </clipPath>
 </defs>
 <g clip-path='url(#cpNDQuMDd8NTMxLjkzfDAuMDB8NDMyLjAw)'>
-<rect x='44.07' y='0.00' width='487.86' height='432.00' style='stroke-width: 0.00; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='44.07' y='0.00' width='487.86' height='432.00' style='stroke-width: 0.00; stroke: none;' />
 </g>
 <g clip-path='url(#cpMC4wMHw1NzYuMDB8MC4wMHw0MzIuMDA=)'>
 </g>
@@ -52,7 +43,7 @@
   </clipPath>
 </defs>
 <g clip-path='url(#cpNTQuMDN8NDY2LjExfDkuOTZ8NDIyLjA0)'>
-<rect x='54.03' y='9.96' width='412.07' height='412.07' style='stroke-width: 0.00; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='54.03' y='9.96' width='412.07' height='412.07' style='stroke-width: 0.00; stroke: none;' />
 <path d='M 280.91 51.46 L 285.15 48.21 L 289.56 45.18 L 294.12 42.38 L 298.82 39.83 L 303.65 37.53 L 308.59 35.48 L 313.64 33.69 L 318.76 32.17 L 323.97 30.93 L 329.22 29.95 L 334.53 29.25 L 339.86 28.83 L 345.21 28.69 L 350.55 28.83 L 355.89 29.25 L 361.19 29.95 L 366.45 30.93 L 371.65 32.17 L 376.78 33.69 L 381.82 35.48 L 386.76 37.53 L 391.59 39.83 L 396.29 42.38 L 400.85 45.18 L 405.26 48.21 L 409.50 51.46 L 413.57 54.94 L 417.45 58.62 L 381.33 94.74 L 379.39 92.90 L 377.36 91.16 L 375.23 89.53 L 373.03 88.02 L 370.75 86.62 L 368.40 85.34 L 365.98 84.19 L 363.51 83.17 L 360.99 82.28 L 358.43 81.52 L 355.83 80.89 L 353.20 80.41 L 350.55 80.06 L 347.88 79.85 L 345.21 79.78 L 342.53 79.85 L 339.87 80.06 L 337.22 80.41 L 334.59 80.89 L 331.99 81.52 L 329.42 82.28 L 326.90 83.17 L 324.43 84.19 L 322.02 85.34 L 319.67 86.62 L 317.39 88.02 L 315.18 89.53 L 313.06 91.16 L 311.03 92.90 L 309.09 94.74 L 138.81 265.02 L 136.97 266.96 L 135.23 268.99 L 133.60 271.11 L 132.09 273.32 L 130.69 275.60 L 129.41 277.95 L 128.26 280.36 L 127.24 282.83 L 126.34 285.35 L 125.59 287.92 L 124.96 290.52 L 124.47 293.15 L 124.12 295.80 L 123.91 298.47 L 123.84 301.14 L 123.91 303.81 L 124.12 306.48 L 124.47 309.13 L 124.96 311.76 L 125.59 314.36 L 126.34 316.93 L 127.24 319.45 L 128.26 321.92 L 129.41 324.33 L 130.69 326.68 L 132.09 328.96 L 133.60 331.17 L 135.23 333.29 L 136.97 335.32 L 138.81 337.26 L 102.69 373.38 L 99.00 369.50 L 95.53 365.44 L 92.27 361.19 L 89.24 356.78 L 86.45 352.22 L 83.90 347.52 L 81.59 342.69 L 79.55 337.75 L 77.76 332.71 L 76.24 327.58 L 74.99 322.38 L 74.02 317.12 L 73.32 311.82 L 72.90 306.49 L 72.76 301.14 L 72.90 295.79 L 73.32 290.46 L 74.02 285.16 L 74.99 279.90 L 76.24 274.70 L 77.76 269.57 L 79.55 264.53 L 81.59 259.58 L 83.90 254.76 L 86.45 250.06 L 89.24 245.50 L 92.27 241.09 L 95.53 236.84 L 99.00 232.78 L 102.69 228.90 L 272.96 58.62 L 276.84 54.94 L 280.91 51.46 Z' style='fill-rule: evenodd; fill: #2B6CB0; fill-opacity: 0.13; stroke-width: 0.47; stroke: none; stroke-linecap: butt;' />
 <path d='M 424.61 66.56 L 427.86 70.81 L 430.89 75.22 L 433.69 79.78 L 436.24 84.48 L 438.54 89.31 L 440.59 94.25 L 442.37 99.29 L 443.89 104.42 L 445.14 109.62 L 446.12 114.88 L 446.81 120.18 L 447.23 125.51 L 447.37 130.86 L 447.23 136.21 L 446.81 141.54 L 446.12 146.84 L 445.14 152.10 L 443.89 157.30 L 442.37 162.43 L 440.59 167.47 L 438.54 172.42 L 436.24 177.24 L 433.69 181.94 L 430.89 186.50 L 427.86 190.91 L 424.61 195.16 L 421.13 199.22 L 417.45 203.10 L 247.17 373.38 L 243.29 377.06 L 239.22 380.54 L 234.98 383.79 L 230.57 386.82 L 226.01 389.62 L 221.31 392.17 L 216.48 394.47 L 211.54 396.52 L 206.50 398.31 L 201.37 399.83 L 196.17 401.07 L 190.91 402.05 L 185.61 402.75 L 180.28 403.17 L 174.93 403.31 L 169.58 403.17 L 164.25 402.75 L 158.95 402.05 L 153.69 401.07 L 148.49 399.83 L 143.36 398.31 L 138.31 396.52 L 133.37 394.47 L 128.55 392.17 L 123.84 389.62 L 119.28 386.82 L 114.88 383.79 L 110.63 380.54 L 106.57 377.06 L 102.69 373.38 L 102.69 373.38 L 138.81 337.26 L 138.81 337.26 L 140.75 339.10 L 142.78 340.84 L 144.90 342.47 L 147.11 343.98 L 149.39 345.38 L 151.74 346.66 L 154.15 347.81 L 156.62 348.83 L 159.14 349.72 L 161.71 350.48 L 164.31 351.11 L 166.94 351.59 L 169.59 351.94 L 172.25 352.15 L 174.93 352.22 L 177.60 352.15 L 180.27 351.94 L 182.92 351.59 L 185.55 351.11 L 188.15 350.48 L 190.71 349.72 L 193.24 348.83 L 195.71 347.81 L 198.12 346.66 L 200.47 345.38 L 202.75 343.98 L 204.95 342.47 L 207.08 340.84 L 209.11 339.10 L 211.05 337.26 L 381.33 166.98 L 383.17 165.04 L 384.91 163.01 L 386.53 160.89 L 388.05 158.68 L 389.45 156.40 L 390.72 154.05 L 391.87 151.64 L 392.90 149.17 L 393.79 146.65 L 394.55 144.08 L 395.17 141.48 L 395.66 138.85 L 396.01 136.20 L 396.22 133.53 L 396.29 130.86 L 396.22 128.19 L 396.01 125.52 L 395.66 122.87 L 395.17 120.24 L 394.55 117.64 L 393.79 115.07 L 392.90 112.55 L 391.87 110.08 L 390.72 107.67 L 389.45 105.32 L 388.05 103.04 L 386.53 100.83 L 384.91 98.71 L 383.17 96.68 L 381.33 94.74 L 417.45 58.62 L 421.13 62.50 L 424.61 66.56 Z' style='fill-rule: evenodd; fill: #C05621; fill-opacity: 0.13; stroke-width: 0.47; stroke: none; stroke-linecap: butt;' />
 <path d='M 311.03 92.90 L 313.06 91.16 L 315.18 89.53 L 317.39 88.02 L 319.67 86.62 L 322.02 85.34 L 324.43 84.19 L 326.90 83.17 L 329.42 82.28 L 331.99 81.52 L 334.59 80.89 L 337.22 80.41 L 339.87 80.06 L 342.53 79.85 L 345.21 79.78 L 347.88 79.85 L 350.55 80.06 L 353.20 80.41 L 355.83 80.89 L 358.43 81.52 L 360.99 82.28 L 363.51 83.17 L 365.98 84.19 L 368.40 85.34 L 370.75 86.62 L 373.03 88.02 L 375.23 89.53 L 377.36 91.16 L 379.39 92.90 L 381.33 94.74 L 138.81 337.26 L 136.97 335.32 L 135.23 333.29 L 133.60 331.17 L 132.09 328.96 L 130.69 326.68 L 129.41 324.33 L 128.26 321.92 L 127.24 319.45 L 126.34 316.93 L 125.59 314.36 L 124.96 311.76 L 124.47 309.13 L 124.12 306.48 L 123.91 303.81 L 123.84 301.14 L 123.91 298.47 L 124.12 295.80 L 124.47 293.15 L 124.96 290.52 L 125.59 287.92 L 126.34 285.35 L 127.24 282.83 L 128.26 280.36 L 129.41 277.95 L 130.69 275.60 L 132.09 273.32 L 133.60 271.11 L 135.23 268.99 L 136.97 266.96 L 138.81 265.02 L 309.09 94.74 L 311.03 92.90 Z' style='fill-rule: evenodd; fill: #2B6CB0; fill-opacity: 0.25; stroke-width: 0.47; stroke: none; stroke-linecap: butt;' />
@@ -90,22 +81,22 @@
 <circle cx='227.52' cy='248.09' r='3.56' style='stroke-width: 0.71; stroke: none; stroke-linecap: butt; fill: #2B6CB0;' />
 </g>
 <g clip-path='url(#cpMC4wMHw1NzYuMDB8MC4wMHw0MzIuMDA=)'>
-<rect x='471.77' y='160.75' width='50.20' height='51.65' style='stroke-width: 0.00; stroke: none;' /> fill: #F5F6F8;' />
-<text x='471.77' y='170.60' style='font-size: 12.00px; font-weight: bold;fill: #2D3748; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='25.33px' lengthAdjust='spacingAndGlyphs'>Side</text>
-<rect x='471.77' y='177.84' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='471.77' y='160.75' width='50.20' height='51.65' style='stroke-width: 0.00; stroke: none;' />
+<text x='471.77' y='170.60' style='font-size: 12.00px; font-weight: bold;fill: #2D3748; font-family: "Arial";' textLength='25.33px' lengthAdjust='spacingAndGlyphs'>Side</text>
+<rect x='471.77' y='177.84' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none;' />
 <circle cx='480.41' cy='186.48' r='3.56' style='stroke-width: 0.71; stroke: #2B6CB0; fill: #2B6CB0;' />
-<rect x='471.77' y='195.12' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='471.77' y='195.12' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none;' />
 <circle cx='480.41' cy='203.76' r='3.56' style='stroke-width: 0.71; stroke: #C05621; fill: #C05621;' />
-<text x='495.03' y='190.42' style='font-size: 11.00px;fill: #2D3748; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='25.09px' lengthAdjust='spacingAndGlyphs'>north</text>
-<text x='495.03' y='207.70' style='font-size: 11.00px;fill: #2D3748; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='26.94px' lengthAdjust='spacingAndGlyphs'>south</text>
-<rect x='471.77' y='219.60' width='47.10' height='51.65' style='stroke-width: 0.00; stroke: none;' /> fill: #F5F6F8;' />
-<text x='471.77' y='229.46' style='font-size: 12.00px; font-weight: bold;fill: #2D3748; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='32.02px' lengthAdjust='spacingAndGlyphs'>Class</text>
-<rect x='471.77' y='236.69' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none;' /> fill: #F5F6F8;' />
+<text x='495.03' y='190.42' style='font-size: 11.00px;fill: #2D3748; font-family: "Arial";' textLength='25.09px' lengthAdjust='spacingAndGlyphs'>north</text>
+<text x='495.03' y='207.70' style='font-size: 11.00px;fill: #2D3748; font-family: "Arial";' textLength='26.94px' lengthAdjust='spacingAndGlyphs'>south</text>
+<rect x='471.77' y='219.60' width='47.10' height='51.65' style='stroke-width: 0.00; stroke: none;' />
+<text x='471.77' y='229.46' style='font-size: 12.00px; font-weight: bold;fill: #2D3748; font-family: "Arial";' textLength='32.02px' lengthAdjust='spacingAndGlyphs'>Class</text>
+<rect x='471.77' y='236.69' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none;' />
 <circle cx='480.41' cy='245.33' r='3.56' style='stroke-width: 0.71; stroke: none; fill: #000000;' />
-<rect x='471.77' y='253.97' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none;' /> fill: #F5F6F8;' />
+<rect x='471.77' y='253.97' width='17.28' height='17.28' style='stroke-width: 0.00; stroke: none;' />
 <circle cx='480.41' cy='262.61' r='3.56' style='stroke-width: 0.71;' />
-<text x='495.03' y='249.27' style='font-size: 11.00px;fill: #2D3748; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='23.84px' lengthAdjust='spacingAndGlyphs'>Core</text>
-<text x='495.03' y='266.55' style='font-size: 11.00px;fill: #2D3748; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='22.62px' lengthAdjust='spacingAndGlyphs'>Halo</text>
+<text x='495.03' y='249.27' style='font-size: 11.00px;fill: #2D3748; font-family: "Arial";' textLength='23.84px' lengthAdjust='spacingAndGlyphs'>Core</text>
+<text x='495.03' y='266.55' style='font-size: 11.00px;fill: #2D3748; font-family: "Arial";' textLength='22.62px' lengthAdjust='spacingAndGlyphs'>Halo</text>
 </g>
 </g>
 </svg>
