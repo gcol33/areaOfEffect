@@ -62,6 +62,15 @@ theme_aoe <- function(base_size = 12) {
 }
 ```
 
+## Installation
+
+```{r, eval = FALSE}
+install.packages("areaOfEffect")        # CRAN
+
+install.packages("pak")                  # development version
+pak::pak("gcol33/areaOfEffect")
+```
+
 ## Overview
 
 The `areaOfEffect` package classifies spatial points by their position relative to a region's boundary—without requiring sf expertise.

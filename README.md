@@ -17,6 +17,17 @@ you: the default produces equal core and halo areas, a scale-free definition of
 "near the boundary" that means the same thing for Luxembourg and Brazil. Projection,
 buffering, and point-in-polygon are handled through `sf` under one call.
 
+## Installation
+
+```r
+install.packages("areaOfEffect")        # CRAN
+
+install.packages("pak")                  # development version
+pak::pak("gcol33/areaOfEffect")
+```
+
+## Quick start
+
 ```r
 library(areaOfEffect)
 
@@ -111,15 +122,6 @@ The `scale` argument sets halo size as a proportion of core area. The default,
 | `sqrt(2) - 1` (default) | 1:1 |
 | `0.5` | 1.25:1 |
 | `1` | 3:1 |
-
-## Installation
-
-```r
-install.packages("areaOfEffect")        # CRAN
-
-install.packages("pak")                  # development version
-pak::pak("gcol33/areaOfEffect")
-```
 
 ## Documentation
 
