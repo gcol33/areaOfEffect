@@ -71,9 +71,9 @@
 <line x1='352.94' y1='35.42' x2='374.54' y2='35.42' style='stroke-width: 1.50;' />
 <line x1='352.94' y1='49.82' x2='374.54' y2='49.82' style='stroke-width: 1.12; stroke: #7F7F7F; stroke-dasharray: 6.00,6.00;' />
 <line x1='352.94' y1='64.22' x2='374.54' y2='64.22' style='stroke-width: 1.12; stroke: #4682B4; stroke-dasharray: 6.00,6.00;' />
-<text x='385.34' y='39.72' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='44.69px' lengthAdjust='spacingAndGlyphs'>Portugal</text>
-<text x='385.34' y='54.12' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='89.36px' lengthAdjust='spacingAndGlyphs'>AoE (unmasked)</text>
-<text x='385.34' y='68.52' style='font-size: 12.00px; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;' textLength='82.03px' lengthAdjust='spacingAndGlyphs'>AoE (land only)</text>
+<text x='385.34' y='39.72' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>Portugal</text>
+<text x='385.34' y='54.12' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>AoE (unmasked)</text>
+<text x='385.34' y='68.52' style='font-size: 1.2em; font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;'>AoE (land only)</text>
 </g>
 </g>
 </svg>

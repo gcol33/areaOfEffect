@@ -9,7 +9,20 @@
 halo area equals the country area (area proportion = 1). These halos
 account for land masking (sea areas excluded)."><meta property="og:description" content="A named list of pre-computed halo geometries for each country where the
 halo area equals the country area (area proportion = 1). These halos
-account for land masking (sea areas excluded)."></head><body>
+account for land masking (sea areas excluded)."><script>
+(function () {
+  var D = String.fromCharCode(36);
+  window.MathJax = {
+    tex: {
+      inlineMath: [[D, D], ["\\(", "\\)"]],
+      displayMath: [[D + D, D + D], ["\\[", "\\]"]]
+    },
+    chtml: { linebreaks: { automatic: true, width: "90% container" } },
+    svg: { linebreaks: { automatic: true, width: "90% container" } },
+    options: { renderActions: { addMenu: [] } }
+  };
+})();
+</script></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -96,7 +109,7 @@ boundary and the expanded boundary, clipped to land.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
@@ -105,6 +118,5 @@ boundary and the expanded boundary, clipped to land.</p>
 
 
 
-  
-</body></html>
+  </body></html>
 

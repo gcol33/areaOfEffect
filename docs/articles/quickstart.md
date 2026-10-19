@@ -1,5 +1,15 @@
 # Quick Start
 
+## Installation
+
+``` r
+
+install.packages("areaOfEffect")        # CRAN
+
+install.packages("pak")                  # development version
+pak::pak("gcol33/areaOfEffect")
+```
+
 ## Overview
 
 The `areaOfEffect` package classifies spatial points by their position
@@ -25,7 +35,9 @@ comparisons.
 
 library(areaOfEffect)
 library(sf)
+#> Warning: package 'sf' was built under R version 4.6.1
 library(ggplot2)
+#> Warning: package 'ggplot2' was built under R version 4.6.1
 ```
 
 ### From a Dataframe
