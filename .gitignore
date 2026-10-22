@@ -39,3 +39,4 @@ areaOfEffect.Rcheck/
 
 # CRAN submission file (regenerated on each submission)
 CRAN-SUBMISSION
+.run*

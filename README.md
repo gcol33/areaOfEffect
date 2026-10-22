@@ -1,34 +1,86 @@
+
 # areaOfEffect
 
-*the area a point actually affects*
+*points inside, near and beyond a region’s border*
 
-[![CRAN status](https://www.r-pkg.org/badges/version/areaOfEffect)](https://CRAN.R-project.org/package=areaOfEffect)
-[![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/areaOfEffect)](https://cran.r-project.org/package=areaOfEffect)
-[![Monthly downloads](https://cranlogs.r-pkg.org/badges/areaOfEffect)](https://cran.r-project.org/package=areaOfEffect)
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/areaOfEffect)](https://CRAN.R-project.org/package=areaOfEffect)
 [![R-CMD-check](https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml)
-[![Codecov test coverage](https://codecov.io/gh/gcol33/areaOfEffect/graph/badge.svg)](https://app.codecov.io/gh/gcol33/areaOfEffect)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Codecov test
+coverage](https://codecov.io/gh/gcol33/areaOfEffect/graph/badge.svg)](https://app.codecov.io/gh/gcol33/areaOfEffect)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- badges: end -->
 
-**Classify points as inside, near, or too far from a polygon boundary, with a buffer width that picks itself.**
+areaOfEffect labels points by where they lie relative to a region, such
+as species records inside Austria, in a band around its border, or too
+far away to count.
 
-Give it points and a region. `areaOfEffect` labels each point **core** (inside),
-**halo** (in the buffer zone), or prunes it (too far), and it sizes the buffer for
-you: the default produces equal core and halo areas, a scale-free definition of
-"near the boundary" that means the same thing for Luxembourg and Brazil. Projection,
-buffering, and point-in-polygon are handled through `sf` under one call.
+Each point inside the region is labelled core, each point in a buffer
+zone around it is labelled halo, and points beyond the buffer are
+dropped. Projection, buffering and the point-in-polygon tests run
+through [sf](https://r-spatial.github.io/sf/) in one call. The buffer
+width comes from the region itself: the default makes the halo area
+equal to the core area, so “near the boundary” means the same for
+Luxembourg and Brazil. You can then compare core and halo records,
+weight them, and decide whether the halo belongs in your analysis.
+
+areaOfEffect supports:
+
+- **Countries by name or your own polygons.**
+  [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.html)
+  takes a country name or ISO code (`"Austria"`, `"AT"`), several
+  countries, an sf polygon, or nothing, in which case it detects the
+  countries that contain the points.
+- **Coastlines.** `mask = "land"` clips the halo to land, and `area = 1`
+  then finds the buffer that makes the halo equal to the core on the
+  land that remains.
+- **Borders between regions.** `aoe_border()` classifies points by side
+  and distance from a line, with zones of equal area on each side, for
+  example along an international border.
+- **A minimum number of points.** `aoe_expand()` grows the buffer of
+  each region until it holds a minimum number of points, within caps on
+  area and distance.
+- **Balanced samples.** `aoe_sample()` draws a sample stratified by core
+  and halo, or by side of a border, when one class dominates.
+
+The default buffer scale, `sqrt(2) - 1`, is the solution of
+`(1 + s)^2 - 1 = 1`: the region scaled by `1 + s` has twice its area, so
+the halo has the area of the core. Without a mask this holds exactly;
+with a mask the buffer is found by a secant search on the clipped area.
+[Theory](https://gillescolling.com/areaOfEffect/articles/theory.html)
+derives the default and compares it with other choices.
 
 ## Installation
 
-```r
-install.packages("areaOfEffect")        # CRAN
+``` r
+install.packages("areaOfEffect")
+```
 
-install.packages("pak")                  # development version
+The development version installs from GitHub:
+
+``` r
+# install.packages("pak")
 pak::pak("gcol33/areaOfEffect")
 ```
 
-## Quick start
+## Usage
 
-```r
+1.  Classify points against a region with `aoe()`.
+2.  Count core and halo points per region with `aoe_summary()`.
+3.  Keep the classes your analysis needs, or draw a balanced sample with
+    `aoe_sample()`.
+
+The input is an sf object of points, or a data frame whose coordinate
+columns are detected by their names or set with `coords`, such as
+`coords = c("lon", "lat")`. The region is a country name or ISO code, an
+sf polygon, or left out.
+
+``` r
+library(sf)
+#> Linking to GEOS 3.13.1, GDAL 3.11.4, PROJ 9.7.0; sf_use_s2() is TRUE
 library(areaOfEffect)
 
 observations <- data.frame(
@@ -36,126 +88,139 @@ observations <- data.frame(
   lon = c(14.5, 15.2, 16.8, 20.0),
   lat = c(47.5, 48.1, 47.2, 48.5)
 )
-
-# classify relative to Austria
 result <- aoe(observations, "Austria")
-result$aoe_class
-#> [1] "core" "core" "halo"
-# (point D is pruned: outside the buffer zone)
+result
+#> Area of Effect Result
+#> ─────────────────────
+#> Points:   3 (2 core, 1 halo)
+#> Supports: 1
+#> Scale:    0.414 (multiplier 1.41, theoretical halo:core 1.00)
+#> 
+#> Simple feature collection with 3 features and 4 fields
+#> Geometry type: POINT
+#> Dimension:     XY
+#> Bounding box:  xmin: 14.5 ymin: 47.2 xmax: 16.8 ymax: 48.1
+#> Geodetic CRS:  WGS 84
+#>   point_id support_id aoe_class id          geometry
+#> 1        1        225      core  A POINT (14.5 47.5)
+#> 2        2        225      core  B POINT (15.2 48.1)
+#> 3        3        225      halo  C POINT (16.8 47.2)
 ```
 
+Points A and B lie in Austria and are core, point C lies in the buffer
+zone east of the border and is halo, and point D, in Slovakia beyond the
+buffer, is dropped. The result is an sf object, so it goes straight into
+sf and ggplot2 workflows.
+
 <p align="center">
-  <img src="man/figures/austria-aoe.svg" alt="Austria with area of effect" width="500">
+
+<img src="man/figures/austria-aoe.svg" alt="Outline of Austria inside the dashed outline of its area of effect, the ring between them having the same area as Austria" width="500">
 </p>
 
-## A buffer width you don't have to guess
-
-The underlying `sf` workflow is well known: load a boundary, fix the CRS,
-`st_buffer()`, `st_intersects()`. The repetitive part is one function call. The
-harder part is the buffer distance. A 10 km buffer is most of Luxembourg and a
-rounding error for Brazil, so a fixed distance is not comparable across regions.
-
-`areaOfEffect` solves for the distance instead of asking you to invent one. The
-default scale `sqrt(2) - 1` is the unique value that makes the halo area equal the
-core area: it is the solution of `(1 + s)^2 - 1 = 1`, not a tuned constant. So "near
-the boundary" is defined by the geometry of the region, the same way everywhere.
-
-```r
-library(sf)
-
-# the hand-rolled version: you choose 10000 and hope it travels
-buf <- st_buffer(st_geometry(austria), 10000)
-near <- lengths(st_intersects(pts, st_difference(buf, austria))) > 0
-
-# the equal-area version: the width is whatever makes core area == halo area
-aoe(pts, "Austria")
+``` r
+aoe_summary(result)
+#>   support_id n_total n_core n_halo prop_core prop_halo
+#> 1        225       3      2      1 0.6666667 0.3333333
 ```
 
-## What's in the box
+## Buffers on land
 
-- **`aoe()`**: classify points as core, halo, or pruned against one or more
-  supports. Pass a data frame with coordinates or an `sf` object; pass a country
-  name (`"Austria"`, `"AT"`), your own polygon, or nothing (countries are detected
-  from the points).
-- **`aoe_border()`**: classify points by side and distance from a line, with
-  symmetric equal-area zones on each side (for example, either side of an
-  international border).
-- **`aoe_expand()`**: grow the buffer per support just enough to capture a minimum
-  point count, under hard caps on area and distance.
-- **`aoe_sample()`**: stratified sampling of a result by core/halo or by side, for
-  balanced draws when one class dominates.
-- **`aoe_summary()`, `aoe_area()`, `aoe_geometry()`**: counts and proportions per
-  support, area statistics (halo:core ratio, masking effect), and the underlying
-  AoE polygons for plotting.
+The default buffer extends into anything around the region, including
+the sea, where terrestrial records cannot occur. `mask = "land"` clips
+the halo to land, and `area = 1` solves for the buffer that makes the
+halo equal to the core after clipping:
 
-## Solving for area after masking
-
-The default equal-area buffer extends into anything around the region, including
-ocean. For terrestrial data that area is wasted. The `mask` argument clips the halo
-to relevant areas, and the `area` argument then solves for the buffer that hits your
-target *after* clipping, so equal-area still holds on the land that remains.
-
-<p align="center">
-  <img src="man/figures/portugal-mask.svg" alt="Portugal with coastline masking" width="500">
-</p>
-
-```r
-# clip the halo to land, then solve for equal core/halo land area;
-# largest_polygon = FALSE keeps Portugal's offshore islands
+``` r
 aoe(df, "Portugal", mask = "land", area = 1, largest_polygon = FALSE)
-
-# the same call anywhere the buffer would otherwise spill into the sea
-aoe(df, "Japan", mask = "land", area = 1)
 ```
 
-Without a mask the equal-area scale is analytic and exact. With one, the masked area
-has no closed form, so the buffer is found by a short secant search that converges in
-a handful of clipping evaluations.
+`largest_polygon = FALSE` keeps Portugal’s islands, which the default
+drops in favour of the largest polygon.
 
-## Scale
+<p align="center">
 
-The `scale` argument sets halo size as a proportion of core area. The default,
-`sqrt(2) - 1` (about 0.414), gives a 1:1 halo:core ratio.
+<img src="man/figures/portugal-mask.svg" alt="Portugal and its Atlantic islands, the unmasked area of effect extending into the Atlantic as a dashed outline, and the area of effect clipped to land filled" width="500">
+</p>
 
-| Scale | Halo:Core area |
-|-------|----------------|
-| `sqrt(2) - 1` (default) | 1:1 |
-| `0.5` | 1.25:1 |
-| `1` | 3:1 |
+## Buffer size
+
+`scale` sets the halo size relative to the core. The halo:core area
+ratio is `(1 + scale)^2 - 1`:
+
+| Scale                   | Halo:core area |
+|-------------------------|----------------|
+| `sqrt(2) - 1` (default) | 1:1            |
+| `0.5`                   | 1.25:1         |
+| `1`                     | 3:1            |
+
+[Theory](https://gillescolling.com/areaOfEffect/articles/theory.html#the-scale-parameter)
+explains when another scale suits an analysis.
 
 ## Documentation
 
-- [Quick Start](https://gillescolling.com/areaOfEffect/articles/quickstart.html)
-- [Theory](https://gillescolling.com/areaOfEffect/articles/theory.html)
-- [Function Reference](https://gillescolling.com/areaOfEffect/reference/index.html)
+Start with [Quick
+Start](https://gillescolling.com/areaOfEffect/articles/quickstart.html):
+points classified against a country, against your own polygons and
+several regions, and with a coastline mask.
+
+- [Theory](https://gillescolling.com/areaOfEffect/articles/theory.html):
+  why the default buffer has the area of the core, the buffer and stamp
+  methods, and masks.
+- [Full reference](https://gillescolling.com/areaOfEffect/reference/):
+  every function, grouped by job.
+
+## Getting help
+
+Questions and bug reports go to the [GitHub
+issues](https://github.com/gcol33/areaOfEffect/issues). A bug report is
+easiest to act on with a small reproducible example, for instance made
+with [reprex](https://reprex.tidyverse.org/).
 
 ## Support
 
-> "Software is like sex: it's better when it's free." — Linus Torvalds
+> “Software is like sex: it’s better when it’s free.” — Linus Torvalds
 
-I'm a PhD student who builds R packages in my free time because I believe good tools
-should be free and open. I started these projects for my own work and figured others
-might find them useful too.
+I’m a PhD student who builds R packages in my free time because I
+believe good tools should be free and open. I started these projects for
+my own work and figured others might find them useful too.
 
-If this package saved you some time, buying me a coffee is a nice way to say thanks.
-It helps with my coffee addiction.
+If this package saved you some time, buying me a coffee is a nice way to
+say thanks. It helps with my coffee addiction.
 
-[![Buy Me A Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gcol33)
+[![Buy Me A
+Coffee](https://img.shields.io/badge/-Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gcol33)
+
+## Acknowledgements
+
+The projection, buffering and point-in-polygon tests run on
+[sf](https://r-spatial.github.io/sf/).
 
 ## License
 
-MIT (see the LICENSE.md file)
+areaOfEffect is licensed under MIT.
 
 ## Citation
 
-```bibtex
-@software{areaOfEffect,
-  author = {Colling, Gilles},
-  title  = {areaOfEffect: Classify Points by Distance to Polygon Boundaries},
-  year   = {2025},
-  url    = {https://CRAN.R-project.org/package=areaOfEffect},
-  doi    = {10.32614/CRAN.package.areaOfEffect}
+``` text
+Colling G (2026). _areaOfEffect: Classify Points by Distance to Polygon
+Boundaries_. doi:10.32614/CRAN.package.areaOfEffect
+<https://doi.org/10.32614/CRAN.package.areaOfEffect>. R package version
+0.2.5, <https://gillescolling.com/areaOfEffect/>.
+```
+
+BibTeX:
+
+``` bibtex
+@Manual{colling2026areaofeffect,
+  title = {areaOfEffect: Classify Points by Distance to Polygon Boundaries},
+  author = {Gilles Colling},
+  year = {2026},
+  note = {R package version 0.2.5},
+  url = {https://gillescolling.com/areaOfEffect/},
+  doi = {10.32614/CRAN.package.areaOfEffect},
 }
 ```
-</content>
-</invoke>
+
+Download the citation as
+[BibTeX](https://gillescolling.com/areaOfEffect/areaOfEffect.bib) or
+[RIS](https://gillescolling.com/areaOfEffect/areaOfEffect.ris).

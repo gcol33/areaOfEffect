@@ -35,9 +35,7 @@ comparisons.
 
 library(areaOfEffect)
 library(sf)
-#> Warning: package 'sf' was built under R version 4.6.1
 library(ggplot2)
-#> Warning: package 'ggplot2' was built under R version 4.6.1
 ```
 
 ### From a Dataframe

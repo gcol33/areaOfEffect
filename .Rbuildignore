@@ -27,3 +27,7 @@
 ^IMPLEMENTATION_PLAN\.md$
 ^data-raw$
 ^dev_notes$
+^README\.Rmd$
+^\.run.*$
+^sidecars$
+^CITATION\.cff$

@@ -68,7 +68,6 @@ Points within the AoE are classified into two categories:
 Points outside the AoE are **pruned** (removed). They are too distant to
 be meaningfully related to the support region.
 
-    #> Warning: package 'sf' was built under R version 4.6.1
     #> Linking to GEOS 3.13.1, GDAL 3.11.4, PROJ 9.7.0; sf_use_s2() is TRUE
 
 ![Point classification by AoE. Core points (green) are inside the
