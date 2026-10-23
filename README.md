@@ -7,6 +7,10 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/areaOfEffect)](https://CRAN.R-project.org/package=areaOfEffect)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/areaOfEffect)](https://cran.r-project.org/package=areaOfEffect)
+[![Monthly
+downloads](https://cranlogs.r-pkg.org/badges/areaOfEffect)](https://cran.r-project.org/package=areaOfEffect)
 [![R-CMD-check](https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/gcol33/areaOfEffect/actions/workflows/R-CMD-check.yml)
 [![Codecov test
 coverage](https://codecov.io/gh/gcol33/areaOfEffect/graph/badge.svg)](https://app.codecov.io/gh/gcol33/areaOfEffect)
