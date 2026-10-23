@@ -1,3 +1,7 @@
+# areaOfEffect (development version)
+
+* `aoe()`, `get_country()` and subsetting of the bundled `countries` data no longer fail with "sf_column does not point to a geometry column" when sf is not attached: the package now imports from sf, so sf's S3 methods are registered whenever areaOfEffect is loaded.
+
 # areaOfEffect 0.2.5
 
 * Reposition package as general spatial classification tool (not ecology-specific)
