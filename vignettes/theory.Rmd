@@ -138,7 +138,7 @@ Two values have special meaning:
 
 ## Why Equal Area is the Default
 
-The default scale produces equal core and halo areas. This is not arbitrary—it reflects a principled position about spatial influence.
+The default scale produces equal core and halo areas. This choice reflects a principled position about spatial influence.
 
 ### The Symmetry Argument
 
@@ -196,7 +196,7 @@ The buffer method expands the boundary uniformly in all directions. The buffer d
 
 **Advantages:**
 
-- Robust for any polygon shape
+- Works for any polygon shape
 
 - Always guarantees the AoE contains the original support
 
@@ -310,7 +310,7 @@ The area of effect provides a principled correction for border truncation in spa
 
 - **Geometric derivation**: The default emerges from symmetry, not tuning
 
-- **Robust method**: Buffer-based expansion works for any polygon shape
+- **Shape-independent method**: Buffer-based expansion works for any polygon shape
 
 - **Categorical output**: Core, halo, or pruned
 
