@@ -30,13 +30,14 @@ navbar:
     - intro
     - reference
     - articles
+    - news
     right:
     - search
-    - lightswitch
     - github
+    - lightswitch
   components:
     intro:
-      text: Get Started
+      text: Get started
       href: articles/quickstart.html
     github:
       icon: fab fa-github
@@ -73,12 +74,13 @@ reference:
   - aoe_sample.aoe_border_result
   - '`[.aoe_result`'
 articles:
-- title: Getting Started
-  navbar: ~
-  contents: quickstart
+- title: Get started
+  contents:
+  - quickstart
 - title: Background
-  navbar: ~
-  contents: theory
+  navbar: Background
+  contents:
+  - theory
 footer:
   structure:
     left: developed_by
