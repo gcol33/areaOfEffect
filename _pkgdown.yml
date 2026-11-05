@@ -36,9 +36,6 @@ navbar:
     - github
     - lightswitch
   components:
-    intro:
-      text: Get started
-      href: articles/quickstart.html
     github:
       icon: fab fa-github
       href: https://github.com/gcol33/areaOfEffect
@@ -74,9 +71,6 @@ reference:
   - aoe_sample.aoe_border_result
   - '`[.aoe_result`'
 articles:
-- title: Get started
-  contents:
-  - quickstart
 - title: Background
   navbar: Background
   contents:
@@ -85,3 +79,5 @@ footer:
   structure:
     left: developed_by
     right: built_with
+redirects:
+- ["articles/quickstart.html", "articles/areaOfEffect.html"]

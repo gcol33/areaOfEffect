@@ -18,7 +18,7 @@ Ecologists and geographers who filter occurrence or survey points by region in R
 ### A1 Core, halo or dropped
 - question: which of my points are inside, near or far from the region?
 - answer: aoe() with a country name, ISO code, polygon or auto-detection
-- home: vignettes/quickstart.Rmd
+- home: vignettes/areaOfEffect.Rmd
 - also: README Usage
 
 ### A2 A buffer width derived from the region
@@ -31,7 +31,7 @@ Ecologists and geographers who filter occurrence or survey points by region in R
 ### A3 Coastlines
 - question: what about buffer area that falls into the sea?
 - answer: mask = "land" with area = 1 solves after clipping
-- home: vignettes/theory.Rmd (Hard vs Soft Boundaries); quickstart (Using a Mask)
+- home: vignettes/theory.Rmd (Hard vs Soft Boundaries); areaOfEffect.Rmd (Using a Mask)
 - also: README
 
 ### A4 Borders, minimum counts, balanced samples
@@ -45,7 +45,7 @@ Theory article, "What AoE is Not".
 ## Documents
 - DESCRIPTION: claim, equal-area default, mask
 - README / landing: claim, relation, first call, mask, scale table, routing
-- Get Started (quickstart): one path from points to classified points
+- Get Started (areaOfEffect.Rmd): one path from points to classified points
 - articles: theory (explanation)
 
 ## Open

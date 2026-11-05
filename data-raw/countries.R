@@ -9,8 +9,9 @@ library(rnaturalearth)
 # PART 1: Country polygons
 # ==============================================================================
 
-# Get country polygons at 1:50m resolution (good balance of detail/size)
-countries_raw <- ne_countries(scale = 50, returnclass = "sf")
+# Country polygons at 1:10m resolution. The 1:50m coastline is too coarse for
+# coastal cities: Lisbon falls into the Tagus estuary.
+countries_raw <- ne_countries(scale = 10, returnclass = "sf")
 
 # Keep essential columns - use _eh variants which handle edge cases better
 countries <- countries_raw[, c("iso_a2_eh", "iso_a3_eh", "name", "continent")]
@@ -21,9 +22,26 @@ countries <- countries[countries$continent != "Antarctica", ]
 countries <- countries[!is.na(countries$iso3) & countries$iso3 != "-99", ]
 countries <- st_make_valid(countries)
 
-# Transform to equal-area projection for accurate AoE calculation
+# Simplify on the sphere (s2, tolerance in metres). Planar simplification,
+# in WGS84 or in Mollweide, leaves self-crossing rings in the countries that
+# span the antimeridian (Russia, the United States, Fiji).
+sf_use_s2(TRUE)
+simplify_tol <- 1000
+countries_full <- countries
+countries <- st_simplify(countries, dTolerance = simplify_tol, preserveTopology = TRUE)
+countries <- st_make_valid(countries)
+
+# A territory smaller than the tolerance can simplify to nothing; keep its
+# full-resolution outline instead.
+empty <- st_is_empty(countries)
+if (any(empty)) {
+  message("Kept unsimplified: ", paste(countries$name[empty], collapse = ", "))
+  st_geometry(countries)[empty] <- st_geometry(countries_full)[empty]
+}
+
+# Transform to equal-area projection for accurate AoE calculation (Mollweide)
 countries_ea <- st_transform(countries, "ESRI:54009")
-# Mollweide equal-area
+countries_ea <- st_make_valid(countries_ea)
 
 # Pre-calculate bounding boxes for each scale
 calc_aoe_bbox <- function(geom, scale) {
@@ -65,12 +83,6 @@ countries$bbox <- do.call(rbind, bbox_original)
 countries$bbox_equal_area <- do.call(rbind, bbox_equal_area)
 countries$bbox_equal_ray <- do.call(rbind, bbox_equal_ray)
 
-# Keep in WGS84 for user convenience
-countries <- st_transform(countries, 4326)
-
-# Simplify geometries to reduce package size
-countries <- st_simplify(countries, dTolerance = 0.01, preserveTopology = TRUE)
-
 message(sprintf("Countries dataset: %d countries, %.1f MB",
                 nrow(countries),
                 object.size(countries) / 1024^2))
@@ -82,24 +94,17 @@ message(sprintf("Countries dataset: %d countries, %.1f MB",
 message("Fetching global land mask from Natural Earth...")
 
 # Get land polygon (excludes water bodies)
-land_raw <- ne_download(scale = 50, type = "land", category = "physical",
+land_raw <- ne_download(scale = 10, type = "land", category = "physical",
                         returnclass = "sf")
-
-# Disable s2 for planar geometry operations (avoids spherical geometry issues)
-sf_use_s2(FALSE)
 
 land <- st_make_valid(land_raw)
 land <- st_transform(land, 4326)
 
-# Simplify to reduce size
-land <- st_simplify(land, dTolerance = 0.01, preserveTopology = TRUE)
-
-# Union into single multipolygon for efficient intersection
+# Simplify and union on the sphere, as for the countries
+land <- st_simplify(land, dTolerance = simplify_tol, preserveTopology = TRUE)
+land <- st_make_valid(land)
 land <- st_union(land)
 land <- st_make_valid(land)
-
-# Fix any remaining topology issues with zero-width buffer trick
-land <- st_buffer(land, 0)
 
 # Convert to sf object with minimal attributes
 land <- st_sf(
@@ -122,6 +127,7 @@ land_ea <- st_make_valid(land_ea)
 land_ea <- st_buffer(land_ea, 0)  # Fix topology after projection
 land_geom_ea <- st_geometry(land_ea)[[1]]
 land_geom_ea <- st_sfc(land_geom_ea, crs = "ESRI:54009")
+
 
 # Function to compute halo with area = 1 (halo area = country area)
 # Uses secant method to find correct scale accounting for land mask
@@ -258,8 +264,52 @@ message(sprintf("Final countries dataset: %d countries, %.1f MB",
                 object.size(countries) / 1024^2))
 
 # ==============================================================================
-# Save datasets
+# Validate on the sphere and save
 # ==============================================================================
+
+# The package runs with s2 on, so every shipped geometry must be valid on
+# the sphere, not only in the planar projection it was built in.
+sf_use_s2(TRUE)
+s2_valid <- function(g) s2::s2_is_valid(st_as_s2(st_geometry(g), check = FALSE))
+# Repair one geometry on the sphere: s2 rebuild first, then a planar (GEOS)
+# repair, then a planar union of its polygon parts, keeping the first result
+# that is valid on the sphere.
+fix_one_s2 <- function(x) {
+  r <- tryCatch(st_make_valid(x), error = function(e) NULL)
+  if (!is.null(r) && isTRUE(all(s2_valid(r)))) return(r)
+  sf_use_s2(FALSE)
+  on.exit(sf_use_s2(TRUE))
+  r <- st_make_valid(x)
+  sf_use_s2(TRUE)
+  if (isTRUE(all(s2_valid(r)))) return(r)
+  sf_use_s2(FALSE)
+  st_union(st_cast(st_collection_extract(r, "POLYGON"), "POLYGON"))
+}
+fix_s2 <- function(g, label, required = TRUE) {
+  geom <- st_geometry(g)
+  bad <- which(!s2_valid(geom))
+  for (i in bad) geom[i] <- fix_one_s2(geom[i])
+  still <- which(!s2_valid(geom))
+  if (length(still)) {
+    msg <- sprintf("%s: %d geometries still invalid on the sphere (%s)",
+                   label, length(still), paste(head(still), collapse = ", "))
+    if (required) stop(msg)
+    message("    ", msg)
+  }
+  if (!inherits(g, "sf")) return(geom)
+  st_geometry(g) <- geom
+  g
+}
+countries <- fix_s2(countries, "countries")
+land <- fix_s2(land, "land")
+# The halos ship as a dataset and are not used by the package functions, so
+# one that cannot be made valid on the sphere is kept and reported.
+for (iso in names(country_halos)) {
+  if (!is.null(country_halos[[iso]]))
+    country_halos[[iso]] <- fix_s2(country_halos[[iso]], paste0("halo_", iso),
+                                   required = FALSE)
+}
+
 
 usethis::use_data(countries, overwrite = TRUE, compress = "xz")
 message("Saved countries to data/countries.rda")

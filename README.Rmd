@@ -26,7 +26,7 @@ Each point inside the region is labelled core, each point in a buffer zone aroun
 
 areaOfEffect supports:
 
-- **Countries by name or your own polygons.** [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.html) takes a country name or ISO code (`"Austria"`, `"AT"`), several countries, an sf polygon, or nothing, in which case it detects the countries that contain the points.
+- **Countries by name or your own polygons.** [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.html) takes a country name or two-letter country code (`"Austria"`, `"AT"`), several countries, an sf polygon, or nothing, in which case it detects the countries that contain the points.
 - **Coastlines.** `mask = "land"` clips the halo to land, and `area = 1` then finds the buffer that makes the halo equal to the core on the land that remains.
 - **Borders between regions.** `aoe_border()` classifies points by side and distance from a line, with zones of equal area on each side, for example along an international border.
 - **A minimum number of points.** `aoe_expand()` grows the buffer of each region until it holds a minimum number of points, within caps on area and distance.
@@ -53,7 +53,7 @@ pak::pak("gcol33/areaOfEffect")
 2. Count core and halo points per region with `aoe_summary()`.
 3. Keep the classes your analysis needs, or draw a balanced sample with `aoe_sample()`.
 
-The input is an sf object of points, or a data frame whose coordinate columns are detected by their names or set with `coords`, such as `coords = c("lon", "lat")`. The region is a country name or ISO code, an sf polygon, or left out.
+The input is an sf object of points, or a data frame whose coordinate columns are detected by their names or set with `coords`, such as `coords = c("lon", "lat")`. The region is given as a country name or two-letter country code, as an sf polygon, or left out so that the countries containing the points are detected.
 
 ```{r aoe}
 library(sf)
@@ -80,17 +80,22 @@ aoe_summary(result)
 
 The default buffer extends into anything around the region, including the sea, where terrestrial records cannot occur. `mask = "land"` clips the halo to land, and `area = 1` solves for the buffer that makes the halo equal to the core after clipping:
 
-```r
-aoe(df, "Portugal", mask = "land", area = 1, largest_polygon = FALSE)
+```{r mask}
+records <- data.frame(
+  id  = c("Porto", "Badajoz", "Madrid"),
+  lon = c(-8.61, -6.97, -3.70),
+  lat = c(41.15, 38.88, 40.42)
+)
+aoe(records, "Portugal", mask = "land", area = 1, largest_polygon = FALSE)
 ```
 
-`largest_polygon = FALSE` keeps Portugal's islands, which the default drops in favour of the largest polygon.
+Porto is core, Badajoz, just across the Spanish border, is halo, and Madrid is dropped. By default only the largest polygon of a region is kept; `largest_polygon = FALSE` keeps Portugal's islands as well.
 
 <p align="center"><img src="man/figures/portugal-mask.svg" alt="Portugal and its Atlantic islands, the unmasked area of effect extending into the Atlantic as a dashed outline, and the area of effect clipped to land filled" width="500"></p>
 
 ## Buffer size
 
-`scale` sets the halo size relative to the core. The halo:core area ratio is `(1 + scale)^2 - 1`:
+`scale` sets the halo size relative to the core, giving a halo:core area ratio of `(1 + scale)^2 - 1`:
 
 | Scale | Halo:core area |
 |-------|----------------|
@@ -102,7 +107,7 @@ aoe(df, "Portugal", mask = "land", area = 1, largest_polygon = FALSE)
 
 ## Documentation
 
-Start with [Quick Start](https://gillescolling.com/areaOfEffect/articles/quickstart.html): points classified against a country, against your own polygons and several regions, and with a coastline mask.
+Start with [Quick Start](https://gillescolling.com/areaOfEffect/articles/areaOfEffect.html): points classified against a country, against your own polygons and several regions, and with a coastline mask.
 
 - [Theory](https://gillescolling.com/areaOfEffect/articles/theory.html): why the default buffer has the area of the core, the buffer and stamp methods, and masks.
 - [Full reference](https://gillescolling.com/areaOfEffect/reference/): every function, grouped by job.

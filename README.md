@@ -35,9 +35,9 @@ areaOfEffect supports:
 
 - **Countries by name or your own polygons.**
   [`aoe()`](https://gillescolling.com/areaOfEffect/reference/aoe.html)
-  takes a country name or ISO code (`"Austria"`, `"AT"`), several
-  countries, an sf polygon, or nothing, in which case it detects the
-  countries that contain the points.
+  takes a country name or two-letter country code (`"Austria"`, `"AT"`),
+  several countries, an sf polygon, or nothing, in which case it detects
+  the countries that contain the points.
 - **Coastlines.** `mask = "land"` clips the halo to land, and `area = 1`
   then finds the buffer that makes the halo equal to the core on the
   land that remains.
@@ -79,8 +79,9 @@ pak::pak("gcol33/areaOfEffect")
 
 The input is an sf object of points, or a data frame whose coordinate
 columns are detected by their names or set with `coords`, such as
-`coords = c("lon", "lat")`. The region is a country name or ISO code, an
-sf polygon, or left out.
+`coords = c("lon", "lat")`. The region is given as a country name or
+two-letter country code, as an sf polygon, or left out so that the
+countries containing the points are detected.
 
 ``` r
 library(sf)
@@ -135,11 +136,31 @@ the halo to land, and `area = 1` solves for the buffer that makes the
 halo equal to the core after clipping:
 
 ``` r
-aoe(df, "Portugal", mask = "land", area = 1, largest_polygon = FALSE)
+records <- data.frame(
+  id  = c("Porto", "Badajoz", "Madrid"),
+  lon = c(-8.61, -6.97, -3.70),
+  lat = c(41.15, 38.88, 40.42)
+)
+aoe(records, "Portugal", mask = "land", area = 1, largest_polygon = FALSE)
+#> Area of Effect Result
+#> ─────────────────────
+#> Points:   2 (1 core, 1 halo)
+#> Supports: 1
+#> Area:     1 (target halo = 1 x original)
+#> 
+#> Simple feature collection with 2 features and 4 fields
+#> Geometry type: POINT
+#> Dimension:     XY
+#> Bounding box:  xmin: -8.61 ymin: 38.88 xmax: -6.97 ymax: 41.15
+#> Geodetic CRS:  WGS 84
+#>   point_id support_id aoe_class      id            geometry
+#> 1        1         79      core   Porto POINT (-8.61 41.15)
+#> 2        2         79      halo Badajoz POINT (-6.97 38.88)
 ```
 
-`largest_polygon = FALSE` keeps Portugal’s islands, which the default
-drops in favour of the largest polygon.
+Porto is core, Badajoz, just across the Spanish border, is halo, and
+Madrid is dropped. By default only the largest polygon of a region is
+kept; `largest_polygon = FALSE` keeps Portugal’s islands as well.
 
 <p align="center">
 
@@ -148,8 +169,8 @@ drops in favour of the largest polygon.
 
 ## Buffer size
 
-`scale` sets the halo size relative to the core. The halo:core area
-ratio is `(1 + scale)^2 - 1`:
+`scale` sets the halo size relative to the core, giving a halo:core area
+ratio of `(1 + scale)^2 - 1`:
 
 | Scale                   | Halo:core area |
 |-------------------------|----------------|
@@ -163,7 +184,7 @@ explains when another scale suits an analysis.
 ## Documentation
 
 Start with [Quick
-Start](https://gillescolling.com/areaOfEffect/articles/quickstart.html):
+Start](https://gillescolling.com/areaOfEffect/articles/areaOfEffect.html):
 points classified against a country, against your own polygons and
 several regions, and with a coastline mask.
 
